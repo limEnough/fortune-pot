@@ -1,50 +1,30 @@
+import { Solar } from "lunar-javascript";
 import { CG_OH, JJ_OH, OH_IDX, type Ohaeng } from "./constants";
 import type { SajuResult } from "@/types/saju";
 
-const mod = (n: number, m: number) => ((n % m) + m) % m;
-
-function jdn(y: number, m: number, d: number): number {
-  const a = Math.floor((14 - m) / 12);
-  const yy = y + 4800 - a;
-  const mm = m + 12 * a - 3;
-  return (
-    d + Math.floor((153 * mm + 2) / 5) + 365 * yy +
-    Math.floor(yy / 4) - Math.floor(yy / 100) + Math.floor(yy / 400) - 32045
-  );
-}
+// 자(0)→0:30, 축(1)→2:30, ... 해(11)→22:30 — 각 시지의 중앙 시각
+const HOUR_CENTERS = [0, 2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22];
 
 /**
  * 생년월일(+시각)로 사주 명식을 계산한다.
- * ⚠️ 프로토타입용 간이 만세력: 절기·진태양시 미반영(연/월 경계 단순화).
- *    운영 시 검증된 만세력 라이브러리나 KASI 절기 데이터로 교체할 것.
+ * lunar-javascript 기반 — 입춘·각월 절입 시각, 23시 자시 경계까지 반영된 정식 만세력.
  */
 export function computeSaju(birth: string, hourIdx: number | null): SajuResult {
   const [y, m, d] = birth.split("-").map(Number);
+  const hasHour = hourIdx !== null && hourIdx !== undefined;
+  const h = hasHour ? HOUR_CENTERS[hourIdx] : 12;
+  const min = hasHour ? 30 : 0;
 
-  let sm = m;
-  if (d < 6) { sm = m - 1; if (sm === 0) sm = 12; }
+  const lunar = Solar.fromYmdHms(y, m, d, h, min, 0).getLunar();
 
-  let yForYear = y;
-  if (m < 2 || (m === 2 && d < 4)) yForYear = y - 1;
+  const year: [number, number] = [lunar.getYearGanIndexExact(), lunar.getYearZhiIndexExact()];
+  const month: [number, number] = [lunar.getMonthGanIndexExact(), lunar.getMonthZhiIndexExact()];
+  const day: [number, number] = [lunar.getDayGanIndexExact(), lunar.getDayZhiIndexExact()];
+  const hour: [number, number] | null = hasHour
+    ? [lunar.getTimeGanIndex(), lunar.getTimeZhiIndex()]
+    : null;
 
-  const yg = mod(yForYear - 4, 10);
-  const yz = mod(yForYear - 4, 12);
-
-  const mz = mod(sm, 12);
-  const base = mod((yg % 5) * 2 + 2, 10);     // 오호둔
-  const mg = mod(base + mod(mz - 2, 12), 10);
-
-  const J = jdn(y, m, d);
-  const dg = mod(J + 9, 10);
-  const dz = mod(J + 1, 12);
-
-  let hour: [number, number] | null = null;
-  if (hourIdx !== null && hourIdx !== undefined) {
-    const hg = mod((dg % 5) * 2 + hourIdx, 10); // 오자둔
-    hour = [hg, hourIdx];
-  }
-
-  return { year: [yg, yz], month: [mg, mz], day: [dg, dz], hour, ilgan: dg };
+  return { year, month, day, hour, ilgan: day[0] };
 }
 
 export function sipseong(dayOh: number, dayYang: boolean, oh: number, yang: boolean): string {
