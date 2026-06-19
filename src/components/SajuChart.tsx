@@ -164,7 +164,7 @@ export default function SajuChart({ saju }: { saju: SajuInput }) {
         <p>부족한 <b style={{ color: ohC(minEl).c }}>{minEl}</b>의 기운은 <b>{OH_BOWAN[minEl]}</b>으로 보완하면 흐름이 한결 부드러워져요.</p>
       </div>
 
-      <div className="saju-note">※ 명식은 lunar-javascript 만세력(절기·자시 경계 반영)을 기반으로 합니다. 경도·균시차 보정은 적용되지 않아 시주는 ±30분 오차가 있을 수 있어요.</div>
+      <div className="saju-note">※ 명식은 lunar-javascript 만세력에 서울 경도 기준 진태양시(균시차 포함) 보정을 적용해 계산합니다. 출생지가 서울에서 멀거나 시지 경계 부근이면 오차가 있을 수 있어요.</div>
     </div>
   );
 }
