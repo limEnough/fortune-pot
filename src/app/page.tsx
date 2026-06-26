@@ -1,5 +1,4 @@
 "use client";
-import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useSaju } from "@/hooks/useSaju";
 import ClayChar from "@/components/ClayChar";
@@ -10,12 +9,10 @@ import TopBar from "@/components/TopBar";
 
 export default function HomePage() {
   const router = useRouter();
-  const { saju, loading } = useSaju();
+  const { loading } = useSaju();
   // const [sheet, setSheet] = useState(false);
-
-  useEffect(() => {
-    if (!loading && saju) router.replace("/fortune"); // 사주 있으면 바로 운세
-  }, [loading, saju, router]);
+  // 캐시된 사주가 있어도 자동으로 운세 페이지로 이동하지 않습니다.
+  // 최근 조회 정보의 재사용 제안은 입력 폼 상단 말풍선에서 처리해요.
 
   if (loading) {
     return <section className="screen"><div className="scroll"><div className="hero"><ClayChar variant="dream" /></div></div></section>;

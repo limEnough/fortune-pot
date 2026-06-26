@@ -34,26 +34,10 @@ export default function FortunePage() {
       <div className="scroll">
         {/* 상단: 사주 정보 확인 트리거(탭하면 바텀시트) */}
         <button
-          className="focusable"
+          className="saju-info-pill focusable"
           onClick={() => setInfoOpen(true)}
           aria-label="내 사주 정보 보기"
-          style={{
-            alignSelf: "center",
-            margin: "0 0 12px",
-            display: "inline-flex",
-            alignItems: "center",
-            gap: 7,
-            padding: "8px 15px",
-            borderRadius: 999,
-            cursor: "pointer",
-            border: "1px solid var(--line)",
-            background: "rgba(255,255,255,.07)",
-            color: "#efe6ff",
-            fontFamily: "var(--body)",
-            fontSize: 13,
-            fontWeight: 700,
-            backdropFilter: "blur(4px)",
-          }}
+          aria-expanded={infoOpen}
         >
           📋 내 사주 정보
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor"
