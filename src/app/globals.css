@@ -207,14 +207,39 @@ body {
   justify-content: center;
   text-align: center;
 }
+/* ClayChar 래퍼 — 캐릭터의 레이아웃 상자(플렉스 아이템)는 항상 이 div */
+.clay {
+  display: flex;
+  justify-content: center;
+  min-width: 0;
+}
 .char {
   width: 248px;
   max-width: 64vw;
+  height: auto; /* height 속성은 ClayChar가 제거 — viewBox 비율을 따른다 */
   animation: float 5s ease-in-out infinite;
   filter: drop-shadow(0 26px 30px rgba(60, 20, 110, 0.55));
 }
 .char.sm {
   width: 140px;
+}
+
+/*
+ * 캐릭터를 다른 콘텐츠와 가로로 나란히 놓는 블록(.f-hero / .saju-hero)에서는
+ * 캐릭터 영역을 폭의 40%로 제한한다. 텍스트가 항상 60%를 확보하도록.
+ *
+ * vw가 아니라 %인 이유: .app 이 --app-w(600px)로 고정되므로 데스크톱에서
+ * 40vw는 앱 프레임보다 커져 상한 역할을 못 한다. 부모 기준 %가 모바일에선
+ * 화면 40%와 사실상 같고 데스크톱에선 더 엄격하다.
+ */
+.f-hero > .clay,
+.saju-hero > .clay {
+  flex: 0 1 auto;
+  max-width: 40%;
+}
+.f-hero > .clay > .char,
+.saju-hero > .clay > .char {
+  max-width: 100%;
 }
 @keyframes float {
   0%,
@@ -1181,7 +1206,6 @@ input[type="date"].input::-webkit-calendar-picker-indicator {
 }
 .saju-hero .char.sm {
   width: 120px;
-  flex: 0 0 auto;
 }
 .saju-head {
   flex: 1;
