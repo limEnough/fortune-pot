@@ -8,13 +8,33 @@
 
 ## [Unreleased]
 
-> 아직 태그가 없습니다. 릴리즈할 때 이 섹션을 `## [0.5.0] - YYYY-MM-DD` 로 바꾸고
-> 맨 아래 비교 링크를 갱신하세요.
+> 다음 릴리즈에 나갈 변경을 여기에 쌓습니다.
+> 릴리즈할 때 이 섹션을 `## [x.y.z] - YYYY-MM-DD` 로 바꾸고 맨 아래 비교 링크를 추가하세요.
+
+## [0.5.0] - 2026-08-06
 
 ### Added
 
-- 헤더에 확성기 버튼 추가 — 새 업데이트가 있으면 말풍선으로 알리고, 누르면 릴리즈 노트를 볼 수 있어요.
+- 업데이트 소식 기능 — 안 본 릴리즈가 있으면 말풍선과 점으로 알리고, 눌러서 릴리즈 노트를 볼 수 있어요.
+  메뉴가 있는 화면에서는 확성기가 LNB 안으로 들어가고 햄버거가 알림 진입점을 맡습니다.
 - 변경 이력 문서(`CHANGELOG.md`)와 앱 내 릴리즈 노트(`src/lib/releases.ts`) 도입.
+- 파비콘·앱 아이콘 3종(`favicon.ico`, `icon.svg`, `apple-icon.png`) 추가.
+- '나의 사주는' 화면에 메뉴와 '오늘의 운세' 바로가기 추가.
+- 화면 전환 전역 로딩 오버레이 — 전환 중 조작을 차단하고 진행 중임을 표시합니다.
+  App Router가 클라이언트 내비게이션 전환 이벤트를 노출하지 않아 `useNav` 훅으로 직접 처리합니다.
+
+### Changed
+
+- 클레이 마법사 캐릭터 SVG 5종 교체.
+- 텍스트와 가로로 배치되는 영역에서 캐릭터 폭을 40%로 제한.
+- 업데이트 소식 시트의 닫기를 X 버튼으로 일원화(하단 '확인했어요' 제거).
+
+### Fixed
+
+- 새 SVG에 `class="char"`가 없어 `ClayChar`의 문자열 치환이 no-op이 되면서
+  캐릭터의 크기·애니메이션·그림자 CSS가 전부 적용되지 않던 문제.
+- SVG 교체 과정에서 누락된 `role="img"` / `aria-label` 복원.
+- LNB 닫기(X) 버튼의 아이콘이 중앙에서 밀려 보이던 정렬 문제.
 
 ## [0.4.0] - 2026-08-05
 
@@ -58,7 +78,8 @@
 - 첫 릴리즈 — 사주 정보 입력, 오늘의 운세, 나의 사주는(명식·오행·십성) 화면.
 - 게스트 저장(localStorage), 공통 레이아웃·컴포넌트, 페이지 라우팅.
 
-[Unreleased]: https://github.com/limEnough/fortune-pot/compare/v0.4.0...HEAD
+[Unreleased]: https://github.com/limEnough/fortune-pot/compare/v0.5.0...HEAD
+[0.5.0]: https://github.com/limEnough/fortune-pot/compare/v0.4.0...v0.5.0
 [0.4.0]: https://github.com/limEnough/fortune-pot/compare/v0.3.0...v0.4.0
 [0.3.0]: https://github.com/limEnough/fortune-pot/compare/v0.2.0...v0.3.0
 [0.2.0]: https://github.com/limEnough/fortune-pot/compare/v0.1.0...v0.2.0
