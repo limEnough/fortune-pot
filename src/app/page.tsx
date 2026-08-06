@@ -1,17 +1,18 @@
 "use client";
-import { useRouter } from "next/navigation";
+import { useNav } from "@/hooks/useNav";
 import { useSaju } from "@/hooks/useSaju";
 import ClayChar from "@/components/ClayChar";
+import LoadingOverlay from "@/components/LoadingOverlay";
 import TopBar from "@/components/TopBar";
 
 export default function HomePage() {
-  const router = useRouter();
+  const nav = useNav();
   const { loading } = useSaju();
   // 캐시된 사주가 있어도 자동으로 운세 페이지로 이동하지 않습니다.
   // 최근 조회 정보의 재사용 제안은 입력 폼 상단 말풍선에서 처리해요.
 
   if (loading) {
-    return <section className="screen"><div className="scroll"><div className="hero"><ClayChar variant="dream" /></div></div></section>;
+    return <section className="screen"><LoadingOverlay /></section>;
   }
 
   return (
@@ -26,7 +27,7 @@ export default function HomePage() {
         </div>
       </div>
       <div className="cta-wrap">
-        <button className="btn primary block focusable" onClick={() => router.push("/onboarding")}>시작하기</button>
+        <button className="btn primary block focusable" onClick={() => nav.push("/onboarding")}>시작하기</button>
       </div>
     </section>
   );

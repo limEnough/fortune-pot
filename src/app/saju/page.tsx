@@ -1,26 +1,26 @@
 "use client";
 import { useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useNav } from "@/hooks/useNav";
 import { useSaju } from "@/hooks/useSaju";
 import TopBar from "@/components/TopBar";
-import ClayChar from "@/components/ClayChar";
+import LoadingOverlay from "@/components/LoadingOverlay";
 import SajuChart from "@/components/SajuChart";
 
 export default function SajuPage() {
-  const router = useRouter();
+  const nav = useNav();
   const { saju, loading } = useSaju();
 
   useEffect(() => {
-    if (!loading && !saju) router.replace("/");
-  }, [loading, saju, router]);
+    if (!loading && !saju) nav.replace("/");
+  }, [loading, saju, nav]);
 
   if (loading || !saju) {
-    return <section className="screen"><div className="scroll"><div className="hero"><ClayChar variant="love" /></div></div></section>;
+    return <section className="screen"><LoadingOverlay label="사주 정보를 불러오는 중" /></section>;
   }
 
   return (
     <section className="screen">
-      <TopBar back home />
+      <TopBar back home menu />
       <div className="scroll">
         <SajuChart saju={saju} />
       </div>

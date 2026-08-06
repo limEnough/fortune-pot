@@ -1,22 +1,22 @@
 "use client";
 import { useEffect, useMemo, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useNav } from "@/hooks/useNav";
 import { useSaju } from "@/hooks/useSaju";
 import TopBar from "@/components/TopBar";
-import ClayChar from "@/components/ClayChar";
+import LoadingOverlay from "@/components/LoadingOverlay";
 import FortuneCard from "@/components/FortuneCard";
 import SajuInfoSheet from "@/components/SajuInfoSheet";
 import { generateFortune } from "@/lib/saju/fortune";
 import { computeSaju } from "@/lib/saju/calc";
 
 export default function FortunePage() {
-  const router = useRouter();
+  const nav = useNav();
   const { saju, loading } = useSaju();
   const [infoOpen, setInfoOpen] = useState(false);
 
   useEffect(() => {
-    if (!loading && !saju) router.replace("/"); // 사주 없으면 홈으로
-  }, [loading, saju, router]);
+    if (!loading && !saju) nav.replace("/"); // 사주 없으면 홈으로
+  }, [loading, saju, nav]);
 
   const fortune = useMemo(
     () => (saju ? generateFortune(computeSaju(saju.birth, saju.hourIdx), saju.name) : null),
@@ -24,7 +24,7 @@ export default function FortunePage() {
   );
 
   if (loading || !saju || !fortune) {
-    return <section className="screen"><div className="scroll"><div className="hero"><ClayChar variant="base" /></div></div></section>;
+    return <section className="screen"><LoadingOverlay label="오늘의 운세를 준비하는 중" /></section>;
   }
 
   return (

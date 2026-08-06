@@ -423,7 +423,8 @@ h1.title .pt {
   flex: 0 0 auto;
   display: flex;
 }
-.topbar .menu.news.dot::after {
+/* 알림 점 — 확성기(메뉴 없는 화면)와 햄버거(메뉴 있는 화면) 양쪽에 붙는다 */
+.topbar .menu.dot::after {
   content: "";
   position: absolute;
   top: 8px;
@@ -435,7 +436,7 @@ h1.title .pt {
   box-shadow: 0 0 0 2px rgba(26, 14, 52, 0.9);
   animation: news-pulse 1.9s ease-in-out infinite;
 }
-.topbar .menu.news {
+.topbar .menu {
   position: relative;
 }
 @keyframes news-pulse {
@@ -593,6 +594,85 @@ h1.title .pt {
   color: #fde9b8;
   background: rgba(252, 211, 77, 0.16);
   border-color: rgba(252, 211, 77, 0.36);
+}
+
+/*
+ * 로딩 — 화면 전체를 덮는 딤 + 정중앙 스피너.
+ * 전환이 끝날 때까지 어떤 조작도 통과시키지 않는다.
+ * z-index는 앱 내 최상단 (드로어 51 / 시트 41 / 헤더 5 위).
+ */
+.loading-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 999;
+  display: grid;
+  place-items: center;
+  background: rgba(7, 4, 16, 0.92);
+  backdrop-filter: blur(7px); /* 뒤 콘텐츠를 확실히 뒤로 물리기 위해 */
+  animation: fade-in 0.18s ease;
+  /* 아래 레이어로 클릭·스크롤·드래그가 새지 않도록 */
+  pointer-events: auto;
+  touch-action: none;
+  overscroll-behavior: contain;
+  user-select: none;
+  cursor: progress;
+}
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+/* 뒤에 뭐가 있든(캐릭터가 정중앙에 오는 화면이 많다) 확실히 읽히도록 카드를 깐다 */
+.loading-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  padding: 30px 34px;
+  border-radius: 24px;
+  background: rgba(28, 15, 56, 0.94);
+  border: 1px solid var(--line);
+  box-shadow: 0 24px 60px -18px rgba(0, 0, 0, 0.75);
+}
+.spinner {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  border: 4px solid rgba(167, 139, 250, 0.18);
+  border-top-color: var(--magic);
+  border-right-color: var(--purple);
+  animation: spin 0.85s linear infinite;
+  filter: drop-shadow(0 0 12px rgba(232, 121, 249, 0.45));
+}
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+.loading-text {
+  margin: 0;
+  font-size: 13.5px;
+  font-weight: 500;
+  color: #e6dbff;
+  letter-spacing: 0.2px;
+}
+/* 회전 애니메이션에 민감한 사용자를 위해 깜빡임으로 대체 */
+@media (prefers-reduced-motion: reduce) {
+  .spinner {
+    animation: pulse-fade 1.2s ease-in-out infinite;
+  }
+  @keyframes pulse-fade {
+    0%,
+    100% {
+      opacity: 1;
+    }
+    50% {
+      opacity: 0.35;
+    }
+  }
 }
 
 /* form */
@@ -1153,11 +1233,19 @@ input[type="date"].input::-webkit-calendar-picker-indicator {
 .drawer .x {
   width: 38px;
   height: 38px;
+  /* grid + place-items 가 없으면 인라인 SVG가 baseline에 앉아 아이콘이 중앙에서 밀린다 */
+  display: grid;
+  place-items: center;
+  flex: 0 0 auto; /* 이름이 길어져도 버튼이 찌그러지지 않게 */
   border: none;
   border-radius: 12px;
   background: rgba(255, 255, 255, 0.08);
   color: #fff;
   cursor: pointer;
+  transition: transform 0.14s, background 0.18s;
+}
+.drawer .x:active {
+  transform: scale(0.92);
 }
 .nav-group .g-lab {
   font-size: 11px;
@@ -1191,6 +1279,18 @@ input[type="date"].input::-webkit-calendar-picker-indicator {
 .nav-item .chev {
   margin-left: auto;
   opacity: 0.5;
+}
+/* LNB 안 '업데이트 소식' 항목의 NEW 뱃지 — chev가 margin-left:auto 로 밀리므로
+   뱃지는 라벨 바로 옆에 붙는다 */
+.nav-new {
+  font-size: 10px;
+  font-weight: 900;
+  letter-spacing: 0.6px;
+  color: #fff;
+  background: linear-gradient(135deg, var(--purple), var(--magic-d));
+  padding: 3px 7px;
+  border-radius: 99px;
+  margin-left: -4px;
 }
 
 /* 명식 / 십성 / 세운 */

@@ -1,5 +1,5 @@
 "use client";
-import { useRouter } from "next/navigation";
+import { useNav } from "@/hooks/useNav";
 import type { SajuInput } from "@/types/saju";
 import { CG, CGH, JJ, JJH } from "@/lib/saju/constants";
 import { computeSaju } from "@/lib/saju/calc";
@@ -12,7 +12,7 @@ interface Props {
 
 /** 운세 페이지 상단 트리거로 여는, 입력한 사주 정보 확인 바텀시트 */
 export default function SajuInfoSheet({ saju, open, onClose }: Props) {
-  const router = useRouter();
+  const nav = useNav();
   const sj = computeSaju(saju.birth, saju.hourIdx);
   const [y, m, d] = saju.birth.split("-");
   const hourTxt = saju.hourIdx === null ? "모름" : `${JJ[saju.hourIdx]}시 (${JJH[saju.hourIdx]})`;
@@ -25,8 +25,8 @@ export default function SajuInfoSheet({ saju, open, onClose }: Props) {
     ["일간 (日干)", `${CG[sj.ilgan]} (${CGH[sj.ilgan]})`],
   ];
 
-  const goEdit = () => { onClose(); router.push("/onboarding"); };
-  const goFull = () => { onClose(); router.push("/saju"); };
+  const goEdit = () => { onClose(); nav.push("/onboarding"); };
+  const goFull = () => { onClose(); nav.push("/saju"); };
 
   return (
     <>

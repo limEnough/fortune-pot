@@ -2,7 +2,19 @@
 import { RELEASES, TAG_LABEL, LATEST_VERSION } from "@/lib/releases";
 import { useRelease } from "@/hooks/useRelease";
 
-const X = () => (<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round"><path d="M6 6l12 12M18 6L6 18" /></svg>);
+const X = () => (
+  <svg
+    width="20"
+    height="20"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2.2"
+    strokeLinecap="round"
+  >
+    <path d="M6 6l12 12M18 6L6 18" />
+  </svg>
+);
 
 const fmt = (iso: string) => {
   const [y, m, d] = iso.split("-");
@@ -15,10 +27,24 @@ export default function ReleaseNoteSheet() {
 
   return (
     <>
-      <div className={`sheet-scrim ${noteOpen ? "show" : ""}`} onClick={closeNote} />
-      <div className={`sheet release-sheet ${noteOpen ? "show" : ""}`} role="dialog" aria-label="업데이트 소식" aria-modal="true">
+      <div
+        className={`sheet-scrim ${noteOpen ? "show" : ""}`}
+        onClick={closeNote}
+      />
+      <div
+        className={`sheet release-sheet ${noteOpen ? "show" : ""}`}
+        role="dialog"
+        aria-label="업데이트 소식"
+        aria-modal="true"
+      >
         <div className="grip" />
-        <button className="sheet-x focusable" aria-label="닫기" onClick={closeNote}><X /></button>
+        <button
+          className="sheet-x focusable"
+          aria-label="닫기"
+          onClick={closeNote}
+        >
+          <X />
+        </button>
 
         <h3>업데이트 소식</h3>
         <p>포춘팟이 이렇게 달라졌어요</p>
@@ -28,14 +54,18 @@ export default function ReleaseNoteSheet() {
             <section key={r.version} className="release">
               <div className="r-head">
                 <span className="r-ver">v{r.version}</span>
-                {r.version === LATEST_VERSION && <span className="r-new">NEW</span>}
+                {r.version === LATEST_VERSION && (
+                  <span className="r-new">NEW</span>
+                )}
                 <span className="r-date">{fmt(r.date)}</span>
               </div>
               <h4 className="r-title">{r.title}</h4>
               <ul className="r-items">
                 {r.items.map((it, i) => (
                   <li key={i}>
-                    <span className={`r-tag ${it.tag}`}>{TAG_LABEL[it.tag]}</span>
+                    <span className={`r-tag ${it.tag}`}>
+                      {TAG_LABEL[it.tag]}
+                    </span>
                     <span>{it.text}</span>
                   </li>
                 ))}
@@ -43,8 +73,6 @@ export default function ReleaseNoteSheet() {
             </section>
           ))}
         </div>
-
-        <button className="btn primary block focusable" onClick={closeNote}>확인했어요</button>
       </div>
     </>
   );
