@@ -1,6 +1,7 @@
 "use client";
 import StarField from "./StarField";
 import NavDrawer from "./NavDrawer";
+import ReleaseNoteSheet from "./ReleaseNoteSheet";
 
 export default function AppShell({ children }: { children: React.ReactNode }) {
   return (
@@ -8,6 +9,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
       <StarField />
       {children}
       <NavDrawer />
+      <ReleaseNoteSheet />
     </div>
   );
 }

@@ -373,6 +373,202 @@ h1.title .pt {
   text-align: center;
   margin: 0 0 18px;
 }
+.sheet-x {
+  position: absolute;
+  top: 14px;
+  right: 16px;
+  width: 34px;
+  height: 34px;
+  display: grid;
+  place-items: center;
+  border: none;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.08);
+  color: #e8dcff;
+  cursor: pointer;
+  transition: transform 0.14s, background 0.18s;
+}
+.sheet-x:active {
+  transform: scale(0.92);
+}
+
+/* 헤더 확성기(업데이트 소식) 버튼 + 말풍선 */
+.news-wrap {
+  position: relative;
+  flex: 0 0 auto;
+  display: flex;
+}
+.topbar .menu.news.dot::after {
+  content: "";
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 8px;
+  height: 8px;
+  border-radius: 99px;
+  background: var(--magic);
+  box-shadow: 0 0 0 2px rgba(26, 14, 52, 0.9);
+  animation: news-pulse 1.9s ease-in-out infinite;
+}
+.topbar .menu.news {
+  position: relative;
+}
+@keyframes news-pulse {
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.35);
+    opacity: 0.7;
+  }
+}
+.news-bubble {
+  position: absolute;
+  top: calc(100% + 9px);
+  right: 0;
+  z-index: 6;
+  white-space: nowrap;
+  font-family: var(--body);
+  font-size: 12.5px;
+  font-weight: 700;
+  line-height: 1;
+  color: #f7efff;
+  padding: 10px 14px;
+  border-radius: 13px;
+  cursor: pointer;
+  background: linear-gradient(
+    135deg,
+    rgba(232, 121, 249, 0.28),
+    rgba(139, 92, 246, 0.24)
+  );
+  border: 1px solid rgba(232, 121, 249, 0.5);
+  backdrop-filter: blur(6px);
+  box-shadow: 0 14px 28px -12px rgba(150, 60, 230, 0.7);
+  animation: news-drop 0.34s cubic-bezier(0.2, 0.9, 0.3, 1.25);
+}
+/* 확성기 버튼을 가리키는 꼬리 — 회전 사각형은 반투명 본문에 비쳐 마름모로 보여서 clip-path로 자른다 */
+.news-bubble::after {
+  content: "";
+  position: absolute;
+  top: -7px;
+  right: 14px;
+  width: 15px;
+  height: 8px;
+  background: rgba(226, 132, 250, 0.62);
+  clip-path: polygon(50% 0, 100% 100%, 0 100%);
+}
+.news-bubble:active {
+  transform: scale(0.97);
+}
+@keyframes news-drop {
+  from {
+    opacity: 0;
+    transform: translateY(-7px) scale(0.94);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* 릴리즈 노트 시트 */
+.release-sheet {
+  display: flex;
+  flex-direction: column;
+  max-height: 80vh;
+  max-height: 80dvh;
+}
+.release-list {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 16px;
+  padding-right: 2px;
+}
+.release {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  padding: 14px 16px 15px;
+}
+.r-head {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  margin-bottom: 6px;
+}
+.r-ver {
+  font-family: var(--display);
+  font-size: 15px;
+  color: #f6efff;
+  letter-spacing: 0.3px;
+}
+.r-new {
+  font-size: 10px;
+  font-weight: 900;
+  letter-spacing: 0.6px;
+  color: #fff;
+  background: linear-gradient(135deg, var(--purple), var(--magic-d));
+  padding: 3px 7px;
+  border-radius: 99px;
+}
+.r-date {
+  margin-left: auto;
+  font-size: 11.5px;
+  color: var(--muted);
+}
+.r-title {
+  margin: 0 0 10px;
+  font-size: 13.5px;
+  font-weight: 700;
+  color: #f3ecff;
+}
+.r-items {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+}
+.r-items li {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  font-size: 13px;
+  line-height: 1.62;
+  color: #ded2f6;
+}
+.r-tag {
+  flex: 0 0 auto;
+  margin-top: 2px;
+  font-size: 10.5px;
+  font-weight: 700;
+  padding: 2px 7px;
+  border-radius: 99px;
+  border: 1px solid var(--line);
+}
+.r-tag.new {
+  color: #f9d8ff;
+  background: rgba(232, 121, 249, 0.2);
+  border-color: rgba(232, 121, 249, 0.42);
+}
+.r-tag.improve {
+  color: #ddd0ff;
+  background: rgba(139, 92, 246, 0.22);
+  border-color: rgba(167, 139, 250, 0.4);
+}
+.r-tag.fix {
+  color: #fde9b8;
+  background: rgba(252, 211, 77, 0.16);
+  border-color: rgba(252, 211, 77, 0.36);
+}
 
 /* form */
 .form {
