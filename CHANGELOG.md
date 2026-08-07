@@ -11,6 +11,8 @@
 > 다음 릴리즈에 나갈 변경을 여기에 쌓습니다.
 > 릴리즈할 때 이 섹션을 `## [x.y.z] - YYYY-MM-DD` 로 바꾸고 맨 아래 비교 링크를 추가하세요.
 
+## [0.7.0] - 2026-08-07
+
 ### Added
 
 - **사주 정보 이미지 카드.** `/saju` 맨 아래 *사주 정보 이미지로 저장* 버튼에서
@@ -159,7 +161,8 @@
 - 첫 릴리즈 — 사주 정보 입력, 오늘의 운세, 나의 사주는(명식·오행·십성) 화면.
 - 게스트 저장(localStorage), 공통 레이아웃·컴포넌트, 페이지 라우팅.
 
-[Unreleased]: https://github.com/limEnough/fortune-pot/compare/v0.6.1...HEAD
+[Unreleased]: https://github.com/limEnough/fortune-pot/compare/v0.7.0...HEAD
+[0.7.0]: https://github.com/limEnough/fortune-pot/compare/v0.6.1...v0.7.0
 [0.6.1]: https://github.com/limEnough/fortune-pot/compare/v0.6.0...v0.6.1
 [0.6.0]: https://github.com/limEnough/fortune-pot/compare/v0.5.0...v0.6.0
 [0.5.0]: https://github.com/limEnough/fortune-pot/compare/v0.4.0...v0.5.0
