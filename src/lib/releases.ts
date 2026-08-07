@@ -23,6 +23,18 @@ export const TAG_LABEL: Record<ReleaseTag, string> = {
 
 export const RELEASES: ReleaseNote[] = [
   {
+    version: "0.6.0",
+    date: "2026-08-07",
+    title: "보고 싶은 것부터, 더 빠르게",
+    items: [
+      { tag: "new", text: "시작할 때 '오늘의 운세'와 '나의 사주' 중 먼저 볼 것을 고를 수 있어요. 입력하는 내용은 그대로예요." },
+      { tag: "new", text: "'나의 사주는'에서 오늘의 운세로 바로 넘어갈 수 있어요." },
+      { tag: "improve", text: "앱이 눈에 띄게 빨라졌어요. 운세를 열 때 받는 데이터를 절반 가까이 줄였어요." },
+      { tag: "improve", text: "화면을 넘길 때 빈 화면 대신 들어올 내용의 윤곽이 먼저 보여요. 기다리는 시간도 줄었고요." },
+      { tag: "improve", text: "시작 화면의 버튼과 문구를 다듬고, 스크롤 막대도 앱 분위기에 맞게 바꿨어요." },
+    ],
+  },
+  {
     version: "0.5.0",
     date: "2026-08-06",
     title: "더 또렷해진 포춘팟",

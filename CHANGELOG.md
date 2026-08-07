@@ -11,6 +11,48 @@
 > 다음 릴리즈에 나갈 변경을 여기에 쌓습니다.
 > 릴리즈할 때 이 섹션을 `## [x.y.z] - YYYY-MM-DD` 로 바꾸고 맨 아래 비교 링크를 추가하세요.
 
+## [0.6.0] - 2026-08-07
+
+### Added
+
+- 시작 화면에서 '오늘의 운세'와 '나의 사주' 중 먼저 볼 화면을 고를 수 있습니다.
+  두 버튼 모두 같은 입력 폼으로 가고, 도착지만 `?next=fortune|saju` 쿼리로 전달됩니다.
+  파라미터가 없으면 기존과 같이 `/fortune` — 기존 링크·북마크는 그대로 동작합니다.
+- '나의 사주는' 상단에 '오늘의 운세 확인하기' 칩. 운세 화면의 '내 사주 정보' 칩과 짝을 이룹니다.
+- 로딩 스켈레톤(`Skeleton.tsx`)과 라우트별 `loading.tsx`.
+- 만세력 지연 로더 `loadManse()` / `isManseReady()` 와 게이트 훅 `useManse`.
+
+### Changed
+
+- **만세력(`lunar-javascript`)을 지연 로딩으로 전환.** gzip 100 kB 짜리 UMD 모놀리스가
+  초기 번들에 통째로 들어 있었습니다. First Load JS: `/fortune` 222 → 123 kB,
+  `/saju` 218 → 119 kB.
+- **폰트를 `next/font` 로 셀프 호스팅.** `<link>` 방식의 외부 왕복 두 번을 없앴습니다.
+  한글 unicode-range 슬라이스가 웨이트당 120개 넘어 `preload` 는 껐습니다.
+  웨이트도 400·500·700·900 → 400·700 으로 정리(500·900 은 각 두 군데서만 사용).
+- **화면 전환 로딩을 전역 스피너 오버레이에서 라우트별 스켈레톤으로 교체.**
+  최소 노출 450ms 하한이 사라져, 전환이 빠르면 스켈레톤도 그만큼 짧게 스칩니다.
+- `SajuChart` 의 명식·오행·십성·세운 계산을 `useMemo` 로 묶었습니다.
+  오행/십성 패널을 토글할 때마다 `computeSaju` 가 두 번씩 다시 돌던 것을 제거.
+- 스크롤바를 숨김(`width: 0`)에서 테마에 맞는 얇은 커스텀 스크롤바로 교체.
+  `.scroll` · `.hour-menu` · `.release-list` 규칙을 하나로 일원화.
+- 시작 화면 진입 버튼의 톤을 완화하고(꽉 찬 그라데이션 → 옅은 틴트) 크기 축소, 하단 여백 확대.
+- 홈 히어로 문구와 브랜드마크 수정("오늘의 사주" → "FortunePot").
+
+### Fixed
+
+- 홈 화면이 쓰지도 않는 사주 데이터의 하이드레이션을 기다리며 스피너를 띄우던 문제.
+  정적으로 프리렌더한 내용을 자기가 가리고 있었습니다.
+- 만세력 청크 로딩이 실패하면 화면이 스켈레톤에서 멈추던 문제 — 3회까지 재시도합니다.
+  (지연 로딩으로 새로 생긴 실패 경로)
+
+### Removed
+
+- `LoadingOverlay` 컴포넌트와 `.loading-overlay` 계열 CSS.
+- `useUIStore` 의 전역 로딩 상태(`loading` / `loadingSince` / `loadingFrom` /
+  `startLoading` / `stopLoading`) — 오버레이가 사라져 참조가 없어졌습니다.
+  이에 따라 화면 전환 중 조작 차단도 없어집니다.
+
 ## [0.5.0] - 2026-08-06
 
 ### Added
@@ -78,7 +120,8 @@
 - 첫 릴리즈 — 사주 정보 입력, 오늘의 운세, 나의 사주는(명식·오행·십성) 화면.
 - 게스트 저장(localStorage), 공통 레이아웃·컴포넌트, 페이지 라우팅.
 
-[Unreleased]: https://github.com/limEnough/fortune-pot/compare/v0.5.0...HEAD
+[Unreleased]: https://github.com/limEnough/fortune-pot/compare/v0.6.0...HEAD
+[0.6.0]: https://github.com/limEnough/fortune-pot/compare/v0.5.0...v0.6.0
 [0.5.0]: https://github.com/limEnough/fortune-pot/compare/v0.4.0...v0.5.0
 [0.4.0]: https://github.com/limEnough/fortune-pot/compare/v0.3.0...v0.4.0
 [0.3.0]: https://github.com/limEnough/fortune-pot/compare/v0.2.0...v0.3.0
