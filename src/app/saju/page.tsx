@@ -2,6 +2,7 @@
 import { useEffect } from "react";
 import { useNav } from "@/hooks/useNav";
 import { useSaju } from "@/hooks/useSaju";
+import { useManse } from "@/hooks/useManse";
 import TopBar from "@/components/TopBar";
 import LoadingOverlay from "@/components/LoadingOverlay";
 import SajuChart from "@/components/SajuChart";
@@ -9,12 +10,13 @@ import SajuChart from "@/components/SajuChart";
 export default function SajuPage() {
   const nav = useNav();
   const { saju, loading } = useSaju();
+  const manseReady = useManse(); // SajuChart 가 computeSaju 를 렌더 중에 부른다
 
   useEffect(() => {
     if (!loading && !saju) nav.replace("/");
   }, [loading, saju, nav]);
 
-  if (loading || !saju) {
+  if (loading || !saju || !manseReady) {
     return (
       <section className="screen">
         <LoadingOverlay label="사주 정보를 불러오는 중" />

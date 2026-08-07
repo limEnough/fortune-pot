@@ -1,6 +1,44 @@
-import { Solar } from "lunar-javascript";
+import type { Solar as SolarClass } from "lunar-javascript";
 import { CG_OH, JJ_OH, OH_IDX, type Ohaeng } from "./constants";
 import type { SajuResult } from "@/types/saju";
+
+/*
+ * lunar-javascript 는 압축 후에도 100 kB 로 초기 번들의 45% 를 차지하는데,
+ * 정작 쓰는 건 명식 계산 한 번뿐이다. 정적 import 를 끊고 필요한 시점에만
+ * 받아오도록 지연 로딩한다.
+ *
+ * computeSaju 자체는 동기로 남긴다 — 호출부(SajuChart·generateFortune)가
+ * 전부 렌더 본문이라 async 로 바꾸면 파급이 크다. 대신 화면을 그리기 전에
+ * loadManse() 를 반드시 한 번 await 해야 하고, 이는 useManse 훅이 담당한다.
+ */
+let Solar: typeof SolarClass | null = null;
+let pending: Promise<void> | null = null;
+
+/**
+ * 만세력 모듈을 받아온다. 여러 번 불러도 요청은 한 번만 나간다.
+ *
+ * 정적 import 였을 땐 없던 실패 경로가 생겼다 — 청크를 못 받으면 화면이
+ * 스켈레톤에서 영영 멈춘다. 실패 시 캐시를 비워 다음 호출이 다시 시도하게 한다.
+ */
+export function loadManse(): Promise<void> {
+  if (Solar) return Promise.resolve();
+  if (!pending) {
+    pending = import("lunar-javascript")
+      .then((m) => {
+        Solar = m.Solar;
+      })
+      .catch((e) => {
+        pending = null; // 재시도 가능하게
+        throw e;
+      });
+  }
+  return pending;
+}
+
+/** 이미 받아왔는지. 훅이 첫 렌더에서 불필요한 로딩 상태를 건너뛰는 데 쓴다. */
+export function isManseReady(): boolean {
+  return Solar !== null;
+}
 
 // 자(0)→0:30, 축(1)→2:30, ... 해(11)→22:30 — 각 시지의 중앙 시각
 const HOUR_CENTERS = [0, 2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22];
@@ -27,6 +65,11 @@ function trueSolarOffsetMin(date: Date, lon: number): number {
  * 한국 표준시 입력을 진태양시(경도 보정 + 균시차)로 환산한 뒤 명식을 산출한다.
  */
 export function computeSaju(birth: string, hourIdx: number | null): SajuResult {
+  if (!Solar) {
+    throw new Error(
+      "만세력이 아직 로드되지 않았습니다. computeSaju 앞에서 loadManse()를 await 하세요(useManse 훅).",
+    );
+  }
   const [y, m, d] = birth.split("-").map(Number);
   const hasHour = hourIdx !== null && hourIdx !== undefined;
   const h = hasHour ? HOUR_CENTERS[hourIdx] : 12;

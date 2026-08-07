@@ -2,6 +2,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { useNav } from "@/hooks/useNav";
 import { useSaju } from "@/hooks/useSaju";
+import { useManse } from "@/hooks/useManse";
 import TopBar from "@/components/TopBar";
 import LoadingOverlay from "@/components/LoadingOverlay";
 import FortuneCard from "@/components/FortuneCard";
@@ -12,6 +13,7 @@ import { computeSaju } from "@/lib/saju/calc";
 export default function FortunePage() {
   const nav = useNav();
   const { saju, loading } = useSaju();
+  const manseReady = useManse(); // 만세력을 받아오기 전에는 computeSaju 를 부를 수 없다
   const [infoOpen, setInfoOpen] = useState(false);
 
   useEffect(() => {
@@ -20,10 +22,10 @@ export default function FortunePage() {
 
   const fortune = useMemo(
     () =>
-      saju
+      saju && manseReady
         ? generateFortune(computeSaju(saju.birth, saju.hourIdx), saju.name)
         : null,
-    [saju],
+    [saju, manseReady],
   );
 
   if (loading || !saju || !fortune) {
