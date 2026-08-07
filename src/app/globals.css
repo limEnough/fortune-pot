@@ -727,81 +727,32 @@ h1.title .pt {
 }
 
 /*
- * 로딩 — 화면 전체를 덮는 딤 + 정중앙 스피너.
- * 전환이 끝날 때까지 어떤 조작도 통과시키지 않는다.
- * z-index는 앱 내 최상단 (드로어 51 / 시트 41 / 헤더 5 위).
+ * 스켈레톤 블록 — 실제 콘텐츠 클래스 안에 끼워 넣어 쓴다.
+ * display:block 인 span 이라 부모의 flex/grid 규칙을 그대로 탄다.
  */
-.loading-overlay {
+.sk {
+  display: block;
+  position: relative;
+  overflow: hidden;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.07);
+}
+.sk::after {
+  content: "";
   position: absolute;
   inset: 0;
-  z-index: 999;
-  display: grid;
-  place-items: center;
-  background: rgba(7, 4, 16, 0.92);
-  backdrop-filter: blur(7px); /* 뒤 콘텐츠를 확실히 뒤로 물리기 위해 */
-  animation: fade-in 0.18s ease;
-  /* 아래 레이어로 클릭·스크롤·드래그가 새지 않도록 */
-  pointer-events: auto;
-  touch-action: none;
-  overscroll-behavior: contain;
-  user-select: none;
-  cursor: progress;
+  transform: translateX(-100%);
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(167, 139, 250, 0.16),
+    transparent
+  );
+  animation: sk-sweep 1.3s ease-in-out infinite;
 }
-@keyframes fade-in {
-  from {
-    opacity: 0;
-  }
+@keyframes sk-sweep {
   to {
-    opacity: 1;
-  }
-}
-/* 뒤에 뭐가 있든(캐릭터가 정중앙에 오는 화면이 많다) 확실히 읽히도록 카드를 깐다 */
-.loading-box {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 16px;
-  padding: 30px 34px;
-  border-radius: 24px;
-  background: rgba(28, 15, 56, 0.94);
-  border: 1px solid var(--line);
-  box-shadow: 0 24px 60px -18px rgba(0, 0, 0, 0.75);
-}
-.spinner {
-  width: 56px;
-  height: 56px;
-  border-radius: 50%;
-  border: 4px solid rgba(167, 139, 250, 0.18);
-  border-top-color: var(--magic);
-  border-right-color: var(--purple);
-  animation: spin 0.85s linear infinite;
-  filter: drop-shadow(0 0 12px rgba(232, 121, 249, 0.45));
-}
-@keyframes spin {
-  to {
-    transform: rotate(360deg);
-  }
-}
-.loading-text {
-  margin: 0;
-  font-size: 13.5px;
-  font-weight: 500;
-  color: #e6dbff;
-  letter-spacing: 0.2px;
-}
-/* 회전 애니메이션에 민감한 사용자를 위해 깜빡임으로 대체 */
-@media (prefers-reduced-motion: reduce) {
-  .spinner {
-    animation: pulse-fade 1.2s ease-in-out infinite;
-  }
-  @keyframes pulse-fade {
-    0%,
-    100% {
-      opacity: 1;
-    }
-    50% {
-      opacity: 0.35;
-    }
+    transform: translateX(100%);
   }
 }
 

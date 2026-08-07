@@ -4,8 +4,8 @@ import { useNav } from "@/hooks/useNav";
 import { useSaju } from "@/hooks/useSaju";
 import { useManse } from "@/hooks/useManse";
 import TopBar from "@/components/TopBar";
-import LoadingOverlay from "@/components/LoadingOverlay";
 import FortuneCard from "@/components/FortuneCard";
+import { FortuneSkeletonScreen } from "@/components/Skeleton";
 import SajuInfoSheet from "@/components/SajuInfoSheet";
 import { generateFortune } from "@/lib/saju/fortune";
 import { computeSaju } from "@/lib/saju/calc";
@@ -28,13 +28,8 @@ export default function FortunePage() {
     [saju, manseReady],
   );
 
-  if (loading || !saju || !fortune) {
-    return (
-      <section className="screen">
-        <LoadingOverlay label="오늘의 운세를 준비하는 중" />
-      </section>
-    );
-  }
+  // 전환 중 loading.tsx 가 띄우던 것과 같은 화면 — 이어지듯 넘어간다
+  if (loading || !saju || !fortune) return <FortuneSkeletonScreen />;
 
   return (
     <section className="screen">

@@ -1,23 +1,16 @@
 "use client";
 import { useNav } from "@/hooks/useNav";
-import { useSaju } from "@/hooks/useSaju";
 import ClayChar from "@/components/ClayChar";
-import LoadingOverlay from "@/components/LoadingOverlay";
 import TopBar from "@/components/TopBar";
 
 export default function HomePage() {
   const nav = useNav();
-  const { loading } = useSaju();
   // 캐시된 사주가 있어도 자동으로 운세 페이지로 이동하지 않습니다.
   // 최근 조회 정보의 재사용 제안은 입력 폼 상단 말풍선에서 처리해요.
-
-  if (loading) {
-    return (
-      <section className="screen">
-        <LoadingOverlay />
-      </section>
-    );
-  }
+  //
+  // 이 화면은 저장된 사주를 읽지 않으므로 하이드레이션을 기다릴 이유가 없다.
+  // 예전엔 useSaju 의 loading 을 그대로 받아 스피너를 띄웠는데, 정적으로
+  // 프리렌더된 내용을 굳이 가리고 있었던 셈이라 걷어냈다.
 
   return (
     <section className="screen">

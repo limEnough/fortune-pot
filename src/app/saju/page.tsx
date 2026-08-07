@@ -4,8 +4,8 @@ import { useNav } from "@/hooks/useNav";
 import { useSaju } from "@/hooks/useSaju";
 import { useManse } from "@/hooks/useManse";
 import TopBar from "@/components/TopBar";
-import LoadingOverlay from "@/components/LoadingOverlay";
 import SajuChart from "@/components/SajuChart";
+import { SajuSkeletonScreen } from "@/components/Skeleton";
 
 export default function SajuPage() {
   const nav = useNav();
@@ -16,13 +16,7 @@ export default function SajuPage() {
     if (!loading && !saju) nav.replace("/");
   }, [loading, saju, nav]);
 
-  if (loading || !saju || !manseReady) {
-    return (
-      <section className="screen">
-        <LoadingOverlay label="사주 정보를 불러오는 중" />
-      </section>
-    );
-  }
+  if (loading || !saju || !manseReady) return <SajuSkeletonScreen />;
 
   return (
     <section className="screen">

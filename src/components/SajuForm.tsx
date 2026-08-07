@@ -1,19 +1,15 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
-import { usePathname, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import { useSaju } from "@/hooks/useSaju";
 import { useNav } from "@/hooks/useNav";
-import { useUIStore } from "@/store/useUIStore";
 import { useGuestStore } from "@/store/useGuestStore";
 import { HOUR_OPTIONS } from "@/lib/saju/constants";
 import type { Gender } from "@/types/saju";
 
 export default function SajuForm() {
   const nav = useNav();
-  const pathname = usePathname();
   const searchParams = useSearchParams();
-  const startLoading = useUIStore((s) => s.startLoading);
-  const stopLoading = useUIStore((s) => s.stopLoading);
   const { saju, save } = useSaju();
   const clearGuest = useGuestStore((s) => s.clear);
 
@@ -63,9 +59,9 @@ export default function SajuForm() {
   const submit = async () => {
     // 제출 직후 save()가 store를 갱신해 말풍선 조건이 재활성화되는 깜빡임 방지
     setBubbleDismissed(true);
+    // 저장 → 전환 사이는 버튼의 '분석 중…' 상태가 덮는다.
+    // 도착 화면은 자기 스켈레톤을 띄우므로 여기서 전역 로딩을 켤 필요가 없다.
     setBusy(true);
-    // 저장 → 화면 전환까지 한 겹으로 덮는다 (전역 오버레이가 AppShell에서 렌더됨)
-    startLoading(pathname);
     try {
       await save({
         name: name.trim() || "게스트",
@@ -75,7 +71,6 @@ export default function SajuForm() {
       });
       nav.push(dest);
     } catch (e) {
-      stopLoading();
       alert("저장에 실패했어요. 잠시 후 다시 시도해 주세요.");
       setBusy(false);
     }
