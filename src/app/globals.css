@@ -327,8 +327,8 @@ h1.title .pt {
   flex: 0 0 auto;
   display: flex;
   flex-direction: column;
-  gap: 11px;
-  padding: 12px 24px calc(18px + env(safe-area-inset-bottom));
+  gap: 9px;
+  padding: 12px 24px calc(34px + env(safe-area-inset-bottom));
 }
 .btn {
   height: 54px;
@@ -400,7 +400,7 @@ h1.title .pt {
 }
 .cta-split {
   display: flex;
-  gap: 11px;
+  gap: 10px;
 }
 .choice {
   flex: 1 1 0;
@@ -408,9 +408,9 @@ h1.title .pt {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 8px;
-  padding: 16px 12px 15px;
-  border-radius: 20px;
+  gap: 6px;
+  padding: 12px 10px 11px;
+  border-radius: 17px;
   cursor: pointer;
   border: 1px solid var(--line);
   background: rgba(255, 255, 255, 0.06);
@@ -423,22 +423,22 @@ h1.title .pt {
     box-shadow 0.2s;
 }
 .choice .ic {
-  width: 42px;
-  height: 42px;
-  border-radius: 14px;
+  width: 34px;
+  height: 34px;
+  border-radius: 12px;
   display: grid;
   place-items: center;
-  font-size: 20px;
+  font-size: 17px;
   background: rgba(167, 139, 250, 0.18);
 }
 .choice .k {
   font-family: var(--display);
-  font-size: 15.5px;
+  font-size: 14px;
   letter-spacing: 0.3px;
 }
 .choice .d {
-  font-size: 11.5px;
-  line-height: 1.5;
+  font-size: 11px;
+  line-height: 1.45;
   color: var(--muted);
   text-align: center;
 }
@@ -449,20 +449,28 @@ h1.title .pt {
 .choice:active {
   transform: scale(0.975);
 }
+/*
+ * 기본 추천(오늘의 운세)이라는 것만 알아볼 정도의 차이. 꽉 찬 그라데이션은
+ * 옆 카드와 너무 벌어져서, 같은 반투명 판 위에 옅은 보라 틴트와 테두리만 얹는다.
+ */
 .choice.accent {
-  border-color: transparent;
-  color: #fff;
-  background: linear-gradient(135deg, var(--purple), var(--magic-d));
-  box-shadow: 0 14px 30px -10px rgba(150, 60, 230, 0.75);
+  border-color: rgba(232, 121, 249, 0.34);
+  background: linear-gradient(
+    135deg,
+    rgba(139, 92, 246, 0.2),
+    rgba(232, 121, 249, 0.13)
+  );
 }
 .choice.accent .ic {
-  background: rgba(255, 255, 255, 0.18);
-}
-.choice.accent .d {
-  color: rgba(255, 255, 255, 0.82);
+  background: rgba(232, 121, 249, 0.22);
 }
 .choice.accent:hover {
-  background: linear-gradient(135deg, var(--lilac), var(--magic));
+  border-color: rgba(232, 121, 249, 0.5);
+  background: linear-gradient(
+    135deg,
+    rgba(139, 92, 246, 0.28),
+    rgba(232, 121, 249, 0.19)
+  );
 }
 
 /* sheet */
