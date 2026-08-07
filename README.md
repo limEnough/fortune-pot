@@ -13,6 +13,13 @@ npm run dev        # http://localhost:3000
 
 별도의 환경변수나 외부 서비스 설정 없이 바로 실행됩니다.
 
+> **TLS 가로채기 프록시 뒤에서 빌드가 실패한다면**
+> `next/font` 가 빌드 타임에 Google Fonts 를 받아오는데, 사내망처럼 TLS 를
+> 가로채는 환경에서는 Node 가 인증서 체인을 거부합니다
+> (`SELF_SIGNED_CERT_IN_CHAIN` → `Failed to fetch 'Jua' from Google Fonts`).
+> 사내 루트 CA 를 PEM 으로 내보내고 `NODE_EXTRA_CA_CERTS` 로 가리키면 됩니다.
+> Vercel·GitHub Actions 등 일반 CI 에서는 필요 없습니다.
+
 ## 사용 흐름
 
 시작 화면에서 **먼저 볼 화면을 고르는 것**으로 출발합니다. 운세만 궁금한 사람과

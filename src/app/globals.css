@@ -17,8 +17,9 @@
   --muted: #b9a8e0;
   --line: rgba(167, 139, 250, 0.18);
   --card: rgba(255, 255, 255, 0.06);
-  --display: "Jua", sans-serif;
-  --body: "Noto Sans KR", sans-serif;
+  /* 실제 폰트는 layout.tsx 의 next/font 가 --font-* 변수로 주입한다 */
+  --display: var(--font-display), "Jua", sans-serif;
+  --body: var(--font-body), "Noto Sans KR", sans-serif;
   --app-w: 600px; /* 모바일에선 꽉 차고, 이 폭까지 커진 뒤 고정 */
   --app-gap: 32px; /* PC 프레임 위/아래 여백 */
 }
@@ -666,7 +667,7 @@ h1.title .pt {
 }
 .r-new {
   font-size: 10px;
-  font-weight: 900;
+  font-weight: 700;
   letter-spacing: 0.6px;
   color: #fff;
   background: linear-gradient(135deg, var(--purple), var(--magic-d));
@@ -1388,7 +1389,7 @@ input[type="date"].input::-webkit-calendar-picker-indicator {
   color: #efe6ff;
   font-family: var(--body);
   font-size: 14.5px;
-  font-weight: 500;
+  font-weight: 400;
   padding: 14px 14px;
   border-radius: 14px;
   margin-bottom: 8px;
@@ -1406,7 +1407,7 @@ input[type="date"].input::-webkit-calendar-picker-indicator {
    뱃지는 라벨 바로 옆에 붙는다 */
 .nav-new {
   font-size: 10px;
-  font-weight: 900;
+  font-weight: 700;
   letter-spacing: 0.6px;
   color: #fff;
   background: linear-gradient(135deg, var(--purple), var(--magic-d));
