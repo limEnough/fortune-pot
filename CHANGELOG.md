@@ -11,12 +11,27 @@
 > 다음 릴리즈에 나갈 변경을 여기에 쌓습니다.
 > 릴리즈할 때 이 섹션을 `## [x.y.z] - YYYY-MM-DD` 로 바꾸고 맨 아래 비교 링크를 추가하세요.
 
+## [0.6.1] - 2026-08-07
+
+### Fixed
+
+- **글꼴이 빠진 채로 배포되던 문제.** v0.6.0 이 Jua·Noto Sans KR 없이 나가서
+  본문과 제목이 모두 Arial 폴백으로 보였습니다. `size-adjust` 보정까지 걸려 있어
+  글자 크기도 어긋났습니다.
+
+  `next/font` 가 빌드 타임에 Google Fonts 를 받아오는데, TLS 를 가로채는 사내망에서
+  Node 가 인증서 체인을 거부합니다(`SELF_SIGNED_CERT_IN_CHAIN`). `next build` 는
+  이 경우 에러로 멈추지만 `next dev` 는 경고만 내고 `src: local("Arial")` 폴백으로
+  조용히 넘어간 뒤 그 결과를 webpack 캐시에 남깁니다. 그래서 "에러는 없는데 글꼴만
+  이상한" 상태로 한참 갔습니다.
+
 ### Changed
 
-- **폰트 파일을 repo 안으로 옮겼습니다**(`public/fonts/`, `src/app/fonts.css`).
-  `next/font` 가 빌드 타임에 Google Fonts 로 나가는 탓에, TLS 를 가로채는 사내망에서
-  폰트 없이 빌드되는 일이 있었습니다. 이제 빌드가 바깥으로 나가지 않습니다.
-  화면에 보이는 결과는 그대로입니다 — `unicode-range` 슬라이싱도 유지됩니다.
+- **폰트 파일을 repo 안으로 옮겼습니다**(`public/fonts/` woff2 211개,
+  `src/app/fonts.css` `@font-face` 337개). 빌드가 바깥으로 나가지 않으므로 어느 망에서
+  clone 하든 같은 결과가 나옵니다. `unicode-range` 슬라이싱은 그대로라 브라우저는
+  화면에 뜬 글자가 속한 슬라이스만 받습니다.
+- 폰트 갱신용 `scripts/vendor-fonts.js` 와 README "폰트" 절 추가.
 
 ## [0.6.0] - 2026-08-07
 
@@ -127,7 +142,8 @@
 - 첫 릴리즈 — 사주 정보 입력, 오늘의 운세, 나의 사주는(명식·오행·십성) 화면.
 - 게스트 저장(localStorage), 공통 레이아웃·컴포넌트, 페이지 라우팅.
 
-[Unreleased]: https://github.com/limEnough/fortune-pot/compare/v0.6.0...HEAD
+[Unreleased]: https://github.com/limEnough/fortune-pot/compare/v0.6.1...HEAD
+[0.6.1]: https://github.com/limEnough/fortune-pot/compare/v0.6.0...v0.6.1
 [0.6.0]: https://github.com/limEnough/fortune-pot/compare/v0.5.0...v0.6.0
 [0.5.0]: https://github.com/limEnough/fortune-pot/compare/v0.4.0...v0.5.0
 [0.4.0]: https://github.com/limEnough/fortune-pot/compare/v0.3.0...v0.4.0

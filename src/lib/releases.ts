@@ -23,6 +23,14 @@ export const TAG_LABEL: Record<ReleaseTag, string> = {
 
 export const RELEASES: ReleaseNote[] = [
   {
+    version: "0.6.1",
+    date: "2026-08-07",
+    title: "글꼴이 제자리로",
+    items: [
+      { tag: "fix", text: "글꼴이 의도한 모양으로 보이지 않던 문제를 고쳤어요." },
+    ],
+  },
+  {
     version: "0.6.0",
     date: "2026-08-07",
     title: "보고 싶은 것부터, 더 빠르게",
