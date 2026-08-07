@@ -19,12 +19,19 @@ export default function FortunePage() {
   }, [loading, saju, nav]);
 
   const fortune = useMemo(
-    () => (saju ? generateFortune(computeSaju(saju.birth, saju.hourIdx), saju.name) : null),
+    () =>
+      saju
+        ? generateFortune(computeSaju(saju.birth, saju.hourIdx), saju.name)
+        : null,
     [saju],
   );
 
   if (loading || !saju || !fortune) {
-    return <section className="screen"><LoadingOverlay label="오늘의 운세를 준비하는 중" /></section>;
+    return (
+      <section className="screen">
+        <LoadingOverlay label="오늘의 운세를 준비하는 중" />
+      </section>
+    );
   }
 
   return (
@@ -40,8 +47,17 @@ export default function FortunePage() {
           aria-expanded={infoOpen}
         >
           📋 내 사주 정보
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-            strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" style={{ opacity: 0.7 }}>
+          <svg
+            width="15"
+            height="15"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2.2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            style={{ opacity: 0.7 }}
+          >
             <path d="M6 9l6 6 6-6" />
           </svg>
         </button>
@@ -49,7 +65,11 @@ export default function FortunePage() {
         <FortuneCard fortune={fortune} name={saju.name} />
       </div>
 
-      <SajuInfoSheet saju={saju} open={infoOpen} onClose={() => setInfoOpen(false)} />
+      <SajuInfoSheet
+        saju={saju}
+        open={infoOpen}
+        onClose={() => setInfoOpen(false)}
+      />
     </section>
   );
 }
