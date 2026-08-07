@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import ClayChar from "./ClayChar";
 import type { SajuInput } from "@/types/saju";
 import {
@@ -37,71 +37,94 @@ function todayStr(d = new Date()) {
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
 }
 
+const ohC = (o: Ohaeng) => OH_COLOR[o];
+
 export default function SajuChart({ saju }: { saju: SajuInput }) {
   const [showOhInfo, setShowOhInfo] = useState(false);
   const [showSipInfo, setShowSipInfo] = useState(false);
-  const sj = computeSaju(saju.birth, saju.hourIdx);
-  const [y, mo, d] = saju.birth.split("-");
-  const hourTxt =
-    saju.hourIdx === null
-      ? "시각 미입력"
-      : `${JJ[saju.hourIdx]}시(${JJH[saju.hourIdx]})`;
 
-  const ilOhIdx = ohIdxOfGan(sj.ilgan);
-  const ilYang = isYangGan(sj.ilgan);
-  const sipGan = (g: number) =>
-    sipseong(ilOhIdx, ilYang, ohIdxOfGan(g), isYangGan(g));
-  const sipJi = (z: number) =>
-    sipseong(ilOhIdx, ilYang, ohIdxOfJi(z), isYangJi(z));
+  /*
+   * 명식·오행·십성·세운을 한 번에 계산한다.
+   *
+   * 원래는 전부 렌더 본문에 있어서 오행/십성 패널을 접었다 펼 때마다
+   * computeSaju 가 두 번(본명식 + 오늘) 다시 돌았다. 입력이 그대로면 결과도
+   * 그대로이므로 saju 가 바뀔 때만 계산한다. new Date() 도 여기로 넣어
+   * 렌더 중에 시간이 바뀌는 일이 없게 했다.
+   */
+  const calc = useMemo(() => {
+    const sj = computeSaju(saju.birth, saju.hourIdx);
+    const [y, mo, d] = saju.birth.split("-");
+    const hourTxt =
+      saju.hourIdx === null
+        ? "시각 미입력"
+        : `${JJ[saju.hourIdx]}시(${JJH[saju.hourIdx]})`;
 
-  // 오행 집계
-  const oCells: Ohaeng[] = [
-    ohOfGan(sj.year[0]),
-    ohOfJi(sj.year[1]),
-    ohOfGan(sj.month[0]),
-    ohOfJi(sj.month[1]),
-    ohOfGan(sj.day[0]),
-    ohOfJi(sj.day[1]),
-  ];
-  if (sj.hour) oCells.push(ohOfGan(sj.hour[0]), ohOfJi(sj.hour[1]));
-  const tally: Record<Ohaeng, number> = { 목: 0, 화: 0, 토: 0, 금: 0, 수: 0 };
-  oCells.forEach((o) => (tally[o] += 1));
-  const total = oCells.length;
-  const els = Object.keys(tally) as Ohaeng[];
-  const maxEl = els.reduce((a, b) => (tally[a] >= tally[b] ? a : b));
-  const minEl = els.reduce((a, b) => (tally[a] <= tally[b] ? a : b));
-  const ilOh = ohOfGan(sj.ilgan);
-  const strength =
-    tally[ilOh] >= 3 ? "신강한" : tally[ilOh] <= 1 ? "신약한" : "균형 잡힌";
+    const ilOhIdx = ohIdxOfGan(sj.ilgan);
+    const ilYang = isYangGan(sj.ilgan);
+    const sipGan = (g: number) =>
+      sipseong(ilOhIdx, ilYang, ohIdxOfGan(g), isYangGan(g));
+    const sipJi = (z: number) =>
+      sipseong(ilOhIdx, ilYang, ohIdxOfJi(z), isYangJi(z));
 
-  // 십성 집계 (일간 제외)
-  const sipList = [
-    sipGan(sj.year[0]),
-    sipGan(sj.month[0]),
-    sipJi(sj.year[1]),
-    sipJi(sj.month[1]),
-    sipJi(sj.day[1]),
-  ];
-  if (sj.hour) sipList.push(sipGan(sj.hour[0]), sipJi(sj.hour[1]));
-  const sipCnt: Record<string, number> = {};
-  sipList.forEach((s) => (sipCnt[s] = (sipCnt[s] || 0) + 1));
-  const catCnt: Record<string, number> = {
-    비겁: 0,
-    식상: 0,
-    재성: 0,
-    관성: 0,
-    인성: 0,
-  };
-  sipList.forEach((s) => (catCnt[SIP_CAT[s]] += 1));
-  const domSip = Object.keys(sipCnt).reduce((a, b) =>
-    sipCnt[a] >= sipCnt[b] ? a : b,
-  );
+    // 오행 집계
+    const oCells: Ohaeng[] = [
+      ohOfGan(sj.year[0]),
+      ohOfJi(sj.year[1]),
+      ohOfGan(sj.month[0]),
+      ohOfJi(sj.month[1]),
+      ohOfGan(sj.day[0]),
+      ohOfJi(sj.day[1]),
+    ];
+    if (sj.hour) oCells.push(ohOfGan(sj.hour[0]), ohOfJi(sj.hour[1]));
+    const tally: Record<Ohaeng, number> = { 목: 0, 화: 0, 토: 0, 금: 0, 수: 0 };
+    oCells.forEach((o) => (tally[o] += 1));
+    const total = oCells.length;
+    const els = Object.keys(tally) as Ohaeng[];
+    const maxEl = els.reduce((a, b) => (tally[a] >= tally[b] ? a : b));
+    const minEl = els.reduce((a, b) => (tally[a] <= tally[b] ? a : b));
+    const ilOh = ohOfGan(sj.ilgan);
+    const strength =
+      tally[ilOh] >= 3 ? "신강한" : tally[ilOh] <= 1 ? "신약한" : "균형 잡힌";
 
-  // 세운·월운 (오늘 기준)
-  const now = new Date();
-  const cur = computeSaju(todayStr(now), null);
+    // 십성 집계 (일간 제외)
+    const sipList = [
+      sipGan(sj.year[0]),
+      sipGan(sj.month[0]),
+      sipJi(sj.year[1]),
+      sipJi(sj.month[1]),
+      sipJi(sj.day[1]),
+    ];
+    if (sj.hour) sipList.push(sipGan(sj.hour[0]), sipJi(sj.hour[1]));
+    const sipCnt: Record<string, number> = {};
+    sipList.forEach((s) => (sipCnt[s] = (sipCnt[s] || 0) + 1));
+    const catCnt: Record<string, number> = {
+      비겁: 0,
+      식상: 0,
+      재성: 0,
+      관성: 0,
+      인성: 0,
+    };
+    sipList.forEach((s) => (catCnt[SIP_CAT[s]] += 1));
+    const domSip = Object.keys(sipCnt).reduce((a, b) =>
+      sipCnt[a] >= sipCnt[b] ? a : b,
+    );
 
-  const ohC = (o: Ohaeng) => OH_COLOR[o];
+    // 세운·월운 (오늘 기준)
+    const now = new Date();
+    const cur = computeSaju(todayStr(now), null);
+
+    return {
+      sj, y, mo, d, hourTxt, sipGan, sipJi,
+      tally, total, els, maxEl, minEl, ilOh, strength,
+      catCnt, domSip, now, cur,
+    };
+  }, [saju]);
+
+  const {
+    sj, y, mo, d, hourTxt, sipGan, sipJi,
+    tally, total, els, maxEl, minEl, ilOh, strength,
+    catCnt, domSip, now, cur,
+  } = calc;
 
   const Cell = ({
     g,
