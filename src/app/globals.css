@@ -17,9 +17,10 @@
   --muted: #b9a8e0;
   --line: rgba(167, 139, 250, 0.18);
   --card: rgba(255, 255, 255, 0.06);
-  /* 실제 폰트는 layout.tsx 의 next/font 가 --font-* 변수로 주입한다 */
-  --display: var(--font-display), "Jua", sans-serif;
-  --body: var(--font-body), "Noto Sans KR", sans-serif;
+  /* @font-face 는 fonts.css 에 있다. *-Fallback 은 폰트가 뜨기 전 Arial 로
+     그려지는 동안 크기를 맞춰주는 보정용이라 반드시 사이에 끼워둔다 */
+  --display: "Jua", "Jua Fallback", sans-serif;
+  --body: "Noto Sans KR", "Noto Sans KR Fallback", sans-serif;
   --app-w: 600px; /* 모바일에선 꽉 차고, 이 폭까지 커진 뒤 고정 */
   --app-gap: 32px; /* PC 프레임 위/아래 여백 */
 }

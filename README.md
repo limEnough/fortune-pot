@@ -13,12 +13,39 @@ npm run dev        # http://localhost:3000
 
 별도의 환경변수나 외부 서비스 설정 없이 바로 실행됩니다.
 
-> **TLS 가로채기 프록시 뒤에서 빌드가 실패한다면**
-> `next/font` 가 빌드 타임에 Google Fonts 를 받아오는데, 사내망처럼 TLS 를
-> 가로채는 환경에서는 Node 가 인증서 체인을 거부합니다
-> (`SELF_SIGNED_CERT_IN_CHAIN` → `Failed to fetch 'Jua' from Google Fonts`).
-> 사내 루트 CA 를 PEM 으로 내보내고 `NODE_EXTRA_CA_CERTS` 로 가리키면 됩니다.
-> Vercel·GitHub Actions 등 일반 CI 에서는 필요 없습니다.
+## 폰트
+
+Jua(제목)와 Noto Sans KR(본문)을 **repo 안에 직접 들고 있습니다.**
+
+- `public/fonts/` — woff2 211개, 3.9 MB
+- `src/app/fonts.css` — `@font-face` 337개 (자동 생성, 직접 고치지 마세요)
+
+빌드할 때 바깥으로 나가지 않으므로, 어느 망에서 clone 하든 똑같이 빌드됩니다.
+예전엔 `next/font` 로 빌드 타임에 Google Fonts 를 받아왔는데, TLS 를 가로채는
+사내망에서 Node 가 인증서 체인을 거부해 폰트 없이 빌드되는 일이 있었습니다.
+`next build` 는 에러로 멈추지만 `next dev` 는 **경고만 내고 Arial 폴백으로
+조용히 넘어가서**, 화면은 뜨는데 글꼴만 어긋난 채로 한참 갑니다.
+
+3.9 MB 를 다 받는 사람은 없습니다. `unicode-range` 로 쪼개져 있어서 브라우저가
+화면에 실제로 뜬 글자가 속한 슬라이스만 가져갑니다. 사용자 이름이 두 폰트 모두에
+렌더되기 때문에(`.f-name` 등) 한글 커버리지를 미리 줄일 수는 없어서, 통짜 파일
+하나로 합치면 안 됩니다.
+
+Noto 는 가변 폰트라 400 과 700 이 같은 woff2 를 가리킵니다. 중복이 아니라
+`wght` 축으로 인스턴스를 고르는 것입니다.
+
+### 폰트 갱신
+
+새 버전을 받아야 할 때만 하면 됩니다. 이 단계에서만 네트워크(사내망이면
+`NODE_EXTRA_CA_CERTS` 로 사내 루트 CA 지정)가 필요합니다.
+
+1. [`src/app/layout.tsx`](src/app/layout.tsx) 를 잠시 `next/font/google` 방식으로 되돌립니다
+   (`git log -- src/app/layout.tsx` 에 이전 형태가 있습니다)
+2. `rm -rf .next && npm run build` — `next dev` 가 떠 있으면 `.next\trace` 를
+   잡고 있어 `EPERM` 으로 죽으니 먼저 내리세요
+3. `node scripts/vendor-fonts.js` — `public/fonts/` 와 `src/app/fonts.css` 재생성
+4. `layout.tsx` 를 되돌린 것 원복 (`fonts.css` import 만 남기기)
+5. `rm -rf .next && npm run build` 로 확인 — 이번엔 **CA 설정 없이** 통과해야 정상입니다
 
 ## 사용 흐름
 
