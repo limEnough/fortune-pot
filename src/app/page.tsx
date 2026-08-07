@@ -25,17 +25,13 @@ export default function HomePage() {
       <div className="scroll">
         <div className="hero">
           <ClayChar />
-          <div className="eyebrow">매일 아침 도착하는 나의 사주</div>
+          <div className="eyebrow">매일 아침 열어보는 포춘쿠키</div>
           <h1 className="title">
-            사주로 보는
+            생년월일시로
             <br />
-            <span className="pt">오늘의 운세</span>를 받아보세요
+            <span className="pt">오늘의 운세를</span> 받아봐요!
           </h1>
-          <p className="sub">
-            생년월일시로 풀어주는
-            <br />
-            하루 한 번의 다정한 길잡이
-          </p>
+          {/* <p className="sub">생년월일시로 풀어주는 다정한 길잡이</p> */}
         </div>
       </div>
       <div className="cta-wrap">
