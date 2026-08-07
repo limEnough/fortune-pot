@@ -1,5 +1,7 @@
 import { stars, type Fortune } from "@/lib/saju/fortune";
 import ClayChar from "./ClayChar";
+import SaveCardButton from "./SaveCardButton";
+import { drawFortuneCard } from "@/lib/share/fortuneCard";
 
 export default function FortuneCard({ fortune, name }: { fortune: Fortune; name: string }) {
   return (
@@ -35,6 +37,14 @@ export default function FortuneCard({ fortune, name }: { fortune: Fortune; name:
       </div>
 
       <div className="advice"><div className="lab">오늘의 한마디</div><p>{fortune.advice}</p></div>
+
+      <SaveCardButton
+        label="오늘의 부적 카드 저장"
+        title="오늘의 부적"
+        hint={`${fortune.dateLabel} · 오늘 하루치 운세를 부적 한 장에 담았어요`}
+        filename={`포춘팟_부적_${name}_${fortune.dateLabel.slice(0, 10)}.png`}
+        render={() => drawFortuneCard(fortune, name)}
+      />
     </div>
   );
 }

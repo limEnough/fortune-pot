@@ -23,6 +23,16 @@ export const TAG_LABEL: Record<ReleaseTag, string> = {
 
 export const RELEASES: ReleaseNote[] = [
   {
+    version: "0.7.0",
+    date: "2026-08-07",
+    title: "카드로 간직하는 내 사주와 오늘",
+    items: [
+      { tag: "new", text: "'나의 사주는' 맨 아래에서 사주 정보를 이미지 카드로 저장할 수 있어요. 명식·오행·십성·일간 풀이가 한 장에 담겨요." },
+      { tag: "new", text: "오늘의 운세를 부적 카드로 만들 수 있어요. 「勅令」 표제와 금빛 테두리, 붉은 도장까지 진짜 부적처럼 그렸어요." },
+      { tag: "new", text: "만든 카드는 저장하거나 바로 공유할 수 있어요. 미리보기를 길게 눌러 저장해도 돼요." },
+    ],
+  },
+  {
     version: "0.6.1",
     date: "2026-08-07",
     title: "글꼴이 제자리로",

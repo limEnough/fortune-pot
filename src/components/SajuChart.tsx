@@ -1,6 +1,7 @@
 "use client";
 import { useMemo, useState } from "react";
 import ClayChar from "./ClayChar";
+import SaveCardButton from "./SaveCardButton";
 import type { SajuInput } from "@/types/saju";
 import {
   CG,
@@ -9,19 +10,11 @@ import {
   JJH,
   JJ_ANI,
   OH_COLOR,
-  OH_IDX,
   type Ohaeng,
 } from "@/lib/saju/constants";
-import {
-  computeSaju,
-  sipseong,
-  ohOfGan,
-  ohOfJi,
-  ohIdxOfGan,
-  ohIdxOfJi,
-  isYangGan,
-  isYangJi,
-} from "@/lib/saju/calc";
+import { computeSaju, ohOfGan, ohOfJi, isYangGan } from "@/lib/saju/calc";
+import { summarizeSaju } from "@/lib/saju/summary";
+import { drawSajuCard } from "@/lib/share/sajuCard";
 import {
   ILGAN_DETAIL,
   OH_BOWAN,
@@ -50,73 +43,16 @@ export default function SajuChart({ saju }: { saju: SajuInput }) {
    * computeSaju 가 두 번(본명식 + 오늘) 다시 돌았다. 입력이 그대로면 결과도
    * 그대로이므로 saju 가 바뀔 때만 계산한다. new Date() 도 여기로 넣어
    * 렌더 중에 시간이 바뀌는 일이 없게 했다.
+   *
+   * 집계 자체는 `summarizeSaju` 가 맡는다 — 저장용 카드도 같은 숫자를 써야 해서
+   * 화면 안에 두지 않았다. 세운·월운은 화면에만 있어 여기서 붙인다.
    */
   const calc = useMemo(() => {
-    const sj = computeSaju(saju.birth, saju.hourIdx);
-    const [y, mo, d] = saju.birth.split("-");
-    const hourTxt =
-      saju.hourIdx === null
-        ? "시각 미입력"
-        : `${JJ[saju.hourIdx]}시(${JJH[saju.hourIdx]})`;
-
-    const ilOhIdx = ohIdxOfGan(sj.ilgan);
-    const ilYang = isYangGan(sj.ilgan);
-    const sipGan = (g: number) =>
-      sipseong(ilOhIdx, ilYang, ohIdxOfGan(g), isYangGan(g));
-    const sipJi = (z: number) =>
-      sipseong(ilOhIdx, ilYang, ohIdxOfJi(z), isYangJi(z));
-
-    // 오행 집계
-    const oCells: Ohaeng[] = [
-      ohOfGan(sj.year[0]),
-      ohOfJi(sj.year[1]),
-      ohOfGan(sj.month[0]),
-      ohOfJi(sj.month[1]),
-      ohOfGan(sj.day[0]),
-      ohOfJi(sj.day[1]),
-    ];
-    if (sj.hour) oCells.push(ohOfGan(sj.hour[0]), ohOfJi(sj.hour[1]));
-    const tally: Record<Ohaeng, number> = { 목: 0, 화: 0, 토: 0, 금: 0, 수: 0 };
-    oCells.forEach((o) => (tally[o] += 1));
-    const total = oCells.length;
-    const els = Object.keys(tally) as Ohaeng[];
-    const maxEl = els.reduce((a, b) => (tally[a] >= tally[b] ? a : b));
-    const minEl = els.reduce((a, b) => (tally[a] <= tally[b] ? a : b));
-    const ilOh = ohOfGan(sj.ilgan);
-    const strength =
-      tally[ilOh] >= 3 ? "신강한" : tally[ilOh] <= 1 ? "신약한" : "균형 잡힌";
-
-    // 십성 집계 (일간 제외)
-    const sipList = [
-      sipGan(sj.year[0]),
-      sipGan(sj.month[0]),
-      sipJi(sj.year[1]),
-      sipJi(sj.month[1]),
-      sipJi(sj.day[1]),
-    ];
-    if (sj.hour) sipList.push(sipGan(sj.hour[0]), sipJi(sj.hour[1]));
-    const sipCnt: Record<string, number> = {};
-    sipList.forEach((s) => (sipCnt[s] = (sipCnt[s] || 0) + 1));
-    const catCnt: Record<string, number> = {
-      비겁: 0,
-      식상: 0,
-      재성: 0,
-      관성: 0,
-      인성: 0,
-    };
-    sipList.forEach((s) => (catCnt[SIP_CAT[s]] += 1));
-    const domSip = Object.keys(sipCnt).reduce((a, b) =>
-      sipCnt[a] >= sipCnt[b] ? a : b,
-    );
-
-    // 세운·월운 (오늘 기준)
     const now = new Date();
-    const cur = computeSaju(todayStr(now), null);
-
     return {
-      sj, y, mo, d, hourTxt, sipGan, sipJi,
-      tally, total, els, maxEl, minEl, ilOh, strength,
-      catCnt, domSip, now, cur,
+      ...summarizeSaju(saju),
+      now,
+      cur: computeSaju(todayStr(now), null),
     };
   }, [saju]);
 
@@ -463,6 +399,14 @@ export default function SajuChart({ saju }: { saju: SajuInput }) {
           <b>{OH_BOWAN[minEl]}</b>으로 보완하면 흐름이 한결 부드러워져요.
         </p>
       </div>
+
+      <SaveCardButton
+        label="사주 정보 이미지로 저장"
+        title="내 사주 카드"
+        hint="명식·오행·십성·일간 풀이를 한 장에 담았어요"
+        filename={`포춘팟_사주_${saju.name}_${saju.birth}.png`}
+        render={() => drawSajuCard(saju)}
+      />
 
       <div className="saju-note">
         ※ 명식은 lunar-javascript 만세력에 서울 경도 기준 진태양시(균시차 포함)

@@ -86,14 +86,48 @@ src/
     TopBar / NavDrawer                     상단바(확성기 버튼)·메뉴 드로어
     SajuForm / FortuneCard / SajuChart     입력·운세·명식
     SajuInfoSheet                          사주 정보 확인 바텀시트
+    SaveCardButton                         카드 이미지 미리보기·저장 바텀시트
     ReleaseNoteSheet                       업데이트 소식 바텀시트
   lib/saju/               calc(명식·십성), fortune(운세), text(해설), constants
+                          summary(명식·오행·십성 집계 — 화면과 카드가 공유)
+  lib/share/              draw(캔버스 유틸), sajuCard·fortuneCard(카드 도안)
   lib/clay/               캐릭터 5종 SVG
   lib/releases.ts         앱 내 릴리즈 노트 데이터
   store/                  Zustand (게스트 사주 persist / UI 드로어 / 릴리즈 확인 상태)
   hooks/useSaju.ts        사주 정보 읽기·저장 통합 훅
   hooks/useRelease.ts     안 본 업데이트 판별 + 시트 열기/닫기
 ```
+
+## 카드 이미지 저장
+
+두 화면 맨 아래 버튼이 각각 카드를 그려 미리보기 바텀시트로 띄웁니다.
+
+| 화면 | 카드 | 담기는 것 |
+|---|---|---|
+| `/saju` | 사주 정보 카드 | 명식·오행·십성·일간 풀이 — **바뀌지 않는 것** |
+| `/fortune` | 오늘의 부적 | 그날의 등급·분야별 운세·행운·한마디 — **오늘치** |
+
+**DOM 스냅샷(html2canvas 류)을 쓰지 않고 Canvas 2D 로 직접 그립니다.** 화면이
+gradient·backdrop-filter·box-shadow 로 짜여 있어 스냅샷 계열이 그대로 옮기지
+못하고, 접힘 패널·스크롤 위치 같은 화면 상태에 결과가 끌려다닙니다. 게다가
+카드는 화면과 레이아웃이 아예 다릅니다(세로로 길고 여백이 넉넉한 인쇄물).
+
+- 좌표계는 **가로 1080px 고정**, 세로는 내용에 따라. 높이를 미리 알 수 없으므로
+  투명 레이어에 내용을 먼저 그려 실제 높이를 재고, 그 높이로 만든 캔버스에
+  배경 → 레이어 순으로 합성합니다(`draw.ts` 의 `layered`).
+- 그리기 전에 **`document.fonts.load(font, text)` 로 글리프를 받아둡니다.**
+  `fonts.css` 가 `unicode-range` 로 쪼개져 있어서, 화면에 아직 안 뜬 글자는
+  슬라이스가 없습니다. 그대로 그리면 폴백으로 그려질 뿐 아니라 `measureText` 도
+  폴백 기준이라 **줄바꿈까지 어긋납니다.**
+- 줄바꿈은 CSS `word-break: keep-all` 과 같은 규칙입니다. 브라우저 기본값은
+  한글을 음절 단위로 끊는데(UAX #14), 줄이 긴 카드에선 끝의 한두 글자만
+  넘어가는 모양이 자주 나옵니다.
+- 저장 경로가 셋입니다 — 공유 시트(`navigator.share`), `a[download]`,
+  미리보기 이미지 길게 누르기. iOS 에서 앞의 둘이 막혀도 마지막은 늘 통하므로
+  미리보기를 반드시 보여줍니다.
+- 캐릭터 SVG 는 `data:` URL 로 넣어 캔버스가 오염되지 않게 합니다(`toBlob` 가능).
+  브라우저가 SVG 를 고유 크기로 래스터화한 뒤 확대하는 경우가 있어, 그릴 크기를
+  `width`/`height` 속성에 미리 박아 넣습니다.
 
 ## 데이터 전략
 - **계산 로직**(명식·십성·세운) → 코드(`lib/saju`). 저장하지 않음.

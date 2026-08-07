@@ -142,23 +142,27 @@ body {
  */
 .scroll,
 .hour-menu,
-.release-list {
+.release-list,
+.card-preview {
   scrollbar-width: thin; /* Firefox */
   scrollbar-color: rgba(167, 139, 250, 0.45) transparent;
 }
 .scroll::-webkit-scrollbar,
 .hour-menu::-webkit-scrollbar,
-.release-list::-webkit-scrollbar {
+.release-list::-webkit-scrollbar,
+.card-preview::-webkit-scrollbar {
   width: 10px;
 }
 .scroll::-webkit-scrollbar-track,
 .hour-menu::-webkit-scrollbar-track,
-.release-list::-webkit-scrollbar-track {
+.release-list::-webkit-scrollbar-track,
+.card-preview::-webkit-scrollbar-track {
   background: transparent;
 }
 .scroll::-webkit-scrollbar-thumb,
 .hour-menu::-webkit-scrollbar-thumb,
-.release-list::-webkit-scrollbar-thumb {
+.release-list::-webkit-scrollbar-thumb,
+.card-preview::-webkit-scrollbar-thumb {
   border-radius: 99px;
   border: 3px solid transparent;
   background: linear-gradient(180deg, var(--lilac), var(--magic));
@@ -167,18 +171,21 @@ body {
 }
 .scroll::-webkit-scrollbar-thumb:hover,
 .hour-menu::-webkit-scrollbar-thumb:hover,
-.release-list::-webkit-scrollbar-thumb:hover {
+.release-list::-webkit-scrollbar-thumb:hover,
+.card-preview::-webkit-scrollbar-thumb:hover {
   border-width: 2px;
   background: linear-gradient(180deg, var(--magic), var(--purple));
   background-clip: padding-box;
 }
 /* 드롭다운·시트 안은 폭이 좁아 한 단계 더 가늘게 */
 .hour-menu::-webkit-scrollbar,
-.release-list::-webkit-scrollbar {
+.release-list::-webkit-scrollbar,
+.card-preview::-webkit-scrollbar {
   width: 8px;
 }
 .hour-menu::-webkit-scrollbar-thumb,
-.release-list::-webkit-scrollbar-thumb {
+.release-list::-webkit-scrollbar-thumb,
+.card-preview::-webkit-scrollbar-thumb {
   border-width: 2px;
 }
 @keyframes fade {
@@ -1251,6 +1258,94 @@ input[type="date"].input::-webkit-calendar-picker-indicator {
   font-size: 13.5px;
   line-height: 1.7;
   color: #f0e8ff;
+}
+
+/*
+ * 카드 이미지 저장 — 화면 맨 아래 트리거 버튼 + 미리보기 바텀시트.
+ * 운세·사주 두 화면이 같은 컴포넌트를 쓰므로 생김새도 하나로 둔다.
+ */
+.save-card {
+  align-self: center;
+  margin: 4px 0 2px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 22px;
+  border-radius: 999px;
+  cursor: pointer;
+  border: 1px solid rgba(232, 121, 249, 0.42);
+  background: linear-gradient(
+    135deg,
+    rgba(139, 92, 246, 0.24),
+    rgba(232, 121, 249, 0.16)
+  );
+  color: #f7efff;
+  font-family: var(--body);
+  font-size: 13.5px;
+  font-weight: 700;
+  transition: background 0.15s ease, transform 0.15s ease;
+}
+.save-card:hover {
+  background: linear-gradient(
+    135deg,
+    rgba(139, 92, 246, 0.34),
+    rgba(232, 121, 249, 0.24)
+  );
+}
+.save-card:active {
+  transform: scale(0.97);
+}
+
+.card-sheet {
+  display: flex;
+  flex-direction: column;
+  max-height: 92vh;
+  max-height: 92dvh;
+}
+/*
+ * 카드는 세로로 길다(가로:세로 ≈ 1:2.5~2.8). 통째로 맞춰 넣으면 손톱만 해져서
+ * 글씨가 안 보이므로, 시트 폭을 꽉 채우고 안에서 세로로 굴려 보게 한다.
+ * iOS 에선 이 이미지를 길게 눌러 저장하는 게 확실한 경로라 크게 보여야 한다.
+ */
+.card-preview {
+  flex: 0 1 auto;
+  width: 100%;
+  max-height: min(52dvh, 520px);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  margin: 0 0 16px;
+  border-radius: 16px;
+  border: 1px solid var(--line);
+  background: rgba(255, 255, 255, 0.04);
+}
+/* 아직 그리는 중이면 이미지가 없어 높이가 0이 되므로 자리를 잡아둔다 */
+.card-preview.pending {
+  height: min(52dvh, 520px);
+  display: grid;
+  place-items: center;
+}
+.card-preview img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+.card-preview .sk {
+  width: 100%;
+  height: 100%;
+  border-radius: 0;
+}
+.card-preview-msg {
+  padding: 20px;
+  font-size: 12.5px;
+  line-height: 1.6;
+  color: var(--muted);
+  text-align: center;
+}
+.card-actions {
+  flex: 0 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
 }
 
 /* drawer */
