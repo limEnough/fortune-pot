@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
-import { usePathname } from "next/navigation";
+import { usePathname, useSearchParams } from "next/navigation";
 import { useSaju } from "@/hooks/useSaju";
 import { useNav } from "@/hooks/useNav";
 import { useUIStore } from "@/store/useUIStore";
@@ -11,6 +11,7 @@ import type { Gender } from "@/types/saju";
 export default function SajuForm() {
   const nav = useNav();
   const pathname = usePathname();
+  const searchParams = useSearchParams();
   const startLoading = useUIStore((s) => s.startLoading);
   const stopLoading = useUIStore((s) => s.stopLoading);
   const { saju, save } = useSaju();
@@ -44,10 +45,15 @@ export default function SajuForm() {
     };
   }, [hourOpen]);
 
+  // 홈에서 고른 도착지(?next=saju|fortune) — 없으면 오늘의 운세로
+  const wantsSaju = searchParams.get("next") === "saju";
+  const dest = wantsSaju ? "/saju" : "/fortune";
+  const destLabel = wantsSaju ? "사주 풀이" : "오늘의 운세";
+
   const showRecentBubble = !!saju && !bubbleDismissed;
 
   const useRecent = () => {
-    nav.push("/fortune");
+    nav.push(dest);
   };
   const dropRecent = () => {
     clearGuest();
@@ -67,7 +73,7 @@ export default function SajuForm() {
         hourIdx: hour > 0 ? hour - 1 : null,
         gender,
       });
-      nav.push("/fortune");
+      nav.push(dest);
     } catch (e) {
       stopLoading();
       alert("저장에 실패했어요. 잠시 후 다시 시도해 주세요.");
@@ -81,7 +87,7 @@ export default function SajuForm() {
         <div className="recent-bubble" role="dialog" aria-label="최근 조회 사주 재사용">
           <p>
             최근 조회한 <b style={{ color: "var(--magic)" }}>{saju.name}</b>님으로
-            오늘의 운세를 확인해보시겠어요?
+            {destLabel}를 확인해보시겠어요?
           </p>
           <div className="bubble-actions">
             <button

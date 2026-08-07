@@ -12,7 +12,11 @@ export default function HomePage() {
   // 최근 조회 정보의 재사용 제안은 입력 폼 상단 말풍선에서 처리해요.
 
   if (loading) {
-    return <section className="screen"><LoadingOverlay /></section>;
+    return (
+      <section className="screen">
+        <LoadingOverlay />
+      </section>
+    );
   }
 
   return (
@@ -22,12 +26,51 @@ export default function HomePage() {
         <div className="hero">
           <ClayChar />
           <div className="eyebrow">매일 아침 도착하는 나의 사주</div>
-          <h1 className="title">사주로 보는<br /><span className="pt">오늘의 운세</span>를 받아보세요</h1>
-          <p className="sub">생년월일시로 풀어주는<br />하루 한 번의 다정한 길잡이</p>
+          <h1 className="title">
+            사주로 보는
+            <br />
+            <span className="pt">오늘의 운세</span>를 받아보세요
+          </h1>
+          <p className="sub">
+            생년월일시로 풀어주는
+            <br />
+            하루 한 번의 다정한 길잡이
+          </p>
         </div>
       </div>
       <div className="cta-wrap">
-        <button className="btn primary block focusable" onClick={() => nav.push("/onboarding")}>시작하기</button>
+        {/* 어느 쪽을 골라도 입력 폼은 같고, 분석 후 도착지만 달라진다 */}
+        <div className="cta-pick">먼저 보고 싶은 걸 골라주세요</div>
+        <div className="cta-split">
+          <button
+            className="choice accent focusable"
+            onClick={() => nav.push("/onboarding?next=fortune")}
+          >
+            <span className="ic" aria-hidden="true">
+              🔮
+            </span>
+            <span className="k">오늘의 운세</span>
+            <span className="d">
+              하루 한 번
+              <br />
+              오늘의 흐름 보기
+            </span>
+          </button>
+          <button
+            className="choice focusable"
+            onClick={() => nav.push("/onboarding?next=saju")}
+          >
+            <span className="ic" aria-hidden="true">
+              📜
+            </span>
+            <span className="k">나의 사주</span>
+            <span className="d">
+              타고난 명식과
+              <br />
+              오행 풀이 보기
+            </span>
+          </button>
+        </div>
       </div>
     </section>
   );

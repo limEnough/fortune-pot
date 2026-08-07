@@ -40,7 +40,13 @@ export default function NavDrawer() {
           {saju && pathname !== "/saju" && (
             <button className="nav-item focusable" onClick={() => go("/saju")}>나의 사주는<Chev /></button>
           )}
-          <button className="nav-item focusable" onClick={() => go("/onboarding")}>
+          {/* 사주 화면에서 들어왔으면 수정 후에도 사주 화면으로 돌려보낸다 */}
+          <button
+            className="nav-item focusable"
+            onClick={() =>
+              go(pathname === "/saju" ? "/onboarding?next=saju" : "/onboarding")
+            }
+          >
             {saju ? "사주정보 수정하기" : "사주정보 입력하기"}<Chev />
           </button>
         </div>
