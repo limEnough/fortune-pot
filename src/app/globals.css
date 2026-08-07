@@ -133,9 +133,51 @@ body {
   padding: 6px 24px 28px;
   overscroll-behavior: contain;
 }
-.scroll::-webkit-scrollbar {
-  width: 0;
+/*
+ * 스크롤바 — 앱 안의 모든 스크롤 영역이 같은 UI를 쓴다.
+ * 트랙은 비워두고 얇은 보라 그라데이션 썸만 띄운다. 썸에 투명 테두리를
+ * 두르고 background-clip: padding-box 로 잘라, 트랙 폭보다 가늘게 보이게 함.
+ */
+.scroll,
+.hour-menu,
+.release-list {
+  scrollbar-width: thin; /* Firefox */
+  scrollbar-color: rgba(167, 139, 250, 0.45) transparent;
+}
+.scroll::-webkit-scrollbar,
+.hour-menu::-webkit-scrollbar,
+.release-list::-webkit-scrollbar {
+  width: 10px;
+}
+.scroll::-webkit-scrollbar-track,
+.hour-menu::-webkit-scrollbar-track,
+.release-list::-webkit-scrollbar-track {
   background: transparent;
+}
+.scroll::-webkit-scrollbar-thumb,
+.hour-menu::-webkit-scrollbar-thumb,
+.release-list::-webkit-scrollbar-thumb {
+  border-radius: 99px;
+  border: 3px solid transparent;
+  background: linear-gradient(180deg, var(--lilac), var(--magic));
+  background-clip: padding-box;
+  opacity: 0.6;
+}
+.scroll::-webkit-scrollbar-thumb:hover,
+.hour-menu::-webkit-scrollbar-thumb:hover,
+.release-list::-webkit-scrollbar-thumb:hover {
+  border-width: 2px;
+  background: linear-gradient(180deg, var(--magic), var(--purple));
+  background-clip: padding-box;
+}
+/* 드롭다운·시트 안은 폭이 좁아 한 단계 더 가늘게 */
+.hour-menu::-webkit-scrollbar,
+.release-list::-webkit-scrollbar {
+  width: 8px;
+}
+.hour-menu::-webkit-scrollbar-thumb,
+.release-list::-webkit-scrollbar-thumb {
+  border-width: 2px;
 }
 @keyframes fade {
   from {
@@ -815,13 +857,6 @@ h1.title .pt {
   overflow-y: auto;
   overscroll-behavior: contain;
   animation: hour-pop 0.18s ease-out;
-}
-.hour-menu::-webkit-scrollbar {
-  width: 6px;
-}
-.hour-menu::-webkit-scrollbar-thumb {
-  background: rgba(167, 139, 250, 0.35);
-  border-radius: 99px;
 }
 .hour-menu li {
   list-style: none;
