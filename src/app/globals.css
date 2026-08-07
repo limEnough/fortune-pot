@@ -1612,7 +1612,9 @@ input[type="date"].input::-webkit-calendar-picker-indicator {
   }
 }
 
-.saju-info-pill {
+/* 운세↔사주를 오가는 상단 칩. 두 화면이 서로를 가리키므로 생김새를 공유한다 */
+.saju-info-pill,
+.nav-pill {
   align-self: center;
   margin: 0 0 12px;
   display: inline-flex;
@@ -1631,10 +1633,12 @@ input[type="date"].input::-webkit-calendar-picker-indicator {
   transition: background 0.15s ease, transform 0.15s ease;
   animation: oh-more-shine 2.4s ease-in-out infinite;
 }
-.saju-info-pill:hover {
+.saju-info-pill:hover,
+.nav-pill:hover {
   background: rgba(232, 121, 249, 0.24);
 }
-.saju-info-pill:active {
+.saju-info-pill:active,
+.nav-pill:active {
   transform: scale(0.97);
 }
 .saju-info-pill[aria-expanded="true"] {
