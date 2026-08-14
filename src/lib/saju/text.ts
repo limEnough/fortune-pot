@@ -106,6 +106,23 @@ export const ILGAN_DETAIL: IlganInfo[] = [
   },
 ];
 
+/**
+ * 일간 열 개의 한 마디 별명 — 귀인지도의 이름 옆에 붙는다.
+ * ILGAN_DETAIL.alias 는 사주 화면용 설명문이라 목록에 넣기엔 길다.
+ */
+export const ILGAN_NICK: { emoji: string; nick: string }[] = [
+  { emoji: "🌳", nick: "큰 나무" },
+  { emoji: "🌿", nick: "여린 풀" },
+  { emoji: "☀️", nick: "한낮의 해" },
+  { emoji: "🕯️", nick: "촛불" },
+  { emoji: "⛰️", nick: "큰 산" },
+  { emoji: "🌾", nick: "기름진 밭" },
+  { emoji: "🪨", nick: "무쇠" },
+  { emoji: "💎", nick: "보석" },
+  { emoji: "🌊", nick: "큰 바다" },
+  { emoji: "💧", nick: "이슬비" },
+];
+
 export const OH_BOWAN: Record<string, string> = {
   목: "초록색과 가까운 자연·산책",
   화: "붉은색과 햇볕·활동",

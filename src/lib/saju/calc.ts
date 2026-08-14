@@ -1,4 +1,4 @@
-import type { Solar as SolarClass } from "lunar-javascript";
+import type { Lunar as LunarClass, Solar as SolarClass } from "lunar-javascript";
 import { CG_OH, JJ_OH, OH_IDX, type Ohaeng } from "./constants";
 import type { SajuResult } from "@/types/saju";
 
@@ -12,6 +12,7 @@ import type { SajuResult } from "@/types/saju";
  * loadManse() 를 반드시 한 번 await 해야 하고, 이는 useManse 훅이 담당한다.
  */
 let Solar: typeof SolarClass | null = null;
+let Lunar: typeof LunarClass | null = null;
 let pending: Promise<void> | null = null;
 
 /**
@@ -26,6 +27,7 @@ export function loadManse(): Promise<void> {
     pending = import("lunar-javascript")
       .then((m) => {
         Solar = m.Solar;
+        Lunar = m.Lunar;
       })
       .catch((e) => {
         pending = null; // 재시도 가능하게
@@ -91,6 +93,24 @@ export function computeSaju(birth: string, hourIdx: number | null): SajuResult {
     : null;
 
   return { year, month, day, hour, ilgan: day[0] };
+}
+
+/**
+ * 음력 생일을 양력 "YYYY-MM-DD" 로 옮긴다. 윤달은 다루지 않는다 —
+ * 입력 폼이 6자리 숫자만 받아 윤달을 구분할 방법이 없고, 같은 달의 평달로 본다.
+ *
+ * computeSaju 와 마찬가지로 loadManse() 이후에만 부를 수 있다.
+ */
+export function lunarToSolar(birth: string): string {
+  if (!Lunar) {
+    throw new Error(
+      "만세력이 아직 로드되지 않았습니다. lunarToSolar 앞에서 loadManse()를 await 하세요.",
+    );
+  }
+  const [y, m, d] = birth.split("-").map(Number);
+  const s = Lunar.fromYmd(y, m, d).getSolar();
+  const p2 = (n: number) => String(n).padStart(2, "0");
+  return `${s.getYear()}-${p2(s.getMonth())}-${p2(s.getDay())}`;
 }
 
 export function sipseong(dayOh: number, dayYang: boolean, oh: number, yang: boolean): string {
