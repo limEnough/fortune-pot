@@ -481,6 +481,35 @@ h1.title .pt {
     rgba(232, 121, 249, 0.19)
   );
 }
+/* 귀인지도 — 두 카드 아래 가로로 눕는 한 줄 */
+.choice.wide {
+  flex-direction: row;
+  align-items: center;
+  gap: 11px;
+  margin-top: 10px;
+  padding: 11px 14px;
+  text-align: left;
+  border-color: rgba(252, 211, 77, 0.28);
+  background: linear-gradient(
+    135deg,
+    rgba(252, 211, 77, 0.12),
+    rgba(139, 92, 246, 0.12)
+  );
+}
+.choice.wide .ic {
+  flex: 0 0 auto;
+  background: rgba(252, 211, 77, 0.18);
+}
+.choice.wide .k {
+  flex: 0 0 auto;
+}
+.choice.wide .d {
+  text-align: left;
+  flex: 1 1 auto;
+}
+.choice.wide:hover {
+  border-color: rgba(252, 211, 77, 0.45);
+}
 
 /* sheet */
 .sheet-scrim {
@@ -1911,6 +1940,496 @@ input[type="date"].input::-webkit-calendar-picker-indicator {
   font-size: 12px;
   line-height: 1.6;
   color: #e3d8ff;
+}
+
+/* ------------------------------------------------------------------ 귀인지도 */
+
+.map-screen {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding-top: 8px;
+}
+.map-card,
+.join-card {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  padding: 17px 16px 16px;
+}
+.join-card {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 8px;
+}
+.join-title {
+  font-family: var(--display);
+  font-weight: 400;
+  font-size: 18.5px;
+  line-height: 1.4;
+  margin: 0;
+  color: #f5efff;
+}
+.join-desc {
+  font-size: 12.5px;
+  line-height: 1.7;
+  color: var(--muted);
+  margin: -2px 0 4px;
+}
+.join-desc b {
+  color: #e8dcff;
+}
+/* 생년월일 + 양/음력 — 한 줄에 붙여둔다 */
+.join-row {
+  display: flex;
+  gap: 9px;
+}
+.join-row .input {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+.seg.cal {
+  flex: 0 0 108px;
+  gap: 6px;
+}
+.seg.cal button {
+  font-size: 13px;
+}
+.join-err {
+  font-size: 12px;
+  color: #fca5a5;
+  margin: -2px 0 0;
+}
+.map-note {
+  font-size: 11.5px;
+  line-height: 1.7;
+  color: #8a7bb6;
+  text-align: center;
+  margin: 16px 4px 0;
+}
+
+.map-head {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  margin-bottom: 12px;
+}
+.map-head h2 {
+  font-family: var(--display);
+  font-weight: 400;
+  font-size: 18px;
+  margin: 0;
+  color: #f5efff;
+}
+.map-head span {
+  font-size: 12.5px;
+  color: var(--muted);
+}
+.link-btn.refresh {
+  margin-left: auto;
+  font-size: 11.5px;
+}
+
+/* 별지도 — 정사각 컨테이너 위에 SVG(하늘)와 HTML(글자)을 겹친다 */
+.starmap {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  border-radius: 20px;
+  overflow: hidden;
+  background:
+    radial-gradient(70% 60% at 50% 45%, rgba(139, 92, 246, 0.22), transparent 70%),
+    linear-gradient(160deg, #17103a 0%, #0d0724 60%, #0a0518 100%);
+  border: 1px solid var(--line);
+}
+.sm-sky {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+.sm-me {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  width: 17%;
+  aspect-ratio: 1 / 1;
+  border-radius: 50%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: var(--ink);
+  font-family: var(--display);
+  line-height: 1.1;
+  box-shadow: 0 0 26px rgba(255, 255, 255, 0.35);
+}
+.sm-me b {
+  font-weight: 400;
+  font-size: clamp(13px, 3.6vw, 20px);
+}
+.sm-me small {
+  font-size: clamp(8px, 2.1vw, 11px);
+  opacity: 0.72;
+}
+.sm-star {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  border: none;
+  border-radius: 50%;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--ink);
+  font-family: var(--display);
+  cursor: pointer;
+  transition:
+    transform 0.18s,
+    opacity 0.18s;
+}
+.sm-star:active {
+  transform: translate(-50%, -50%) scale(0.94);
+}
+.sm-star.on {
+  opacity: 1 !important;
+  outline: 2px solid #fff;
+  outline-offset: 2px;
+}
+.sm-oh {
+  font-size: clamp(10px, 2.7vw, 15px);
+}
+/* 이름은 별 아래에 붙는 알약 — 별을 가리지 않게 바깥으로 뺀다 */
+.sm-name {
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  margin-top: 3px;
+  white-space: nowrap;
+  max-width: 84px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  background: rgba(10, 5, 24, 0.74);
+  border: 1px solid var(--line);
+  border-radius: 99px;
+  padding: 2px 7px;
+  font-family: var(--body);
+  font-weight: 700;
+  font-size: 10.5px;
+  color: #efe7ff;
+}
+.sm-star.up .sm-name {
+  top: auto;
+  bottom: 100%;
+  margin: 0 0 3px;
+}
+.sm-badge {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  white-space: nowrap;
+  border: 1px solid;
+  border-radius: 99px;
+  background: rgba(10, 5, 24, 0.72);
+  padding: 3px 8px;
+  font-size: 10.5px;
+  font-weight: 700;
+  opacity: 0.45;
+}
+.sm-badge.on {
+  opacity: 1;
+}
+.sm-badge b {
+  margin-left: 4px;
+  font-family: var(--display);
+  font-weight: 400;
+}
+.sm-cap {
+  text-align: center;
+  font-size: 11px;
+  color: #8a7bb6;
+  margin: 9px 0 0;
+}
+
+.role-tiles {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 6px;
+  margin-top: 13px;
+}
+.role-tile {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 9px 3px;
+  text-align: center;
+}
+.role-tile b {
+  display: block;
+  font-family: var(--display);
+  font-weight: 400;
+  font-size: 18px;
+}
+.role-tile span {
+  display: block;
+  font-size: 9.5px;
+  line-height: 1.35;
+  color: var(--muted);
+  margin-top: 2px;
+}
+
+/* 케미 나래비 */
+.chemi-list {
+  list-style: none;
+  margin: 6px 0 0;
+  padding: 0;
+}
+.chemi + .chemi {
+  border-top: 1px solid var(--line);
+}
+.chemi-row {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  width: 100%;
+  padding: 11px 2px;
+  background: none;
+  border: none;
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+.chemi-row .rank {
+  flex: 0 0 20px;
+  text-align: center;
+  font-size: 13px;
+  color: var(--muted);
+}
+.chemi-row .oh {
+  flex: 0 0 30px;
+  height: 30px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  color: var(--ink);
+  font-family: var(--display);
+  font-size: 13px;
+}
+.chemi-row .who {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+.chemi-row .who b {
+  display: block;
+  font-size: 13.5px;
+  color: #f3ecff;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.chemi-row .nick {
+  font-weight: 400;
+  font-size: 11px;
+  color: var(--muted);
+}
+.chemi-row .role {
+  display: block;
+  font-size: 11.5px;
+  margin-top: 2px;
+}
+.chemi-row .score {
+  flex: 0 0 auto;
+  font-size: 11px;
+  color: var(--muted);
+}
+.chemi-row .score b {
+  font-family: var(--display);
+  font-weight: 400;
+  font-size: 15px;
+  color: var(--gold);
+  margin-left: 3px;
+}
+.chemi-row .chev {
+  flex: 0 0 auto;
+  color: #8a7bb6;
+  transition: transform 0.2s;
+}
+.chemi.open .chev {
+  transform: rotate(180deg);
+}
+.chemi-body {
+  padding: 0 2px 14px 60px;
+}
+.chemi-body .rel {
+  font-family: var(--display);
+  font-size: 13px;
+  color: var(--gold);
+}
+.chemi-body p {
+  font-size: 12.5px;
+  line-height: 1.7;
+  color: #e3d8ff;
+  margin: 6px 0 0;
+}
+.chemi-body .caution {
+  color: #d9c8f0;
+  background: rgba(251, 113, 133, 0.08);
+  border: 1px solid rgba(251, 113, 133, 0.22);
+  border-radius: 13px;
+  padding: 10px 12px;
+  margin-top: 10px;
+}
+.chemi-body .caution b {
+  display: block;
+  color: #fb7185;
+  font-size: 11.5px;
+  margin-bottom: 3px;
+}
+.chemi-body .link-btn {
+  margin-top: 10px;
+  font-size: 12px;
+}
+
+/* 공유 링크 */
+.share-bar {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+  margin-top: 12px;
+}
+.share-url {
+  border: 1px dashed var(--line);
+  border-radius: 13px;
+  background: rgba(255, 255, 255, 0.04);
+  padding: 11px 13px;
+  font-size: 12px;
+  color: #cdbef0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  user-select: all;
+}
+.share-actions {
+  display: grid;
+  grid-template-columns: 1fr 1.4fr;
+  gap: 9px;
+}
+.share-actions .btn {
+  height: 46px;
+  font-size: 14px;
+}
+
+.map-empty {
+  text-align: center;
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  background: var(--card);
+  padding: 32px 20px;
+  margin-top: 8px;
+}
+.map-empty p {
+  font-size: 13px;
+  line-height: 1.75;
+  color: var(--muted);
+  margin: 0 0 16px;
+}
+.map-empty small {
+  display: inline-block;
+  margin-top: 6px;
+  font-size: 11.5px;
+  color: #8a7bb6;
+}
+.map-empty .btn {
+  display: inline-flex;
+  text-decoration: none;
+  padding: 0 22px;
+}
+
+/* 공유 링크로 들어온 사람이 받는 결과 */
+.join-result {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 14px 4px 8px;
+  animation: fade 0.4s ease both;
+}
+.jr-badge {
+  border: 1px solid;
+  border-radius: 99px;
+  padding: 5px 14px;
+  font-size: 12.5px;
+  font-weight: 700;
+  background: rgba(10, 5, 24, 0.5);
+}
+.jr-title {
+  font-family: var(--display);
+  font-weight: 400;
+  font-size: 21px;
+  line-height: 1.5;
+  margin: 14px 0 18px;
+  color: #f5efff;
+}
+.jr-score {
+  width: 96px;
+  height: 96px;
+  border-radius: 50%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: var(--ink);
+  font-family: var(--display);
+  box-shadow: 0 0 34px rgba(255, 255, 255, 0.3);
+}
+.jr-score b {
+  font-weight: 400;
+  font-size: 32px;
+  line-height: 1;
+}
+.jr-score small {
+  font-size: 11px;
+  opacity: 0.75;
+}
+.jr-rel {
+  font-family: var(--display);
+  font-size: 15px;
+  color: var(--gold);
+  margin-top: 16px;
+}
+.jr-line {
+  font-size: 13.5px;
+  line-height: 1.75;
+  color: #e8dcff;
+  margin: 8px 6px 0;
+}
+.jr-mirror {
+  font-size: 12.5px;
+  line-height: 1.7;
+  color: #d9c8f0;
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  padding: 13px 15px;
+  margin: 16px 0 0;
+}
+.jr-mirror b {
+  display: block;
+  color: var(--lilac);
+  font-size: 11.5px;
+  margin-bottom: 4px;
+}
+.jr-note {
+  font-size: 11.5px;
+  line-height: 1.7;
+  color: #8a7bb6;
+  margin: 14px 6px 20px;
+}
+.jr-note b {
+  color: #cdbef0;
+}
+.join-result .btn {
+  width: 100%;
 }
 
 .focusable:focus-visible {

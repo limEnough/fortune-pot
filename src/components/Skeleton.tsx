@@ -118,6 +118,38 @@ export function SajuSkeleton() {
   );
 }
 
+export function MapSkeleton() {
+  return (
+    <div className="map-screen" role="status" aria-label="귀인지도를 불러오는 중">
+      <div className="map-card">
+        <Sk w="62%" h={17} />
+        <Sk w="90%" h={12} style={{ marginTop: 10 }} />
+        <Sk h={40} r={12} style={{ marginTop: 14 }} />
+      </div>
+      <div className="map-card">
+        <Sk w={140} h={17} />
+        <Sk r={20} style={{ marginTop: 12, aspectRatio: "1 / 1" }} />
+        <div className="role-tiles" style={{ marginTop: 12 }}>
+          {[0, 1, 2, 3, 4].map((i) => (
+            <Sk key={i} h={54} r={14} />
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export function MapSkeletonScreen() {
+  return (
+    <section className="screen">
+      <TopBar back home menu />
+      <div className="scroll">
+        <MapSkeleton />
+      </div>
+    </section>
+  );
+}
+
 export function FortuneSkeletonScreen() {
   return (
     <section className="screen">

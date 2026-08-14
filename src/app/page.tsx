@@ -60,6 +60,15 @@ export default function HomePage() {
             </span>
           </button>
         </div>
+
+        {/* 혼자 보는 두 화면과 성격이 달라(친구를 부르는 화면) 한 칸 아래 따로 둔다 */}
+        <button className="choice wide focusable" onClick={() => nav.push("/map")}>
+          <span className="ic" aria-hidden="true">
+            🌟
+          </span>
+          <span className="k">내 귀인지도</span>
+          <span className="d">생일만 넣으면 친구와의 케미가 별자리로</span>
+        </button>
       </div>
     </section>
   );

@@ -52,6 +52,13 @@ export default function NavDrawer() {
         </div>
 
         <div className="nav-group">
+          <div className="g-lab">관계</div>
+          <button className="nav-item focusable" onClick={() => go("/map")}>
+            내 귀인지도<Chev />
+          </button>
+        </div>
+
+        <div className="nav-group">
           <div className="g-lab">소식</div>
           <button className="nav-item focusable" onClick={goNote}>
             업데이트 소식
