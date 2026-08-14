@@ -1,0 +1,200 @@
+import { kv } from "@/lib/kv";
+import { loadManse, computeSaju, lunarToSolar, ohOfGan } from "@/lib/saju/calc";
+import { chemistry } from "@/lib/saju/chemi";
+import { ILGAN_NICK } from "@/lib/saju/text";
+import type {
+  Calendar, JoinInput, JoinResult, MapIntro, MapMember, MapView,
+} from "./types";
+
+/*
+ * 귀인지도 서버 저장소.
+ *
+ * 키는 둘로 나눠 둔다.
+ *   map:{id}    → 주인 문서(이름·생일·주인키)
+ *   map:{id}:e  → 합류자 해시 (필드=합류자 id)
+ *
+ * 합류를 해시 필드 쓰기로 처리하면 문서 전체를 읽어 고쳐 쓸 일이 없다.
+ * 링크를 여러 명이 동시에 열어도 서로의 글을 덮어쓰지 않는다.
+ *
+ * **생년월일은 서버 밖으로 나가지 않는다.** 궁합 계산이 여기서 끝나고,
+ * 브라우저로는 이름·유형·점수·문구만 내려간다. 공유 링크를 주운 사람이
+ * 주인의 생일을 알아낼 방법이 없어야 하기 때문이다.
+ */
+
+const TTL = 60 * 60 * 24 * 200; // 200일 — 쓸 때마다 늘어난다
+const MAX_MEMBERS = 60;
+const MAX_NAME = 12;
+
+export class MapError extends Error {
+  constructor(
+    readonly status: number,
+    message: string,
+  ) {
+    super(message);
+    this.name = "MapError";
+  }
+}
+
+interface OwnerDoc {
+  name: string;
+  /** 입력 원본(음력일 수 있다) */
+  birth: string;
+  cal: Calendar;
+  /** 계산에 쓰는 양력 */
+  solar: string;
+  /** 주인만 아는 열쇠 — 지도 조회·삭제에 필요 */
+  key: string;
+  at: number;
+}
+
+interface EntryDoc {
+  name: string;
+  solar: string;
+  at: number;
+}
+
+const docKey = (id: string) => `map:${id}`;
+const entKey = (id: string) => `map:${id}:e`;
+
+// 헷갈리기 쉬운 l·o·0·1 을 뺀 32글자. 256 % 32 === 0 이라 치우침 없이 고를 수 있다
+const ALPHA = "abcdefghijkmnpqrstuvwxyz23456789";
+
+/** 링크에 들어가는 짧은 id — 받아적을 일은 없고 추측만 어려우면 된다 */
+function randomId(len: number): string {
+  const b = new Uint8Array(len);
+  crypto.getRandomValues(b);
+  return Array.from(b, (n) => ALPHA[n % ALPHA.length]).join("");
+}
+
+/** 같은 사람이 두 번 넣어도 한 줄로 남게 — 이름+생일로 필드를 정한다 */
+function entryId(name: string, solar: string): string {
+  const s = `${name}|${solar}`;
+  let h = 5381;
+  for (let i = 0; i < s.length; i++) h = ((h << 5) + h + s.charCodeAt(i)) | 0;
+  return (h >>> 0).toString(36);
+}
+
+export function normalizeJoin(raw: unknown): JoinInput {
+  const o = (raw ?? {}) as Record<string, unknown>;
+  const name = typeof o.name === "string" ? o.name.trim().replace(/\s+/g, " ") : "";
+  const birth = typeof o.birth === "string" ? o.birth.trim() : "";
+  const cal: Calendar = o.cal === "lunar" ? "lunar" : "solar";
+
+  if (!name) throw new MapError(400, "이름을 입력해 주세요.");
+  if (name.length > MAX_NAME) throw new MapError(400, `이름은 ${MAX_NAME}자까지 넣을 수 있어요.`);
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(birth)) throw new MapError(400, "생년월일을 다시 확인해 주세요.");
+
+  const [y, m, d] = birth.split("-").map(Number);
+  const dt = new Date(y, m - 1, d);
+  const real = dt.getFullYear() === y && dt.getMonth() === m - 1 && dt.getDate() === d;
+  const thisYear = new Date().getFullYear();
+  if (!real || y < 1900 || y > thisYear) {
+    throw new MapError(400, "생년월일을 다시 확인해 주세요.");
+  }
+  return { name, birth, cal };
+}
+
+/** 음력이면 양력으로 옮겨둔다 — 이후 계산은 전부 양력 기준 */
+async function toSolar(input: JoinInput): Promise<string> {
+  await loadManse();
+  return input.cal === "lunar" ? lunarToSolar(input.birth) : input.birth;
+}
+
+function ownerOf(doc: OwnerDoc) {
+  const sj = computeSaju(doc.solar, null);
+  const nick = ILGAN_NICK[sj.ilgan];
+  return {
+    sj,
+    view: {
+      name: doc.name,
+      ohaeng: ohOfGan(sj.ilgan) as string,
+      emoji: nick.emoji,
+      nick: nick.nick,
+    },
+  };
+}
+
+function toMember(id: string, e: EntryDoc, ownerSj: ReturnType<typeof computeSaju>): MapMember {
+  return {
+    id,
+    name: e.name,
+    at: e.at,
+    ...chemistry(ownerSj, computeSaju(e.solar, null)),
+  };
+}
+
+async function readDoc(id: string): Promise<OwnerDoc> {
+  const doc = await kv.getJSON<OwnerDoc>(docKey(id));
+  if (!doc) throw new MapError(404, "지도를 찾을 수 없어요. 링크가 만료되었을 수 있어요.");
+  return doc;
+}
+
+/* ------------------------------------------------------------------ 바깥 API */
+
+/** 지도를 새로 만든다. 주인만 아는 key 를 함께 돌려준다. */
+export async function createMap(raw: unknown): Promise<{ id: string; key: string }> {
+  const input = normalizeJoin(raw);
+  const solar = await toSolar(input);
+  const id = randomId(10);
+  const key = randomId(22);
+  const doc: OwnerDoc = { ...input, solar, key, at: Date.now() };
+  await kv.setJSON(docKey(id), doc, TTL);
+  return { id, key };
+}
+
+/** 공유 링크로 들어온 사람에게 보여줄 것 — 주인 이름과 인원수뿐 */
+export async function getIntro(id: string): Promise<MapIntro> {
+  const doc = await readDoc(id);
+  const entries = await kv.hGetAllJSON<EntryDoc>(entKey(id));
+  return { id, ownerName: doc.name, count: Object.keys(entries).length };
+}
+
+/** 주인이 보는 내 지도 — key 가 맞아야 열린다 */
+export async function getMap(id: string, key: string | null): Promise<MapView> {
+  const doc = await readDoc(id);
+  if (!key || key !== doc.key) throw new MapError(403, "내 지도만 열어볼 수 있어요.");
+
+  await loadManse();
+  const { sj, view } = ownerOf(doc);
+  const entries = await kv.hGetAllJSON<EntryDoc>(entKey(id));
+  const members = Object.entries(entries)
+    .map(([eid, e]) => toMember(eid, e, sj))
+    .sort((a, b) => b.score - a.score || a.at - b.at);
+
+  return { id, owner: view, members };
+}
+
+/** 공유 링크에서 이름을 올린다. 결과(내가 주인에게 어떤 사람인지)를 돌려준다. */
+export async function joinMap(id: string, raw: unknown): Promise<JoinResult> {
+  const doc = await readDoc(id);
+  const input = normalizeJoin(raw);
+  const solar = await toSolar(input);
+
+  const entries = await kv.hGetAllJSON<EntryDoc>(entKey(id));
+  const eid = entryId(input.name, solar);
+  if (!entries[eid] && Object.keys(entries).length >= MAX_MEMBERS) {
+    throw new MapError(409, `한 지도에는 ${MAX_MEMBERS}명까지 올릴 수 있어요.`);
+  }
+
+  const entry: EntryDoc = { name: input.name, solar, at: entries[eid]?.at ?? Date.now() };
+  await kv.hSetJSON(entKey(id), eid, entry);
+  await kv.expire(entKey(id), TTL);
+  await kv.expire(docKey(id), TTL);
+
+  const { sj } = ownerOf(doc);
+  const member = toMember(eid, entry, sj);
+  // "이 지도의 N번째 단짝" — 나를 포함해 센다
+  const sameRole =
+    Object.entries(entries).filter(
+      ([k, e]) => k !== eid && toMember(k, e, sj).role === member.role,
+    ).length + 1;
+
+  return { ownerName: doc.name, member, sameRole, role: member.role };
+}
+
+/** 주인이 한 명을 지운다 */
+export async function removeMember(id: string, key: string | null, memberId: string) {
+  const doc = await readDoc(id);
+  if (!key || key !== doc.key) throw new MapError(403, "내 지도만 고칠 수 있어요.");
+  await kv.hDel(entKey(id), memberId);
+}
