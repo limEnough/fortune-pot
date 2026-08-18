@@ -1,8 +1,9 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNav } from "@/hooks/useNav";
 import { useMapStore } from "@/store/useMapStore";
 import { ROLE_MAP } from "@/lib/saju/chemi";
+import { readJoined, visitorId, writeJoined, type Joined } from "@/lib/map/visitor";
 import JoinForm from "./JoinForm";
 import type { JoinInput, JoinResult } from "@/lib/map/types";
 
@@ -19,15 +20,25 @@ export default function JoinPanel({
   const nav = useNav();
   const myId = useMapStore((s) => s.id);
   const [result, setResult] = useState<JoinResult | null>(null);
+  // localStorage 는 서버 렌더에 없다. 하이드레이션 후에 읽어야 화면이 어긋나지 않는다
+  const [before, setBefore] = useState<Joined | null>(null);
+  const [ready, setReady] = useState(false);
+
+  useEffect(() => {
+    setBefore(readJoined(id));
+    setReady(true);
+  }, [id]);
 
   const submit = async (input: JoinInput) => {
     const res = await fetch(`/api/map/${id}/join`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(input),
+      body: JSON.stringify({ ...input, visitor: visitorId() }),
     });
     const body = await res.json().catch(() => ({}));
     if (!res.ok) throw new Error((body as { message?: string }).message ?? "잠시 후 다시 시도해 주세요.");
+    // 다음에 다시 들어오면 이 값으로 폼을 채우고 "이미 올렸어요" 를 띄운다
+    writeJoined(id, { name: input.name, birth: input.birth, cal: input.cal });
     setResult(body as JoinResult);
   };
 
@@ -36,6 +47,7 @@ export default function JoinPanel({
     const role = ROLE_MAP[m.role];
     return (
       <div className="join-result">
+        {result.updated && <div className="jr-updated">고쳐서 다시 올렸어요</div>}
         <div className="jr-badge" style={{ borderColor: role.color, color: role.color }}>
           {role.emoji} {role.label}
         </div>
@@ -57,8 +69,9 @@ export default function JoinPanel({
           {m.mirror}
         </p>
         <p className="jr-note">
-          {result.ownerName}님 지도에 <b>{result.sameRole}번째 {role.label}</b>으로 올라갔어요.
-          지도에는 이름과 유형만 보여요.
+          {result.ownerName}님 지도에 <b>{result.sameRole}번째 {role.label}</b>
+          {result.updated ? "으로 바뀌었어요." : "으로 올라갔어요."} 지도에는 이름과 유형만
+          보여요.
         </p>
 
         <button className="btn primary block focusable" onClick={() => nav.push("/map")}>
@@ -84,6 +97,7 @@ export default function JoinPanel({
 
   return (
     <JoinForm
+      key={ready ? "ready" : "init"} /* 지난 입력이 읽히면 폼을 그 값으로 다시 세운다 */
       title={<>🙋 나는 {ownerName}님에게 어떤 사람일까?</>}
       desc={
         <>
@@ -92,7 +106,16 @@ export default function JoinPanel({
           {count > 0 && <> 지금까지 {count}명이 올라와 있어요.</>}
         </>
       }
-      submitLabel="지도에 이름 올리기"
+      notice={
+        before && (
+          <>
+            <b>{before.name}</b>(으)로 이미 올렸어요. 다시 올리면 줄이 하나 더 생기지 않고
+            <b> 최신 내용으로 바뀌어요.</b>
+          </>
+        )
+      }
+      initial={before ?? undefined}
+      submitLabel={before ? "고쳐서 다시 올리기" : "지도에 이름 올리기"}
       busyLabel="궁합 보는 중…"
       onSubmit={submit}
     />

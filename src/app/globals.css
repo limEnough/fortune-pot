@@ -2001,6 +2001,28 @@ input[type="date"].input::-webkit-calendar-picker-indicator {
   color: #fca5a5;
   margin: -2px 0 0;
 }
+/* 이미 올린 적이 있을 때 — 모르고 다시 눌러 덮어쓰는 일이 없게 미리 알린다 */
+.join-notice {
+  border: 1px solid rgba(252, 211, 77, 0.3);
+  background: rgba(252, 211, 77, 0.09);
+  border-radius: 14px;
+  padding: 11px 13px;
+  font-size: 12.5px;
+  line-height: 1.65;
+  color: #efe2c4;
+}
+.join-notice b {
+  color: var(--gold);
+}
+.jr-updated {
+  font-size: 11.5px;
+  font-weight: 700;
+  color: var(--gold);
+  background: rgba(252, 211, 77, 0.12);
+  border-radius: 99px;
+  padding: 4px 12px;
+  margin-bottom: 12px;
+}
 .map-note {
   font-size: 11.5px;
   line-height: 1.7;

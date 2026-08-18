@@ -50,7 +50,10 @@ interface OwnerDoc {
 interface EntryDoc {
   name: string;
   solar: string;
+  /** 처음 올린 시각 — 고쳐 올려도 유지된다 */
   at: number;
+  /** 방문자 토큰 해시 — 같은 사람인지 가리는 1차 기준 */
+  v?: string;
 }
 
 const docKey = (id: string) => `map:${id}`;
@@ -66,19 +69,41 @@ function randomId(len: number): string {
   return Array.from(b, (n) => ALPHA[n % ALPHA.length]).join("");
 }
 
-/** 같은 사람이 두 번 넣어도 한 줄로 남게 — 이름+생일로 필드를 정한다 */
-function entryId(name: string, solar: string): string {
-  const s = `${name}|${solar}`;
+function hash36(s: string): string {
   let h = 5381;
   for (let i = 0; i < s.length; i++) h = ((h << 5) + h + s.charCodeAt(i)) | 0;
   return (h >>> 0).toString(36);
 }
+
+/*
+ * 같은 사람을 가리는 기준.
+ *
+ * 예전엔 이름+생일을 그대로 필드로 썼는데, 사람이 다시 올리는 이유는 대개
+ * **고쳐 넣으려는 것**이라(이름 표기 변경·생일 오타·양음력 토글) 고칠 때마다
+ * 다른 사람이 되어 줄이 쌓였다. 그래서 입력과 무관한 표식을 1차 기준으로 둔다.
+ *
+ *   1차: 방문자 토큰 — 브라우저가 들고 있는 임의 id. 무엇을 고쳐도 같은 사람.
+ *   2차: 정규화한 이름+양력 생일 — 기기가 바뀌어 토큰이 없을 때.
+ *
+ * IP·기기 지문은 쓰지 않는다. 공용 와이파이에서 남의 줄을 덮어쓰는 실패가
+ * 중복보다 나쁘다.
+ */
+const nameKey = (name: string, solar: string) =>
+  `${name.normalize("NFC").replace(/\s+/g, "").toLowerCase()}|${solar}`;
+
+const fieldOf = (visitorHash: string | null, nk: string) =>
+  visitorHash ? `v${visitorHash}` : `n${hash36(nk)}`;
 
 export function normalizeJoin(raw: unknown): JoinInput {
   const o = (raw ?? {}) as Record<string, unknown>;
   const name = typeof o.name === "string" ? o.name.trim().replace(/\s+/g, " ") : "";
   const birth = typeof o.birth === "string" ? o.birth.trim() : "";
   const cal: Calendar = o.cal === "lunar" ? "lunar" : "solar";
+  // 브라우저가 만든 임의 문자열. 못 믿을 값이므로 길이만 자르고 그대로 해시한다
+  const visitor =
+    typeof o.visitor === "string" && o.visitor.length >= 8
+      ? o.visitor.slice(0, 64)
+      : undefined;
 
   if (!name) throw new MapError(400, "이름을 입력해 주세요.");
   if (name.length > MAX_NAME) throw new MapError(400, `이름은 ${MAX_NAME}자까지 넣을 수 있어요.`);
@@ -91,7 +116,7 @@ export function normalizeJoin(raw: unknown): JoinInput {
   if (!real || y < 1900 || y > thisYear) {
     throw new MapError(400, "생년월일을 다시 확인해 주세요.");
   }
-  return { name, birth, cal };
+  return { name, birth, cal, visitor };
 }
 
 /** 음력이면 양력으로 옮겨둔다 — 이후 계산은 전부 양력 기준 */
@@ -171,25 +196,55 @@ export async function joinMap(id: string, raw: unknown): Promise<JoinResult> {
   const solar = await toSolar(input);
 
   const entries = await kv.hGetAllJSON<EntryDoc>(entKey(id));
-  const eid = entryId(input.name, solar);
-  if (!entries[eid] && Object.keys(entries).length >= MAX_MEMBERS) {
+  const nk = nameKey(input.name, solar);
+  const vh = input.visitor ? hash36(input.visitor) : null;
+  const eid = fieldOf(vh, nk);
+
+  /*
+   * 같은 사람이 이미 올린 줄을 모은다. 표기를 바꿔가며 여러 번 올렸다면 여기서
+   * 여러 개가 잡히고, 아래에서 한 줄로 합친다.
+   *
+   * 2차 기준은 저장해 둔 값이 아니라 그때그때 계산한다. 이 방식 이전에 쌓인 줄도
+   * 이름과 양력 생일은 들고 있으므로 같은 규칙으로 걸리고, 살아 있는 지도를
+   * 손볼 필요가 없다.
+   */
+  const prior = Object.entries(entries).filter(
+    ([, e]) => (vh && e.v === vh) || nameKey(e.name, e.solar) === nk,
+  );
+
+  if (!prior.length && Object.keys(entries).length >= MAX_MEMBERS) {
     throw new MapError(409, `한 지도에는 ${MAX_MEMBERS}명까지 올릴 수 있어요.`);
   }
 
-  const entry: EntryDoc = { name: input.name, solar, at: entries[eid]?.at ?? Date.now() };
+  const entry: EntryDoc = {
+    name: input.name,
+    solar,
+    // 처음 올린 시각은 지킨다 — 고쳐 올렸다고 새로 온 사람이 되는 건 아니다
+    at: prior.length ? Math.min(...prior.map(([, e]) => e.at)) : Date.now(),
+    v: vh ?? undefined,
+  };
   await kv.hSetJSON(entKey(id), eid, entry);
+  // 표기가 바뀌어 다른 필드에 남아 있던 예전 줄을 걷어낸다
+  for (const [f] of prior) if (f !== eid) await kv.hDel(entKey(id), f);
   await kv.expire(entKey(id), TTL);
   await kv.expire(docKey(id), TTL);
 
   const { sj } = ownerOf(doc);
   const member = toMember(eid, entry, sj);
+  const mine = new Set(prior.map(([f]) => f).concat(eid));
   // "이 지도의 N번째 단짝" — 나를 포함해 센다
   const sameRole =
     Object.entries(entries).filter(
-      ([k, e]) => k !== eid && toMember(k, e, sj).role === member.role,
+      ([k, e]) => !mine.has(k) && toMember(k, e, sj).role === member.role,
     ).length + 1;
 
-  return { ownerName: doc.name, member, sameRole, role: member.role };
+  return {
+    ownerName: doc.name,
+    member,
+    sameRole,
+    role: member.role,
+    updated: prior.length > 0,
+  };
 }
 
 /** 주인이 한 명을 지운다 */

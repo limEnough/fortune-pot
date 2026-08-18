@@ -9,6 +9,10 @@ interface Props {
   submitLabel: string;
   busyLabel?: string;
   namePlaceholder?: string;
+  /** 이미 올린 적이 있을 때의 안내 — 폼 맨 위에 붙는다 */
+  notice?: React.ReactNode;
+  /** 지난번에 올린 값으로 채워둔다. 틀린 칸만 고치면 되게 */
+  initial?: { name: string; birth: string; cal: Calendar };
   onSubmit: (input: JoinInput) => Promise<void>;
 }
 
@@ -20,11 +24,12 @@ interface Props {
  * 기준이라 시각 없이도 나오고, 남의 링크에서 채울 칸은 적을수록 좋다.
  */
 export default function JoinForm({
-  title, desc, submitLabel, busyLabel = "그리는 중…", namePlaceholder = "이름 또는 별명", onSubmit,
+  title, desc, submitLabel, busyLabel = "그리는 중…", namePlaceholder = "이름 또는 별명",
+  notice, initial, onSubmit,
 }: Props) {
-  const [name, setName] = useState("");
-  const [digits, setDigits] = useState("");
-  const [cal, setCal] = useState<Calendar>("solar");
+  const [name, setName] = useState(initial?.name ?? "");
+  const [digits, setDigits] = useState(initial ? initial.birth.replace(/-/g, "") : "");
+  const [cal, setCal] = useState<Calendar>(initial?.cal ?? "solar");
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState<string | null>(null);
 
@@ -47,6 +52,7 @@ export default function JoinForm({
     <div className="join-card">
       <h2 className="join-title">{title}</h2>
       {desc && <p className="join-desc">{desc}</p>}
+      {notice && <div className="join-notice">{notice}</div>}
 
       <input
         className="input focusable"

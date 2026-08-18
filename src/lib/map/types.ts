@@ -8,6 +8,11 @@ export interface JoinInput {
   /** "YYYY-MM-DD" — cal 이 lunar 면 음력 날짜 */
   birth: string;
   cal: Calendar;
+  /**
+   * 브라우저가 들고 있는 임의 id. 같은 사람이 고쳐 올릴 때 한 줄로 합치는 데만 쓴다.
+   * 지도를 만들 때는 필요 없다.
+   */
+  visitor?: string;
 }
 
 /**
@@ -50,4 +55,6 @@ export interface JoinResult {
   /** 지도에서 이 유형이 몇 명째인지 */
   sameRole: number;
   role: RoleKey;
+  /** 새로 올라간 게 아니라 이미 있던 줄을 고친 것 */
+  updated: boolean;
 }
