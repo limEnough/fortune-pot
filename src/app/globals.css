@@ -2619,6 +2619,10 @@ input[type="date"].input::-webkit-calendar-picker-indicator {
   gap: 8px;
   margin-top: 12px;
 }
+/*
+ * 주소 칸은 눌러서 복사하는 버튼이지만, 길게 눌러 글자를 집는 마지막 길이기도
+ * 하다. 그래서 버튼 기본값(가운데 정렬·자체 글꼴·선택 불가)을 되돌려 놓는다.
+ */
 .share-url {
   flex: 1 1 auto;
   min-width: 0; /* 없으면 긴 주소가 줄을 밀어내 버튼이 튀어나간다 */
@@ -2629,11 +2633,15 @@ input[type="date"].input::-webkit-calendar-picker-indicator {
   border-radius: 13px;
   background: rgba(255, 255, 255, 0.04);
   padding: 0 13px;
+  font-family: var(--body);
   font-size: 12px;
   color: #cdbef0;
+  text-align: left;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  cursor: pointer;
+  -webkit-user-select: all;
   user-select: all;
 }
 .share-copy {
@@ -2643,6 +2651,49 @@ input[type="date"].input::-webkit-calendar-picker-indicator {
   padding: 0 16px;
   font-size: 13.5px;
   white-space: nowrap;
+}
+
+/*
+ * 토스트 — 화면이 바뀌지 않는 동작(복사)의 응답.
+ *
+ * 카드 안이 아니라 화면에 고정한다. 공유 줄은 지도 아래라 눌렀을 때 스크롤
+ * 위치에 따라 카드 밖으로 밀려나 있을 수 있다. 층은 시트(51)·오버레이(90)보다
+ * 위 — 무엇이 열려 있든 이 말은 보여야 한다.
+ */
+.toast {
+  position: fixed;
+  left: 50%;
+  bottom: calc(26px + env(safe-area-inset-bottom));
+  z-index: 95;
+  max-width: min(84vw, 380px);
+  margin: 0;
+  border: 1px solid var(--line);
+  border-radius: 99px;
+  background: rgba(20, 11, 44, 0.94);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.42);
+  padding: 10px 18px;
+  font-size: 13px;
+  font-weight: 700;
+  /* 어두운 알약 위 글자다 — var(--ink) 는 밝은 바탕에 얹는 색이라 여기선 안 보인다 */
+  color: #f3ecff;
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  /* 껍데기는 늘 있고 보이기만 토글한다 — 살아 있는 영역이라 붙였다 떼면 안 읽힌다 */
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transform: translate(-50%, 8px);
+  transition:
+    opacity 0.18s,
+    transform 0.18s,
+    visibility 0.18s;
+}
+.toast.on {
+  opacity: 1;
+  visibility: visible;
+  transform: translate(-50%, 0);
 }
 
 .map-empty {
