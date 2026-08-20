@@ -44,7 +44,7 @@ export default function MapViewPage() {
   if (error) {
     return (
       <section className="screen">
-        <TopBar back home />
+        <TopBar back home menu />
         <div className="scroll">
           <div className="map-empty">
             <p>{error}</p>
@@ -59,7 +59,7 @@ export default function MapViewPage() {
 
   return (
     <section className="screen">
-      <TopBar back home />
+      <TopBar back home menu />
       <div className="scroll">
         {!map ? (
           <MapSkeleton />

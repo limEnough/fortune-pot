@@ -43,7 +43,7 @@ export default async function MapJoinPage({ params }: Params) {
   if (!got || got === "down") {
     return (
       <section className="screen">
-        <TopBar home />
+        <TopBar home menu />
         <div className="scroll">
           <div className="map-empty">
             {got === "down" ? (
@@ -66,7 +66,7 @@ export default async function MapJoinPage({ params }: Params) {
 
   return (
     <section className="screen">
-      <TopBar home />
+      <TopBar home menu />
       <div className="scroll">
         <JoinPanel id={got.id} ownerName={got.ownerName} count={got.count} />
       </div>
