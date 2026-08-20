@@ -3,7 +3,6 @@ import { useState } from "react";
 import { parseBirthDigits } from "@/lib/map/birth";
 import { HOUR_OPTIONS } from "@/lib/saju/constants";
 import type { Calendar, JoinInput } from "@/lib/map/types";
-import type { Gender } from "@/types/saju";
 
 interface Props {
   title: React.ReactNode;
@@ -19,11 +18,12 @@ interface Props {
 }
 
 /**
- * 이름 + 생년월일 여섯 자리 + 양/음력 + 성별 + 태어난 시간.
+ * 이름 + 생년월일 여섯 자리 + 양/음력 + 태어난 시간.
  *
  * 지도를 만들 때(주인)와 링크로 들어와 이름을 올릴 때(친구) 둘 다 이 폼을 쓴다.
  * 생년월일을 캘린더가 아니라 여섯 자리 숫자로 받는 건 남의 링크에서 채우는
  * 칸이기 때문이다 — 한 칸에 숫자만 두드리고 끝나는 쪽이 이탈이 적다.
+ * 성별은 궁합에 쓰이지 않으므로 받지 않는다.
  *
  * 시간은 모르는 사람이 많아서 **모르겠어요가 기본값**이다. 시주가 있으면 오행
  * 여덟 글자로 세어 케미가 조금 더 정확해지고, 없어도 일간 기준이라 결과는 나온다.
@@ -35,7 +35,6 @@ export default function JoinForm({
   const [name, setName] = useState(initial?.name ?? "");
   const [digits, setDigits] = useState(initial?.birth ? initial.birth.replace(/-/g, "") : "");
   const [cal, setCal] = useState<Calendar>(initial?.cal ?? "solar");
-  const [gender, setGender] = useState<Gender>(initial?.gender ?? "여");
   const [hourIdx, setHourIdx] = useState<number | null>(initial?.hourIdx ?? null);
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState<string | null>(null);
@@ -50,7 +49,7 @@ export default function JoinForm({
     setErr(null);
     setBusy(true);
     try {
-      await onSubmit({ name: name.trim(), birth, cal, gender, hourIdx });
+      await onSubmit({ name: name.trim(), birth, cal, hourIdx });
     } catch (e) {
       setErr(e instanceof Error ? e.message : "잠시 후 다시 시도해 주세요.");
       setBusy(false);
@@ -99,23 +98,6 @@ export default function JoinForm({
             음력
           </button>
         </div>
-      </div>
-
-      <div className="seg">
-        <button
-          type="button"
-          className={`focusable ${gender === "여" ? "on" : ""}`}
-          onClick={() => setGender("여")}
-        >
-          여성
-        </button>
-        <button
-          type="button"
-          className={`focusable ${gender === "남" ? "on" : ""}`}
-          onClick={() => setGender("남")}
-        >
-          남성
-        </button>
       </div>
 
       <div className="join-hour">

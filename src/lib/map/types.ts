@@ -1,15 +1,19 @@
 import type { Chemi, RoleKey } from "@/lib/saju/chemi";
-import type { Gender } from "@/types/saju";
 
 export type Calendar = "solar" | "lunar";
 
-/** 지도에 이름을 올릴 때 받는 것 */
+/**
+ * 지도에 이름을 올릴 때 받는 것.
+ *
+ * 성별은 받지 않는다 — 궁합은 일간 오행과 지지 합충으로 내므로 쓸 데가 없고,
+ * 남의 링크에서 채우는 칸은 적을수록 좋다. 사주 화면은 성별을 표시에 쓰는데,
+ * 그건 그 화면으로 갈 때 입력 폼에서 채운다.
+ */
 export interface JoinInput {
   name: string;
   /** "YYYY-MM-DD" — cal 이 lunar 면 음력 날짜 */
   birth: string;
   cal: Calendar;
-  gender: Gender;
   /** 0(자)~11(해). 모르면 null — 시주 없이도 궁합은 나온다 */
   hourIdx: number | null;
   /**
@@ -65,4 +69,6 @@ export interface JoinResult {
   role: RoleKey;
   /** 새로 올라간 게 아니라 이미 있던 줄을 고친 것 */
   updated: boolean;
+  /** 방금 올린 생일의 양력 환산 — 브라우저가 이 정보를 사주로도 심어둔다 */
+  solar: string;
 }

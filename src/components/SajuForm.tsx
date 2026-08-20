@@ -16,7 +16,6 @@ export default function SajuForm() {
   // 여기까지 와서 정보를 확정한 사람에게 메인에서 또 물을 이유가 없다
   const { confirm, reset: resetSession } = useSessionStore();
 
-  // 항상 기본값으로 시작 — 최근 조회값은 상단 말풍선에서만 제안
   const [name, setName] = useState("");
   const [birth, setBirth] = useState("1996-06-16");
   const [hour, setHour] = useState<number>(6);
@@ -24,7 +23,34 @@ export default function SajuForm() {
   const [busy, setBusy] = useState(false);
   const [bubbleDismissed, setBubbleDismissed] = useState(false);
   const [hourOpen, setHourOpen] = useState(false);
+  const [filled, setFilled] = useState(false);
   const hourRef = useRef<HTMLDivElement>(null);
+
+  /*
+   * 저장된 값이 있으면 폼을 그 값으로 채운다.
+   *
+   * 예전엔 늘 기본값으로 시작하고 재사용은 말풍선으로만 제안했다. 그런데 이제
+   * 귀인지도에서 이름·생일·시각까지 받고 오는 길이 생겼다. 그 사람에게 필요한 건
+   * **성별 한 칸**이지 처음부터 다시 넣는 일이 아니다.
+   * 하이드레이션 뒤에 한 번만 채우고, 이후 타이핑은 덮어쓰지 않는다.
+   */
+  useEffect(() => {
+    if (filled || !saju) return;
+    setName(saju.name);
+    setBirth(saju.birth);
+    setHour(saju.hourIdx === null ? 0 : saju.hourIdx + 1);
+    if (saju.gender) setGender(saju.gender);
+    setFilled(true);
+  }, [saju, filled]);
+
+  /*
+   * 지도만 하고 온 사람 — 이름·생일은 찼고 성별이 비어 있다.
+   * 태어난 시각도 안 넣었다면(지도에선 '모르겠어요' 가 기본) 여기서 한 번 더
+   * 묻는다. 사주 풀이는 시주가 있고 없고가 크게 다르므로, 그냥 넘기지 않고
+   * 고를 기회를 준다 — 그래도 모르면 '모르겠어요' 그대로 두면 된다.
+   */
+  const fromMap = !!saju && saju.gender === null;
+  const needHour = fromMap && saju.hourIdx === null;
 
   useEffect(() => {
     if (!hourOpen) return;
@@ -49,7 +75,8 @@ export default function SajuForm() {
   const dest = wantsSaju ? "/saju" : "/fortune";
   const destLabel = wantsSaju ? "사주 풀이" : "오늘의 운세";
 
-  const showRecentBubble = !!saju && !bubbleDismissed;
+  // 빠진 칸을 채우러 온 사람에게 "이 정보로 볼까요" 를 다시 묻지 않는다
+  const showRecentBubble = !!saju && !fromMap && !bubbleDismissed;
 
   const useRecent = () => {
     confirm();
@@ -111,7 +138,13 @@ export default function SajuForm() {
 
       <div className="form-head">
         <h2>사주 정보 입력</h2>
-        <span>정확한 풀이를 위해 태어난 순간을 알려주세요</span>
+        <span>
+          {!fromMap
+            ? "정확한 풀이를 위해 태어난 순간을 알려주세요"
+            : needHour
+              ? "귀인지도에 넣은 정보를 가져왔어요. 성별과 태어난 시각만 확인해 주세요"
+              : "귀인지도에 넣은 정보를 가져왔어요. 성별만 골라주세요"}
+        </span>
       </div>
 
       <label className="field"><span className="lab">이름</span>
@@ -123,7 +156,10 @@ export default function SajuForm() {
       </label>
 
       <div className="field">
-        <span className="lab">태어난 시각</span>
+        <span className="lab">
+          태어난 시각
+          {needHour && <em className="need">확인 필요</em>}
+        </span>
         <div className="hour-select" ref={hourRef}>
           <button
             type="button"
@@ -184,7 +220,11 @@ export default function SajuForm() {
         <span className="hint">모르면 비워두어도 풀이는 가능해요</span>
       </div>
 
-      <label className="field"><span className="lab">성별</span>
+      <label className="field">
+        <span className="lab">
+          성별
+          {fromMap && <em className="need">확인 필요</em>}
+        </span>
         <div className="seg">
           <button type="button" className={`focusable ${gender === "여" ? "on" : ""}`} onClick={() => setGender("여")}>여성</button>
           <button type="button" className={`focusable ${gender === "남" ? "on" : ""}`} onClick={() => setGender("남")}>남성</button>

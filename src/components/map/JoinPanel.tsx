@@ -4,6 +4,7 @@ import { useNav } from "@/hooks/useNav";
 import { useMapStore } from "@/store/useMapStore";
 import { ROLE_MAP } from "@/lib/saju/chemi";
 import { readJoined, visitorId, writeJoined, type Joined } from "@/lib/map/visitor";
+import { plantSaju } from "@/lib/map/plant";
 import JoinForm from "./JoinForm";
 import type { JoinInput, JoinResult } from "@/lib/map/types";
 
@@ -40,7 +41,10 @@ export default function JoinPanel({
     // 다음에 다시 들어오면 이 값으로 폼을 채우고 "이미 올렸어요" 를 띄운다
     const { visitor: _v, ...keep } = input;
     writeJoined(id, keep);
-    setResult(body as JoinResult);
+    const got = body as JoinResult;
+    // 남의 지도에 올린 정보라도 자기 것이므로, 사주가 비어 있으면 옮겨 심는다
+    plantSaju(input, got.solar);
+    setResult(got);
   };
 
   if (result) {

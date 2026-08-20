@@ -1,6 +1,7 @@
 "use client";
 import { useCallback, useEffect, useState } from "react";
 import { useMapStore } from "@/store/useMapStore";
+import { plantSaju } from "@/lib/map/plant";
 import type { JoinInput, MapView } from "@/lib/map/types";
 
 async function ask<T>(url: string, init?: RequestInit): Promise<T> {
@@ -66,12 +67,14 @@ export function useMyMap() {
 
   const create = useCallback(
     async (input: JoinInput) => {
-      const got = await ask<{ id: string; key: string }>("/api/map", {
+      const got = await ask<{ id: string; key: string; solar: string }>("/api/map", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(input),
       });
       setMap(got.id, got.key);
+      // 여기서 넣은 정보로 운세·사주도 볼 수 있게 사주 자리에 옮겨 심는다
+      plantSaju(input, got.solar);
       return got;
     },
     [setMap],

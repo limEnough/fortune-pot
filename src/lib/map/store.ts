@@ -5,7 +5,6 @@ import { ILGAN_NICK } from "@/lib/saju/text";
 import type {
   Calendar, JoinInput, JoinResult, MapIntro, MapMember, MapView,
 } from "./types";
-import type { Gender } from "@/types/saju";
 
 /*
  * 귀인지도 서버 저장소.
@@ -43,7 +42,6 @@ interface OwnerDoc {
   cal: Calendar;
   /** 계산에 쓰는 양력 */
   solar: string;
-  gender?: Gender;
   /** 0~11, 모르면 null/없음 */
   hour?: number | null;
   /** 주인만 아는 열쇠 — 지도 조회·삭제에 필요 */
@@ -54,7 +52,6 @@ interface OwnerDoc {
 interface EntryDoc {
   name: string;
   solar: string;
-  gender?: Gender;
   hour?: number | null;
   /** 처음 올린 시각 — 고쳐 올려도 유지된다 */
   at: number;
@@ -105,7 +102,6 @@ export function normalizeJoin(raw: unknown): JoinInput {
   const name = typeof o.name === "string" ? o.name.trim().replace(/\s+/g, " ") : "";
   const birth = typeof o.birth === "string" ? o.birth.trim() : "";
   const cal: Calendar = o.cal === "lunar" ? "lunar" : "solar";
-  const gender: Gender = o.gender === "남" ? "남" : "여";
   // 모르면 null. 범위를 벗어난 값도 모르는 것으로 본다
   const hourIdx =
     typeof o.hourIdx === "number" && o.hourIdx >= 0 && o.hourIdx <= 11
@@ -128,7 +124,7 @@ export function normalizeJoin(raw: unknown): JoinInput {
   if (!real || y < 1900 || y > thisYear) {
     throw new MapError(400, "생년월일을 다시 확인해 주세요.");
   }
-  return { name, birth, cal, gender, hourIdx, visitor };
+  return { name, birth, cal, hourIdx, visitor };
 }
 
 /** 음력이면 양력으로 옮겨둔다 — 이후 계산은 전부 양력 기준 */
@@ -169,7 +165,9 @@ async function readDoc(id: string): Promise<OwnerDoc> {
 /* ------------------------------------------------------------------ 바깥 API */
 
 /** 지도를 새로 만든다. 주인만 아는 key 를 함께 돌려준다. */
-export async function createMap(raw: unknown): Promise<{ id: string; key: string }> {
+export async function createMap(
+  raw: unknown,
+): Promise<{ id: string; key: string; solar: string }> {
   const input = normalizeJoin(raw);
   const solar = await toSolar(input);
   const id = randomId(10);
@@ -179,13 +177,14 @@ export async function createMap(raw: unknown): Promise<{ id: string; key: string
     birth: input.birth,
     cal: input.cal,
     solar,
-    gender: input.gender,
     hour: input.hourIdx,
     key,
     at: Date.now(),
   };
   await kv.setJSON(docKey(id), doc, TTL);
-  return { id, key };
+  // solar 를 돌려주는 건 브라우저가 이 정보를 사주로도 심어두기 위해서다.
+  // 음력을 넣었다면 변환 결과를 서버만 알고 있다(만세력이 서버에 있으므로).
+  return { id, key, solar };
 }
 
 /** 공유 링크로 들어온 사람에게 보여줄 것 — 주인 이름과 인원수뿐 */
@@ -259,7 +258,6 @@ export async function joinMap(id: string, raw: unknown): Promise<JoinResult> {
   const entry: EntryDoc = {
     name: input.name,
     solar,
-    gender: input.gender,
     hour: input.hourIdx,
     // 처음 올린 시각은 지킨다 — 고쳐 올렸다고 새로 온 사람이 되는 건 아니다
     at: prior.length ? Math.min(...prior.map(([, e]) => e.at)) : Date.now(),
@@ -285,6 +283,7 @@ export async function joinMap(id: string, raw: unknown): Promise<JoinResult> {
     member,
     sameRole,
     role: member.role,
+    solar,
     updated: prior.length > 0,
   };
 }

@@ -6,6 +6,7 @@ import { useManse } from "@/hooks/useManse";
 import TopBar from "@/components/TopBar";
 import SajuChart from "@/components/SajuChart";
 import { SajuSkeletonScreen } from "@/components/Skeleton";
+import { isComplete } from "@/types/saju";
 
 export default function SajuPage() {
   const nav = useNav();
@@ -13,10 +14,13 @@ export default function SajuPage() {
   const manseReady = useManse(); // SajuChart 가 computeSaju 를 렌더 중에 부른다
 
   useEffect(() => {
-    if (!loading && !saju) nav.replace("/");
+    if (loading) return;
+    if (!saju) return nav.replace("/");
+    // 귀인지도에서 넘어온 사람은 성별이 비어 있다 — 그 칸만 받고 돌아온다
+    if (!isComplete(saju)) nav.replace("/onboarding?next=saju");
   }, [loading, saju, nav]);
 
-  if (loading || !saju || !manseReady) return <SajuSkeletonScreen />;
+  if (loading || !isComplete(saju) || !manseReady) return <SajuSkeletonScreen />;
 
   return (
     <section className="screen">

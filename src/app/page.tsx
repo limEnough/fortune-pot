@@ -7,6 +7,7 @@ import { useMapStore } from "@/store/useMapStore";
 import ClayChar from "@/components/ClayChar";
 import TopBar from "@/components/TopBar";
 import RecentSajuDialog from "@/components/RecentSajuDialog";
+import { isComplete } from "@/types/saju";
 
 export default function HomePage() {
   const nav = useNav();
@@ -30,9 +31,13 @@ export default function HomePage() {
     reset();
   };
 
-  // 확인했으면 입력을 건너뛰고 바로 그 화면으로 간다
+  /*
+   * 확인했으면 입력을 건너뛰고 바로 그 화면으로 간다.
+   * 다만 귀인지도만 하고 온 사람은 성별이 비어 있다 — 두 화면이 표시에 쓰므로
+   * 입력 폼을 한 번 거친다. 폼은 나머지 칸을 채운 채로 뜬다.
+   */
   const go = (dest: "fortune" | "saju") =>
-    nav.push(confirmed && saju ? `/${dest}` : `/onboarding?next=${dest}`);
+    nav.push(confirmed && isComplete(saju) ? `/${dest}` : `/onboarding?next=${dest}`);
 
   return (
     <section className="screen">

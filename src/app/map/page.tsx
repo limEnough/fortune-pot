@@ -52,9 +52,8 @@ export default function MapPage() {
     try {
       await create({
         name: saju.name,
-        birth: saju.birth,
+        birth: saju.birth, // 저장된 값은 늘 양력
         cal: "solar",
-        gender: saju.gender,
         hourIdx: saju.hourIdx,
       });
     } catch (e) {

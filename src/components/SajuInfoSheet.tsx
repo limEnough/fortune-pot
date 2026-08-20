@@ -21,7 +21,7 @@ export default function SajuInfoSheet({ saju, open, onClose }: Props) {
     ["이름", saju.name],
     ["생년월일", `${y}년 ${m}월 ${d}일`],
     ["태어난 시각", hourTxt],
-    ["성별", `${saju.gender}성`],
+    ["성별", saju.gender ? `${saju.gender}성` : "미입력"],
     ["일간 (日干)", `${CG[sj.ilgan]} (${CGH[sj.ilgan]})`],
   ];
 

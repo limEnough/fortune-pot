@@ -42,7 +42,8 @@ export default function RecentSajuDialog({
           오늘의 운세를 확인해보시겠어요?
         </h2>
         <p className="m-sub">
-          {saju.birth} · {saju.gender === "여" ? "여성" : "남성"}
+          {saju.birth}
+          {saju.gender && ` · ${saju.gender === "여" ? "여성" : "남성"}`}
           <br />
           네를 누르면 운세·사주·귀인지도를 이 정보로 바로 볼 수 있어요.
         </p>

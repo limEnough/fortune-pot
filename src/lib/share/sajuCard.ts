@@ -174,7 +174,9 @@ export async function drawSajuCard(saju: SajuInput): Promise<HTMLCanvasElement> 
   const s = summarizeSaju(saju);
   const ilgan = ILGAN_DETAIL[s.sj.ilgan];
 
-  const metaLine = `${s.y}년 ${s.mo}월 ${s.d}일 · ${s.hourTxt} · ${saju.gender}성`;
+  const metaLine =
+    `${s.y}년 ${s.mo}월 ${s.d}일 · ${s.hourTxt}` +
+    (saju.gender ? ` · ${saju.gender}성` : "");
   const domLine = `사주에서 ${s.domSip}의 기운이 가장 도드라져요.`;
   const ilganP1 = `사주의 주인공(일간)은 ${CG[s.sj.ilgan]}(${CGH[s.sj.ilgan]}), 오행으로는 ${s.ilOh} · ${isYangGan(s.sj.ilgan) ? "양(陽)" : "음(陰)"}의 기운이에요.`;
   const ilganP2 = `${ilgan.alias}으로 비유돼요.`;

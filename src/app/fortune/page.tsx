@@ -9,6 +9,7 @@ import { FortuneSkeletonScreen } from "@/components/Skeleton";
 import SajuInfoSheet from "@/components/SajuInfoSheet";
 import { generateFortune } from "@/lib/saju/fortune";
 import { computeSaju } from "@/lib/saju/calc";
+import { isComplete } from "@/types/saju";
 
 export default function FortunePage() {
   const nav = useNav();
@@ -17,7 +18,10 @@ export default function FortunePage() {
   const [infoOpen, setInfoOpen] = useState(false);
 
   useEffect(() => {
-    if (!loading && !saju) nav.replace("/"); // 사주 없으면 홈으로
+    if (loading) return;
+    if (!saju) return nav.replace("/"); // 사주 없으면 홈으로
+    // 귀인지도에서 넘어온 사람은 성별이 비어 있다 — 그 칸만 받고 돌아온다
+    if (!isComplete(saju)) nav.replace("/onboarding?next=fortune");
   }, [loading, saju, nav]);
 
   const fortune = useMemo(
@@ -29,7 +33,7 @@ export default function FortunePage() {
   );
 
   // 전환 중 loading.tsx 가 띄우던 것과 같은 화면 — 이어지듯 넘어간다
-  if (loading || !saju || !fortune) return <FortuneSkeletonScreen />;
+  if (loading || !isComplete(saju) || !fortune) return <FortuneSkeletonScreen />;
 
   return (
     <section className="screen">

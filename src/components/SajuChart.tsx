@@ -172,7 +172,8 @@ export default function SajuChart({ saju }: { saju: SajuInput }) {
             <b style={{ color: "var(--magic)" }}>{saju.name}</b>님의 사주
           </h2>
           <div className="meta">
-            {y}년 {mo}월 {d}일 · {hourTxt} · {saju.gender}성
+            {y}년 {mo}월 {d}일 · {hourTxt}
+            {saju.gender && ` · ${saju.gender}성`}
           </div>
         </div>
       </div>
