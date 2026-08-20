@@ -132,12 +132,13 @@ export default function JoinPanel({
        * 지도가 궁금해 다시 왔을 뿐인데, 그동안은 같은 값을 한 번 더 올려
        * 결과 화면을 지나야만 지도에 닿을 수 있었다.
        */
+      submitIcon={before ? "✏️" : undefined}
       extra={
         before && (
-          <button
-            className="btn ghost block focusable"
-            onClick={() => nav.push(`/map/${id}/view`)}
-          >
+          <button className="btn ghost focusable" onClick={() => nav.push(`/map/${id}/view`)}>
+            <span className="btn-ic" aria-hidden="true">
+              🌟
+            </span>
             {ownerName}님의 귀인지도 확인하기
           </button>
         )

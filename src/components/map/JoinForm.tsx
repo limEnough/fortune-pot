@@ -14,7 +14,9 @@ interface Props {
   notice?: React.ReactNode;
   /** 지난번에 올린 값으로 채워둔다. 틀린 칸만 고치면 되게 */
   initial?: Partial<Omit<JoinInput, "visitor">>;
-  /** 제출 버튼 아래에 붙일 다른 길 — 올릴 생각 없이 들어온 사람도 있다 */
+  /** 제출 버튼 앞에 붙는 그림 — 무엇을 하는 버튼인지 글자보다 빨리 읽힌다 */
+  submitIcon?: React.ReactNode;
+  /** 제출 버튼과 나란히 설 다른 길 — 올릴 생각 없이 들어온 사람도 있다 */
   extra?: React.ReactNode;
   onSubmit: (input: JoinInput) => Promise<void>;
 }
@@ -32,7 +34,7 @@ interface Props {
  */
 export default function JoinForm({
   title, desc, submitLabel, busyLabel = "그리는 중…", namePlaceholder = "이름 또는 별명",
-  notice, initial, extra, onSubmit,
+  notice, initial, submitIcon, extra, onSubmit,
 }: Props) {
   const [name, setName] = useState(initial?.name ?? "");
   const [digits, setDigits] = useState(initial?.birth ? initial.birth.replace(/-/g, "") : "");
@@ -57,6 +59,22 @@ export default function JoinForm({
       setBusy(false);
     }
   };
+
+  const submitBtn = (
+    <button
+      // 짝이 있으면 폭을 나눠 쓰고, 혼자면 한 줄을 다 쓴다
+      className={`btn primary focusable ${extra ? "" : "block"}`}
+      disabled={busy}
+      onClick={submit}
+    >
+      {submitIcon && (
+        <span className="btn-ic" aria-hidden="true">
+          {submitIcon}
+        </span>
+      )}
+      {busy ? busyLabel : submitLabel}
+    </button>
+  );
 
   return (
     <div className="join-card">
@@ -134,10 +152,7 @@ export default function JoinForm({
 
       {err && <p className="join-err">{err}</p>}
 
-      <button className="btn primary block focusable" disabled={busy} onClick={submit}>
-        {busy ? busyLabel : submitLabel}
-      </button>
-      {extra}
+      {extra ? <div className="join-actions">{submitBtn}{extra}</div> : submitBtn}
     </div>
   );
 }
