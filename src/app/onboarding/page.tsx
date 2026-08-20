@@ -1,18 +1,16 @@
-"use client";
-import { Suspense } from "react";
-import TopBar from "@/components/TopBar";
-import SajuForm from "@/components/SajuForm";
+import { redirect } from "next/navigation";
 
-export default function OnboardingPage() {
-  return (
-    <section className="screen">
-      <TopBar back home />
-      <div className="scroll">
-        {/* SajuForm이 useSearchParams(?next=)로 도착지를 읽어서 Suspense가 필요하다 */}
-        <Suspense fallback={null}>
-          <SajuForm />
-        </Suspense>
-      </div>
-    </section>
-  );
+/**
+ * 예전 입력 화면 주소.
+ *
+ * `/onboarding` 하나가 "보러 가는 길목"과 "정보 고치기"를 겸하다 `/infoinput` ·
+ * `/info` 로 갈라졌다. 북마크나 예전 링크가 죽지 않게 길목 쪽으로 넘긴다.
+ */
+export default async function OnboardingRedirect({
+  searchParams,
+}: {
+  searchParams: Promise<{ next?: string }>;
+}) {
+  const { next } = await searchParams;
+  redirect(next ? `/infoinput?next=${encodeURIComponent(next)}` : "/infoinput");
 }

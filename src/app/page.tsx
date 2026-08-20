@@ -37,7 +37,7 @@ export default function HomePage() {
    * 입력 폼을 한 번 거친다. 폼은 나머지 칸을 채운 채로 뜬다.
    */
   const go = (dest: "fortune" | "saju") =>
-    nav.push(confirmed && isComplete(saju) ? `/${dest}` : `/onboarding?next=${dest}`);
+    nav.push(confirmed && isComplete(saju) ? `/${dest}` : `/infoinput?next=${dest}`);
 
   return (
     <section className="screen">

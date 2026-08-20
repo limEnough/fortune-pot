@@ -8,7 +8,19 @@ import { useSessionStore } from "@/store/useSessionStore";
 import { HOUR_OPTIONS } from "@/lib/saju/constants";
 import type { Gender } from "@/types/saju";
 
-export default function SajuForm() {
+/*
+ * 같은 폼이지만 들어온 이유가 둘이라, 버튼이 하는 일과 화면 문구가 다르다.
+ *
+ *   start(/infoinput) — 운세·사주를 보러 가는 길목. 저장하고 고른 화면으로 간다.
+ *   edit(/info)       — 메뉴에서 내 정보를 고치러 온 것. 저장하고 있던 자리로 돌아간다.
+ *
+ * 예전엔 한 라우트(/onboarding)가 둘을 겸했다. 그래서 정보를 고치러 들어와도
+ * "최근 조회한 ◯◯님으로 오늘의 운세를 확인해보시겠어요?" 가 맨 위에 떴다.
+ * 고치러 온 사람에게 고치지 말라고 권하는 셈이었다.
+ */
+export type FormMode = "start" | "edit";
+
+export default function SajuForm({ mode = "start" }: { mode?: FormMode }) {
   const nav = useNav();
   const searchParams = useSearchParams();
   const { saju, save } = useSaju();
@@ -70,13 +82,25 @@ export default function SajuForm() {
     };
   }, [hourOpen]);
 
-  // 홈에서 고른 도착지(?next=saju|fortune) — 없으면 오늘의 운세로
+  const editing = mode === "edit";
+
+  /*
+   * start: 홈에서 고른 도착지(?next=saju|fortune) — 없으면 오늘의 운세로.
+   * edit:  고치기 전에 있던 화면(?from=) — 없으면 홈으로.
+   */
   const wantsSaju = searchParams.get("next") === "saju";
-  const dest = wantsSaju ? "/saju" : "/fortune";
+  const dest = editing
+    ? searchParams.get("from") || "/"
+    : wantsSaju
+      ? "/saju"
+      : "/fortune";
   const destLabel = wantsSaju ? "사주 풀이" : "오늘의 운세";
 
-  // 빠진 칸을 채우러 온 사람에게 "이 정보로 볼까요" 를 다시 묻지 않는다
-  const showRecentBubble = !!saju && !fromMap && !bubbleDismissed;
+  /*
+   * 말풍선은 start 에서만. 고치러 온 사람에게 "그냥 그대로 보시겠어요?" 는
+   * 하려던 일을 막는 제안이다. 빠진 칸을 채우러 온 사람에게도 띄우지 않는다.
+   */
+  const showRecentBubble = !editing && !!saju && !fromMap && !bubbleDismissed;
 
   const useRecent = () => {
     confirm();
@@ -101,8 +125,11 @@ export default function SajuForm() {
         hourIdx: hour > 0 ? hour - 1 : null,
         gender,
       });
+      // 방금 손으로 확정한 정보다. 메인에서 또 물을 이유가 없다
       confirm();
-      nav.push(dest);
+      // start 는 고른 화면으로, edit 는 고치기 전에 있던 자리로
+      if (editing) nav.replace(dest);
+      else nav.push(dest);
     } catch (e) {
       alert("저장에 실패했어요. 잠시 후 다시 시도해 주세요.");
       setBusy(false);
@@ -137,13 +164,15 @@ export default function SajuForm() {
       )}
 
       <div className="form-head">
-        <h2>사주 정보 입력</h2>
+        <h2>{editing ? "내 정보 수정" : "사주 정보 입력"}</h2>
         <span>
-          {!fromMap
-            ? "정확한 풀이를 위해 태어난 순간을 알려주세요"
-            : needHour
+          {fromMap
+            ? needHour
               ? "귀인지도에 넣은 정보를 가져왔어요. 성별과 태어난 시각만 확인해 주세요"
-              : "귀인지도에 넣은 정보를 가져왔어요. 성별만 골라주세요"}
+              : "귀인지도에 넣은 정보를 가져왔어요. 성별만 골라주세요"
+            : editing
+              ? "고칠 곳을 바꾸고 저장하면 다음 조회부터 새 정보로 봐요"
+              : "정확한 풀이를 위해 태어난 순간을 알려주세요"}
         </span>
       </div>
 
@@ -233,7 +262,13 @@ export default function SajuForm() {
 
       <div className="spacer" />
       <button className="btn primary block focusable" style={{ marginTop: 6 }} disabled={busy} onClick={submit}>
-        {busy ? "분석 중…" : "분석하기"}
+        {editing
+          ? busy
+            ? "저장 중…"
+            : "저장하기"
+          : busy
+            ? "분석 중…"
+            : `분석하고 ${destLabel} 보기`}
       </button>
     </div>
   );

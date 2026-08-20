@@ -25,7 +25,8 @@ export default function SajuInfoSheet({ saju, open, onClose }: Props) {
     ["일간 (日干)", `${CG[sj.ilgan]} (${CGH[sj.ilgan]})`],
   ];
 
-  const goEdit = () => { onClose(); nav.push("/onboarding"); };
+  // 고치고 나면 이 시트를 열었던 운세 화면으로 돌아온다
+  const goEdit = () => { onClose(); nav.push("/info?from=/fortune"); };
   const goFull = () => { onClose(); nav.push("/saju"); };
 
   return (

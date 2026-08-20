@@ -17,7 +17,7 @@ export default function SajuPage() {
     if (loading) return;
     if (!saju) return nav.replace("/");
     // 귀인지도에서 넘어온 사람은 성별이 비어 있다 — 그 칸만 받고 돌아온다
-    if (!isComplete(saju)) nav.replace("/onboarding?next=saju");
+    if (!isComplete(saju)) nav.replace("/infoinput?next=saju");
   }, [loading, saju, nav]);
 
   if (loading || !isComplete(saju) || !manseReady) return <SajuSkeletonScreen />;

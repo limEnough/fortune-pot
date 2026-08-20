@@ -6,8 +6,34 @@ import { useSaju } from "@/hooks/useSaju";
 import { useNav } from "@/hooks/useNav";
 import { isComplete } from "@/types/saju";
 
-const Chev = () => (<svg className="chev" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9 6l6 6-6 6" /></svg>);
-const X = () => (<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round"><path d="M6 6l12 12M18 6L6 18" /></svg>);
+const Chev = () => (
+  <svg
+    className="chev"
+    width="18"
+    height="18"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  >
+    <path d="M9 6l6 6-6 6" />
+  </svg>
+);
+const X = () => (
+  <svg
+    width="20"
+    height="20"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2.2"
+    strokeLinecap="round"
+  >
+    <path d="M6 6l12 12M18 6L6 18" />
+  </svg>
+);
 
 export default function NavDrawer() {
   const nav = useNav();
@@ -16,10 +42,16 @@ export default function NavDrawer() {
   const { saju } = useSaju();
   const { hasUpdate, openNote } = useRelease();
 
-  const go = (path: string) => { closeDrawer(); nav.push(path); };
+  const go = (path: string) => {
+    closeDrawer();
+    nav.push(path);
+  };
 
   // 드로어(z-index 51)가 릴리즈 시트(41)를 가리므로 먼저 닫는다
-  const goNote = () => { closeDrawer(); openNote(); };
+  const goNote = () => {
+    closeDrawer();
+    openNote();
+  };
 
   /*
    * 어느 화면에서든 세 곳이 다 보인다.
@@ -35,17 +67,22 @@ export default function NavDrawer() {
   const Item = ({ path, label }: { path: string; label: string }) =>
     here(path) ? (
       <div className="nav-item current" aria-current="page">
-        {label}<span className="nav-here">지금 화면</span>
+        {label}
+        <span className="nav-here">지금 화면</span>
       </div>
     ) : (
       <button className="nav-item focusable" onClick={() => go(path)}>
-        {label}<Chev />
+        {label}
+        <Chev />
       </button>
     );
 
   return (
     <>
-      <div className={`drawer-scrim ${drawerOpen ? "show" : ""}`} onClick={closeDrawer} />
+      <div
+        className={`drawer-scrim ${drawerOpen ? "show" : ""}`}
+        onClick={closeDrawer}
+      />
       <nav className={`drawer ${drawerOpen ? "show" : ""}`} aria-label="메뉴">
         <div className="d-top">
           <div className="who">
@@ -58,21 +95,32 @@ export default function NavDrawer() {
                   : "몇 칸만 더 채우면 운세도 볼 수 있어요"}
             </small>
           </div>
-          <button className="x focusable" aria-label="닫기" onClick={closeDrawer}><X /></button>
+          <button
+            className="x focusable"
+            aria-label="닫기"
+            onClick={closeDrawer}
+          >
+            <X />
+          </button>
         </div>
 
         <div className="nav-group">
           <div className="g-lab">사주</div>
           <Item path="/fortune" label="오늘의 운세" />
           <Item path="/saju" label="나의 사주는" />
-          {/* 사주 화면에서 들어왔으면 수정 후에도 사주 화면으로 돌려보낸다 */}
+          {/*
+            정보가 있으면 고치러(/info), 없으면 처음 넣으러(/infoinput) 간다.
+            고치기는 저장한 뒤 보고 있던 화면으로 돌아온다 — 메뉴에서 들어온
+            사람은 화면을 옮기려던 게 아니라 값을 고치려던 것이므로.
+          */}
           <button
             className="nav-item focusable"
             onClick={() =>
-              go(pathname === "/saju" ? "/onboarding?next=saju" : "/onboarding")
+              go(saju ? `/info?from=${encodeURIComponent(pathname)}` : "/infoinput")
             }
           >
-            {saju ? "사주정보 수정하기" : "사주정보 입력하기"}<Chev />
+            {saju ? "내 정보 수정하기" : "내 정보 입력하기"}
+            <Chev />
           </button>
         </div>
 
