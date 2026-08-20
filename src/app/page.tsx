@@ -37,7 +37,9 @@ export default function HomePage() {
    * 입력 폼을 한 번 거친다. 폼은 나머지 칸을 채운 채로 뜬다.
    */
   const go = (dest: "fortune" | "saju") =>
-    nav.push(confirmed && isComplete(saju) ? `/${dest}` : `/infoinput?next=${dest}`);
+    nav.push(
+      confirmed && isComplete(saju) ? `/${dest}` : `/infoinput?next=${dest}`,
+    );
 
   return (
     <section className="screen">
@@ -59,8 +61,7 @@ export default function HomePage() {
           <div className="using">
             <p>
               <b>{saju.name}</b>님 정보로 이용중이에요.
-              <br />
-              초기화 하고 싶다면 초기화 버튼을 클릭해주세요.
+              <br />새 정보로 시작하려면 초기화 버튼을 눌러주세요.
             </p>
             <button className="using-reset focusable" onClick={startOver}>
               초기화
@@ -71,7 +72,10 @@ export default function HomePage() {
         )}
 
         <div className="cta-split">
-          <button className="choice accent focusable" onClick={() => go("fortune")}>
+          <button
+            className="choice accent focusable"
+            onClick={() => go("fortune")}
+          >
             <span className="ic" aria-hidden="true">
               🔮
             </span>
@@ -96,7 +100,10 @@ export default function HomePage() {
         </div>
 
         {/* 혼자 보는 두 화면과 성격이 달라(친구를 부르는 화면) 한 칸 아래 따로 둔다 */}
-        <button className="choice wide focusable" onClick={() => nav.push("/map")}>
+        <button
+          className="choice wide focusable"
+          onClick={() => nav.push("/map")}
+        >
           <span className="ic" aria-hidden="true">
             🌟
           </span>
