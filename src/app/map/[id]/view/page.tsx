@@ -3,6 +3,7 @@ import { useCallback, useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import { useNav } from "@/hooks/useNav";
 import { useMapStore } from "@/store/useMapStore";
+import { apiGet } from "@/lib/map/api";
 import { visitorId } from "@/lib/map/visitor";
 import TopBar from "@/components/TopBar";
 import MapBoard from "@/components/map/MapBoard";
@@ -27,14 +28,11 @@ export default function MapViewPage() {
   const [open, setOpen] = useState<string | null>(null);
 
   const load = useCallback(async () => {
-    const v = visitorId();
-    const res = await fetch(`/api/map/${id}?visitor=${v ?? ""}`, { cache: "no-store" });
-    const body = await res.json().catch(() => ({}));
-    if (!res.ok) {
-      setError((body as { message?: string }).message ?? "지도를 불러오지 못했어요.");
-      return;
+    try {
+      setMap(await apiGet<MapView>(`/api/map/${id}?visitor=${visitorId() ?? ""}`));
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "지도를 불러오지 못했어요.");
     }
-    setMap(body as MapView);
   }, [id]);
 
   useEffect(() => {

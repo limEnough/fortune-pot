@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { useNav } from "@/hooks/useNav";
 import { useMapStore } from "@/store/useMapStore";
 import { ROLE_MAP } from "@/lib/saju/chemi";
+import { apiPost } from "@/lib/map/api";
 import { readJoined, visitorId, writeJoined, type Joined } from "@/lib/map/visitor";
 import { plantSaju } from "@/lib/map/plant";
 import JoinForm from "./JoinForm";
@@ -31,17 +32,14 @@ export default function JoinPanel({
   }, [id]);
 
   const submit = async (input: JoinInput) => {
-    const res = await fetch(`/api/map/${id}/join`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ ...input, visitor: visitorId() }),
-    });
-    const body = await res.json().catch(() => ({}));
-    if (!res.ok) throw new Error((body as { message?: string }).message ?? "잠시 후 다시 시도해 주세요.");
+    const got = await apiPost<JoinResult>(
+      `/api/map/${id}/join`,
+      { ...input, visitor: visitorId() },
+      "잠시 후 다시 시도해 주세요.",
+    );
     // 다음에 다시 들어오면 이 값으로 폼을 채우고 "이미 올렸어요" 를 띄운다
     const { visitor: _v, ...keep } = input;
     writeJoined(id, keep);
-    const got = body as JoinResult;
     // 남의 지도에 올린 정보라도 자기 것이므로, 사주가 비어 있으면 옮겨 심는다
     plantSaju(input, got.solar);
     setResult(got);

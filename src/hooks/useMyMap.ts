@@ -1,15 +1,9 @@
 "use client";
 import { useCallback, useEffect, useState } from "react";
 import { useMapStore } from "@/store/useMapStore";
+import { apiDelete, apiGet, apiPost } from "@/lib/map/api";
 import { plantSaju } from "@/lib/map/plant";
 import type { JoinInput, MapView } from "@/lib/map/types";
-
-async function ask<T>(url: string, init?: RequestInit): Promise<T> {
-  const res = await fetch(url, { cache: "no-store", ...init });
-  const body = await res.json().catch(() => ({}));
-  if (!res.ok) throw new Error((body as { message?: string }).message ?? "요청에 실패했어요.");
-  return body as T;
-}
 
 /**
  * 내 귀인지도 한 장을 다루는 훅 — 만들기·불러오기·지우기.
@@ -31,7 +25,7 @@ export function useMyMap() {
     setLoading(true);
     setError(null);
     try {
-      setMapView(await ask<MapView>(`/api/map/${id}?key=${key}`));
+      setMapView(await apiGet<MapView>(`/api/map/${id}?key=${key}`, "지도를 불러오지 못했어요."));
     } catch (e) {
       // 만료·삭제된 지도를 붙들고 있으면 영영 빈 화면이라 주소록을 비운다
       if (e instanceof Error && /찾을 수 없/.test(e.message)) clear();
@@ -67,11 +61,7 @@ export function useMyMap() {
 
   const create = useCallback(
     async (input: JoinInput) => {
-      const got = await ask<{ id: string; key: string; solar: string }>("/api/map", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(input),
-      });
+      const got = await apiPost<{ id: string; key: string; solar: string }>("/api/map", input);
       setMap(got.id, got.key);
       // 여기서 넣은 정보로 운세·사주도 볼 수 있게 사주 자리에 옮겨 심는다
       plantSaju(input, got.solar);
@@ -86,7 +76,7 @@ export function useMyMap() {
       // 지도를 다시 받아오는 대신 화면에서 먼저 지운다 — 목록이 길어도 끊기지 않게
       setMapView((m) => (m ? { ...m, members: m.members.filter((x) => x.id !== memberId) } : m));
       try {
-        await ask(`/api/map/${id}?key=${key}&member=${memberId}`, { method: "DELETE" });
+        await apiDelete(`/api/map/${id}?key=${key}&member=${memberId}`);
       } catch {
         await load(); // 실패하면 서버 쪽이 맞다
       }
