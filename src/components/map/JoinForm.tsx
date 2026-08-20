@@ -14,6 +14,8 @@ interface Props {
   notice?: React.ReactNode;
   /** 지난번에 올린 값으로 채워둔다. 틀린 칸만 고치면 되게 */
   initial?: Partial<Omit<JoinInput, "visitor">>;
+  /** 제출 버튼 아래에 붙일 다른 길 — 올릴 생각 없이 들어온 사람도 있다 */
+  extra?: React.ReactNode;
   onSubmit: (input: JoinInput) => Promise<void>;
 }
 
@@ -30,7 +32,7 @@ interface Props {
  */
 export default function JoinForm({
   title, desc, submitLabel, busyLabel = "그리는 중…", namePlaceholder = "이름 또는 별명",
-  notice, initial, onSubmit,
+  notice, initial, extra, onSubmit,
 }: Props) {
   const [name, setName] = useState(initial?.name ?? "");
   const [digits, setDigits] = useState(initial?.birth ? initial.birth.replace(/-/g, "") : "");
@@ -135,6 +137,7 @@ export default function JoinForm({
       <button className="btn primary block focusable" disabled={busy} onClick={submit}>
         {busy ? busyLabel : submitLabel}
       </button>
+      {extra}
     </div>
   );
 }

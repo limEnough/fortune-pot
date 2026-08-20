@@ -127,6 +127,21 @@ export default function JoinPanel({
       initial={before ?? undefined}
       submitLabel={before ? "고쳐서 다시 올리기" : "지도에 이름 올리기"}
       busyLabel="궁합 보는 중…"
+      /*
+       * 이미 올린 사람이 링크를 다시 눌렀다면 고치러 온 게 아닐 수 있다.
+       * 지도가 궁금해 다시 왔을 뿐인데, 그동안은 같은 값을 한 번 더 올려
+       * 결과 화면을 지나야만 지도에 닿을 수 있었다.
+       */
+      extra={
+        before && (
+          <button
+            className="btn ghost block focusable"
+            onClick={() => nav.push(`/map/${id}/view`)}
+          >
+            {ownerName}님의 귀인지도 확인하기
+          </button>
+        )
+      }
       onSubmit={submit}
     />
   );
