@@ -4,6 +4,7 @@ import { useSearchParams } from "next/navigation";
 import { useSaju } from "@/hooks/useSaju";
 import { useNav } from "@/hooks/useNav";
 import { useGuestStore } from "@/store/useGuestStore";
+import { useSessionStore } from "@/store/useSessionStore";
 import { HOUR_OPTIONS } from "@/lib/saju/constants";
 import type { Gender } from "@/types/saju";
 
@@ -12,6 +13,8 @@ export default function SajuForm() {
   const searchParams = useSearchParams();
   const { saju, save } = useSaju();
   const clearGuest = useGuestStore((s) => s.clear);
+  // 여기까지 와서 정보를 확정한 사람에게 메인에서 또 물을 이유가 없다
+  const { confirm, reset: resetSession } = useSessionStore();
 
   // 항상 기본값으로 시작 — 최근 조회값은 상단 말풍선에서만 제안
   const [name, setName] = useState("");
@@ -49,10 +52,12 @@ export default function SajuForm() {
   const showRecentBubble = !!saju && !bubbleDismissed;
 
   const useRecent = () => {
+    confirm();
     nav.push(dest);
   };
   const dropRecent = () => {
     clearGuest();
+    resetSession();
     setBubbleDismissed(true);
   };
 
@@ -69,6 +74,7 @@ export default function SajuForm() {
         hourIdx: hour > 0 ? hour - 1 : null,
         gender,
       });
+      confirm();
       nav.push(dest);
     } catch (e) {
       alert("저장에 실패했어요. 잠시 후 다시 시도해 주세요.");
