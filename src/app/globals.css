@@ -2349,6 +2349,10 @@ input[type="date"].input::-webkit-calendar-picker-indicator {
 .sm-planet:active .sm-body {
   transform: scale(0.92);
 }
+/* 고른 행성은 앞으로 — 붐빌 때 접혔던 이름표가 옆 행성에 가리지 않게 */
+.sm-planet.on {
+  z-index: 3;
+}
 .sm-planet.on .sm-body {
   opacity: 1 !important;
   outline: 2px solid #fff;
@@ -2378,6 +2382,25 @@ input[type="date"].input::-webkit-calendar-picker-indicator {
 }
 .sm-oh {
   font-size: clamp(10px, 2.7vw, 15px);
+}
+/*
+ * 붐비는 구역에서는 행성이 작아진다(StarMap 의 shrinkToFit). 글자는 px 고정이라
+ * 그대로 두면 줄어든 행성 밖으로 삐져나오므로 행성 폭을 따라가게 한다.
+ * 컨테이너 단위를 모르는 브라우저는 위의 vw 규칙을 그대로 쓴다.
+ */
+@supports (font-size: 1cqw) {
+  .sm-planet {
+    container-type: size;
+  }
+  .sm-oh {
+    font-size: clamp(8px, 30cqw, 15px);
+  }
+  /* 이보다 작아지면 어차피 못 읽는다 — 오행은 색으로만 말한다 */
+  @container (max-width: 25px) {
+    .sm-oh {
+      display: none;
+    }
+  }
 }
 /* 이름은 행성 아래에 붙는 알약 — 행성을 가리지 않게 바깥으로 뺀다 */
 .sm-name {
