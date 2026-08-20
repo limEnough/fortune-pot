@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { KvUnavailable } from "@/lib/kv";
+import { KvUnavailable, logKvUnavailable } from "@/lib/kv";
 import { getIntro } from "@/lib/map/store";
 import type { MapIntro } from "@/lib/map/types";
 import TopBar from "@/components/TopBar";
@@ -21,7 +21,7 @@ async function intro(id: string): Promise<MapIntro | "down" | null> {
     return await getIntro(id);
   } catch (e) {
     if (e instanceof KvUnavailable) {
-      console.error("[map] KV 환경변수가 없습니다 — Vercel 프로젝트에 KV 를 연결하세요.");
+      logKvUnavailable();
       return "down";
     }
     return null;

@@ -2,6 +2,7 @@ import { kv } from "@/lib/kv";
 import { loadManse, computeSaju, lunarToSolar, ohOfGan } from "@/lib/saju/calc";
 import { chemistry } from "@/lib/saju/chemi";
 import { ILGAN_NICK } from "@/lib/saju/text";
+import { isRealBirth } from "./birth";
 import type {
   Calendar, JoinInput, JoinResult, MapIntro, MapMember, MapView,
 } from "./types";
@@ -118,12 +119,7 @@ export function normalizeJoin(raw: unknown): JoinInput {
   if (!/^\d{4}-\d{2}-\d{2}$/.test(birth)) throw new MapError(400, "생년월일을 다시 확인해 주세요.");
 
   const [y, m, d] = birth.split("-").map(Number);
-  const dt = new Date(y, m - 1, d);
-  const real = dt.getFullYear() === y && dt.getMonth() === m - 1 && dt.getDate() === d;
-  const thisYear = new Date().getFullYear();
-  if (!real || y < 1900 || y > thisYear) {
-    throw new MapError(400, "생년월일을 다시 확인해 주세요.");
-  }
+  if (!isRealBirth(y, m, d)) throw new MapError(400, "생년월일을 다시 확인해 주세요.");
   return { name, birth, cal, hourIdx, visitor };
 }
 

@@ -7,7 +7,7 @@ import TopBar from "@/components/TopBar";
 import JoinForm from "@/components/map/JoinForm";
 import MapBoard from "@/components/map/MapBoard";
 import ShareBar from "@/components/map/ShareBar";
-import { MapSkeleton } from "@/components/Skeleton";
+import { MapSkeleton, MapSkeletonScreen } from "@/components/Skeleton";
 import type { JoinInput, MapMember } from "@/lib/map/types";
 
 /** 지도를 처음 만드는 폼 — 최근 정보를 쓰지 않을 때만 나온다 */
@@ -68,14 +68,8 @@ export default function MapPage() {
     await remove(m.id);
   };
 
-  if (!ready) {
-    return (
-      <section className="screen">
-        <TopBar back home menu />
-        <div className="scroll"><MapSkeleton /></div>
-      </section>
-    );
-  }
+  // loading.tsx 와 같은 마크업이라야 라우트 전환에서 넘어올 때 화면이 튀지 않는다
+  if (!ready) return <MapSkeletonScreen />;
 
   /* 아직 지도가 없다 */
   if (!hasMap) {

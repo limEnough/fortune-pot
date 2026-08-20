@@ -25,6 +25,15 @@ export class KvUnavailable extends Error {
   }
 }
 
+/*
+ * 설정이 빠진 건 사용자가 어쩔 수 없는 일이라 원인은 서버 로그에만 남긴다.
+ * API 라우트(_fail.ts)와 공유 링크 페이지가 각각 같은 말을 적고 있었다 —
+ * 고칠 방법을 알려주는 문장이라 두 벌로 갈리면 한쪽만 낡는다.
+ */
+export function logKvUnavailable() {
+  console.error("[map] KV 환경변수가 없습니다 — Vercel 프로젝트에 KV 를 연결하세요.");
+}
+
 async function cmd<T>(args: (string | number)[]): Promise<T> {
   const res = await fetch(REST_URL!, {
     method: "POST",

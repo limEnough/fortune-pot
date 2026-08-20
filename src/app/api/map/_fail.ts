@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { KvUnavailable } from "@/lib/kv";
+import { KvUnavailable, logKvUnavailable } from "@/lib/kv";
 import { MapError } from "@/lib/map/store";
 
 /**
@@ -13,7 +13,7 @@ export function fail(e: unknown) {
     return NextResponse.json({ message: e.message }, { status: e.status });
   }
   if (e instanceof KvUnavailable) {
-    console.error("[map] KV 환경변수가 없습니다 — Vercel 프로젝트에 KV 를 연결하세요.");
+    logKvUnavailable();
     return NextResponse.json(
       { message: "지도 보관소에 연결하지 못했어요. 잠시 후 다시 시도해 주세요." },
       { status: 503 },
