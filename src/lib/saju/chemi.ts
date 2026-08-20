@@ -153,12 +153,16 @@ const JI_WEIGHT: Record<Exclude<JiRel, null>, number> = {
   육합: 9, 삼합: 7, 동일: 4, 충: -9, 해: -5,
 };
 
-/** 여섯 글자(시주 제외)의 오행 집계 — 보완 가점을 매길 때 쓴다 */
+/** 오행 집계 — 보완 가점을 매길 때 쓴다. 시각을 알면 여덟 글자, 모르면 여섯 글자 */
 function ohTally(sj: SajuResult): Record<Ohaeng, number> {
   const t: Record<Ohaeng, number> = { 목: 0, 화: 0, 토: 0, 금: 0, 수: 0 };
-  [ohOfGan(sj.year[0]), ohOfJi(sj.year[1]),
-   ohOfGan(sj.month[0]), ohOfJi(sj.month[1]),
-   ohOfGan(sj.day[0]), ohOfJi(sj.day[1])].forEach((o) => (t[o] += 1));
+  const cells = [
+    ohOfGan(sj.year[0]), ohOfJi(sj.year[1]),
+    ohOfGan(sj.month[0]), ohOfJi(sj.month[1]),
+    ohOfGan(sj.day[0]), ohOfJi(sj.day[1]),
+  ];
+  if (sj.hour) cells.push(ohOfGan(sj.hour[0]), ohOfJi(sj.hour[1]));
+  cells.forEach((o) => (t[o] += 1));
   return t;
 }
 
@@ -206,13 +210,19 @@ export function chemistry(mine: SajuResult, yours: SajuResult): Chemi {
   rel(mine.day[1], yours.day[1], 1);
   rel(mine.year[1], yours.year[1], 0.45);
   rel(mine.month[1], yours.month[1], 0.35);
+  // 시지는 둘 다 시각을 알 때만 — 한쪽만 알면 볼 수 없다
+  if (mine.hour && yours.hour) rel(mine.hour[1], yours.hour[1], 0.3);
 
-  // 오행 보완 — 상대의 일간이 내게 없는 기운이면 반갑고, 넘치는 기운이면 덜하다
+  /*
+   * 오행 보완 — 상대의 일간이 내게 없는 기운이면 반갑고, 넘치는 기운이면 덜하다.
+   * 시각을 알면 여덟 글자로 세므로 기준도 한 칸 올린다(넘침 판정 4 → 5).
+   */
   const tally = ohTally(mine);
   const cnt = tally[OH_NAME[yo]];
+  const many = mine.hour ? 5 : 4;
   if (cnt === 0) score += 7;
   else if (cnt === 1) score += 4;
-  else if (cnt >= 4) score -= 4;
+  else if (cnt >= many) score -= 4;
 
   // 음양이 엇갈리면 서로 모자란 자리를 채운다
   if (isYangGan(mine.ilgan) !== isYangGan(yours.ilgan)) score += 3;

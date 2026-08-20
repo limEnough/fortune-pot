@@ -5,6 +5,7 @@ import { ILGAN_NICK } from "@/lib/saju/text";
 import type {
   Calendar, JoinInput, JoinResult, MapIntro, MapMember, MapView,
 } from "./types";
+import type { Gender } from "@/types/saju";
 
 /*
  * 귀인지도 서버 저장소.
@@ -42,6 +43,9 @@ interface OwnerDoc {
   cal: Calendar;
   /** 계산에 쓰는 양력 */
   solar: string;
+  gender?: Gender;
+  /** 0~11, 모르면 null/없음 */
+  hour?: number | null;
   /** 주인만 아는 열쇠 — 지도 조회·삭제에 필요 */
   key: string;
   at: number;
@@ -50,6 +54,8 @@ interface OwnerDoc {
 interface EntryDoc {
   name: string;
   solar: string;
+  gender?: Gender;
+  hour?: number | null;
   /** 처음 올린 시각 — 고쳐 올려도 유지된다 */
   at: number;
   /** 방문자 토큰 해시 — 같은 사람인지 가리는 1차 기준 */
@@ -99,6 +105,12 @@ export function normalizeJoin(raw: unknown): JoinInput {
   const name = typeof o.name === "string" ? o.name.trim().replace(/\s+/g, " ") : "";
   const birth = typeof o.birth === "string" ? o.birth.trim() : "";
   const cal: Calendar = o.cal === "lunar" ? "lunar" : "solar";
+  const gender: Gender = o.gender === "남" ? "남" : "여";
+  // 모르면 null. 범위를 벗어난 값도 모르는 것으로 본다
+  const hourIdx =
+    typeof o.hourIdx === "number" && o.hourIdx >= 0 && o.hourIdx <= 11
+      ? Math.floor(o.hourIdx)
+      : null;
   // 브라우저가 만든 임의 문자열. 못 믿을 값이므로 길이만 자르고 그대로 해시한다
   const visitor =
     typeof o.visitor === "string" && o.visitor.length >= 8
@@ -116,7 +128,7 @@ export function normalizeJoin(raw: unknown): JoinInput {
   if (!real || y < 1900 || y > thisYear) {
     throw new MapError(400, "생년월일을 다시 확인해 주세요.");
   }
-  return { name, birth, cal, visitor };
+  return { name, birth, cal, gender, hourIdx, visitor };
 }
 
 /** 음력이면 양력으로 옮겨둔다 — 이후 계산은 전부 양력 기준 */
@@ -126,7 +138,7 @@ async function toSolar(input: JoinInput): Promise<string> {
 }
 
 function ownerOf(doc: OwnerDoc) {
-  const sj = computeSaju(doc.solar, null);
+  const sj = computeSaju(doc.solar, doc.hour ?? null);
   const nick = ILGAN_NICK[sj.ilgan];
   return {
     sj,
@@ -144,7 +156,7 @@ function toMember(id: string, e: EntryDoc, ownerSj: ReturnType<typeof computeSaj
     id,
     name: e.name,
     at: e.at,
-    ...chemistry(ownerSj, computeSaju(e.solar, null)),
+    ...chemistry(ownerSj, computeSaju(e.solar, e.hour ?? null)),
   };
 }
 
@@ -162,7 +174,16 @@ export async function createMap(raw: unknown): Promise<{ id: string; key: string
   const solar = await toSolar(input);
   const id = randomId(10);
   const key = randomId(22);
-  const doc: OwnerDoc = { ...input, solar, key, at: Date.now() };
+  const doc: OwnerDoc = {
+    name: input.name,
+    birth: input.birth,
+    cal: input.cal,
+    solar,
+    gender: input.gender,
+    hour: input.hourIdx,
+    key,
+    at: Date.now(),
+  };
   await kv.setJSON(docKey(id), doc, TTL);
   return { id, key };
 }
@@ -174,19 +195,38 @@ export async function getIntro(id: string): Promise<MapIntro> {
   return { id, ownerName: doc.name, count: Object.keys(entries).length };
 }
 
-/** 주인이 보는 내 지도 — key 가 맞아야 열린다 */
-export async function getMap(id: string, key: string | null): Promise<MapView> {
+/**
+ * 지도를 펼쳐 본다. 두 사람만 열 수 있다.
+ *
+ *   - 주인: 열쇠(key)를 가진 사람. 지우기까지 할 수 있다.
+ *   - 합류자: 이 지도에 자기 이름을 올린 사람. 읽기만 한다(mine 으로 자기 별을 표시).
+ *
+ * 링크만 주운 사람은 열 수 없다. 참여자 명단이 그대로 퍼지는 걸 막으면서도,
+ * 이름을 올린 사람에게는 "내가 이 사람들 사이 어디쯤인지" 를 돌려주기 위해서다.
+ */
+export async function getMap(
+  id: string,
+  key: string | null,
+  visitor?: string | null,
+): Promise<MapView> {
   const doc = await readDoc(id);
-  if (!key || key !== doc.key) throw new MapError(403, "내 지도만 열어볼 수 있어요.");
+  const owner = !!key && key === doc.key;
 
   await loadManse();
   const { sj, view } = ownerOf(doc);
   const entries = await kv.hGetAllJSON<EntryDoc>(entKey(id));
+
+  const vh = visitor ? hash36(visitor) : null;
+  const mine = vh ? Object.entries(entries).find(([, e]) => e.v === vh)?.[0] : undefined;
+  if (!owner && !mine) {
+    throw new MapError(403, "먼저 이 지도에 이름을 올려야 볼 수 있어요.");
+  }
+
   const members = Object.entries(entries)
     .map(([eid, e]) => toMember(eid, e, sj))
     .sort((a, b) => b.score - a.score || a.at - b.at);
 
-  return { id, owner: view, members };
+  return { id, owner: view, members, role: owner ? "owner" : "member", mine };
 }
 
 /** 공유 링크에서 이름을 올린다. 결과(내가 주인에게 어떤 사람인지)를 돌려준다. */
@@ -219,6 +259,8 @@ export async function joinMap(id: string, raw: unknown): Promise<JoinResult> {
   const entry: EntryDoc = {
     name: input.name,
     solar,
+    gender: input.gender,
+    hour: input.hourIdx,
     // 처음 올린 시각은 지킨다 — 고쳐 올렸다고 새로 온 사람이 되는 건 아니다
     at: prior.length ? Math.min(...prior.map(([, e]) => e.at)) : Date.now(),
     v: vh ?? undefined,

@@ -38,7 +38,8 @@ export default function JoinPanel({
     const body = await res.json().catch(() => ({}));
     if (!res.ok) throw new Error((body as { message?: string }).message ?? "잠시 후 다시 시도해 주세요.");
     // 다음에 다시 들어오면 이 값으로 폼을 채우고 "이미 올렸어요" 를 띄운다
-    writeJoined(id, { name: input.name, birth: input.birth, cal: input.cal });
+    const { visitor: _v, ...keep } = input;
+    writeJoined(id, keep);
     setResult(body as JoinResult);
   };
 
@@ -74,7 +75,14 @@ export default function JoinPanel({
           보여요.
         </p>
 
-        <button className="btn primary block focusable" onClick={() => nav.push("/map")}>
+        {/* 올린 사람에게 돌려줄 게 둘 — 상대 지도 구경과 내 지도 만들기 */}
+        <button
+          className="btn primary block focusable"
+          onClick={() => nav.push(`/map/${id}/view`)}
+        >
+          {result.ownerName}님 귀인지도 확인하기
+        </button>
+        <button className="btn ghost block focusable" onClick={() => nav.push("/map")}>
           나도 내 귀인지도 그리기
         </button>
       </div>

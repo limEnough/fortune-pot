@@ -6,12 +6,12 @@ export const dynamic = "force-dynamic";
 
 type Ctx = { params: Promise<{ id: string }> };
 
-/** GET /api/map/{id}?key= — 주인이 보는 내 지도 */
+/** GET /api/map/{id}?key=  또는 ?visitor= — 주인이거나 이름을 올린 사람만 */
 export async function GET(req: Request, { params }: Ctx) {
   try {
     const { id } = await params;
-    const key = new URL(req.url).searchParams.get("key");
-    return NextResponse.json(await getMap(id, key));
+    const q = new URL(req.url).searchParams;
+    return NextResponse.json(await getMap(id, q.get("key"), q.get("visitor")));
   } catch (e) {
     return fail(e);
   }

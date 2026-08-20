@@ -1,13 +1,17 @@
 import type { Chemi, RoleKey } from "@/lib/saju/chemi";
+import type { Gender } from "@/types/saju";
 
 export type Calendar = "solar" | "lunar";
 
-/** 지도에 이름을 올릴 때 받는 것 — 캡쳐 화면과 같이 이름·생년월일·달력뿐 */
+/** 지도에 이름을 올릴 때 받는 것 */
 export interface JoinInput {
   name: string;
   /** "YYYY-MM-DD" — cal 이 lunar 면 음력 날짜 */
   birth: string;
   cal: Calendar;
+  gender: Gender;
+  /** 0(자)~11(해). 모르면 null — 시주 없이도 궁합은 나온다 */
+  hourIdx: number | null;
   /**
    * 브라우저가 들고 있는 임의 id. 같은 사람이 고쳐 올릴 때 한 줄로 합치는 데만 쓴다.
    * 지도를 만들 때는 필요 없다.
@@ -34,11 +38,15 @@ export interface MapOwner {
   nick: string;
 }
 
-/** 주인이 보는 내 지도 */
+/** 펼쳐 본 지도 */
 export interface MapView {
   id: string;
   owner: MapOwner;
   members: MapMember[];
+  /** 주인이면 고칠 수 있고, 합류자면 읽기만 한다 */
+  role: "owner" | "member";
+  /** 합류자로 볼 때 목록에서 내 별 — 어디쯤인지 표시하는 데 쓴다 */
+  mine?: string;
 }
 
 /** 공유 링크로 들어온 사람이 보는 것 — 주인 이름만 */

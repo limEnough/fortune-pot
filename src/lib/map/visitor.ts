@@ -1,5 +1,5 @@
 "use client";
-import type { Calendar } from "./types";
+import type { JoinInput } from "./types";
 
 /*
  * 공유 링크로 들어온 사람의 브라우저 표식.
@@ -42,12 +42,7 @@ export function visitorId(): string | undefined {
 }
 
 /** 이 브라우저가 어느 지도에 무엇으로 올렸는지 — 폼을 채워두고 미리 알리는 데 쓴다 */
-export interface Joined {
-  name: string;
-  /** "YYYY-MM-DD" — 입력 원본(음력일 수 있다) */
-  birth: string;
-  cal: Calendar;
-}
+export type Joined = Omit<JoinInput, "visitor">;
 
 type JoinedMap = Record<string, Joined>;
 

@@ -8,7 +8,10 @@ interface Props {
   members: MapMember[];
   openId: string | null;
   onToggle: (id: string) => void;
-  onRemove: (m: MapMember) => void;
+  /** 없으면 읽기 전용 — 합류자가 남의 지도를 볼 때 */
+  onRemove?: (m: MapMember) => void;
+  /** 합류자로 볼 때 내 줄 */
+  mineId?: string;
 }
 
 /**
@@ -17,14 +20,14 @@ interface Props {
  * 지도는 한눈에 보는 그림이고, 이 목록이 근거를 댄다. 유형·오행 관계·조심할 점은
  * 펼쳤을 때만 나온다. 접힌 줄에서는 이름과 숫자만 보여 훑기 좋게 둔다.
  */
-export default function ChemiList({ members, openId, onToggle, onRemove }: Props) {
+export default function ChemiList({ members, openId, onToggle, onRemove, mineId }: Props) {
   return (
     <ul className="chemi-list">
       {members.map((m, i) => {
         const role = ROLE_MAP[m.role];
         const open = openId === m.id;
         return (
-          <li key={m.id} className={`chemi ${open ? "open" : ""}`}>
+          <li key={m.id} className={`chemi ${open ? "open" : ""} ${m.id === mineId ? "me" : ""}`}>
             <button
               className="chemi-row focusable"
               onClick={() => onToggle(m.id)}
@@ -36,7 +39,9 @@ export default function ChemiList({ members, openId, onToggle, onRemove }: Props
               </span>
               <span className="who">
                 <b>
-                  {m.name} <span className="nick">{m.emoji} {m.nick}</span>
+                  {m.name}
+                  {m.id === mineId && <em className="mine">나</em>}{" "}
+                  <span className="nick">{m.emoji} {m.nick}</span>
                 </b>
                 <span className="role" style={{ color: role.color }}>
                   {role.emoji} {role.gist}
@@ -59,9 +64,11 @@ export default function ChemiList({ members, openId, onToggle, onRemove }: Props
                   <b>조심할 점</b>
                   {m.caution}
                 </p>
-                <button className="link-btn focusable" onClick={() => onRemove(m)}>
-                  지도에서 지우기
-                </button>
+                {onRemove && (
+                  <button className="link-btn focusable" onClick={() => onRemove(m)}>
+                    지도에서 지우기
+                  </button>
+                )}
               </div>
             )}
           </li>
