@@ -11,7 +11,10 @@ import type { SajuInput } from "@/types/saju";
  * 배경을 덮어 이 결정을 먼저 하게 한다.
  */
 export default function RecentSajuDialog({
-  saju, onConfirm, onReset, onClose,
+  saju,
+  onConfirm,
+  onReset,
+  onClose,
 }: {
   saju: SajuInput;
   onConfirm: () => void;
@@ -35,7 +38,9 @@ export default function RecentSajuDialog({
         aria-labelledby="recent-title"
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="m-ic" aria-hidden="true">🔮</div>
+        <div className="m-ic" aria-hidden="true">
+          🔮
+        </div>
         <h2 className="m-title" id="recent-title">
           최근 조회한 <b>{saju.name}</b>님으로
           <br />
@@ -45,7 +50,7 @@ export default function RecentSajuDialog({
           {saju.birth}
           {saju.gender && ` · ${saju.gender === "여" ? "여성" : "남성"}`}
           <br />
-          네를 누르면 운세·사주·귀인지도를 이 정보로 바로 볼 수 있어요.
+          운세·사주·귀인지도를 이 정보로 바로 볼 수 있어요.
         </p>
         <div className="m-actions">
           <button className="btn ghost focusable" onClick={onReset}>
