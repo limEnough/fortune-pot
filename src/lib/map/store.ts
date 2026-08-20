@@ -183,10 +183,18 @@ export async function createMap(
   return { id, key, solar };
 }
 
+/*
+ * 주인 문서와 합류자 해시는 서로를 기다릴 이유가 없다. 원격 KV 는 명령 하나가
+ * REST 왕복 하나라, 줄 세우면 대기 시간이 그대로 두 배가 된다. 없는 지도를 열 때
+ * 합류자 읽기 한 번이 헛돌지만, 링크는 대개 살아 있는 쪽으로 눌린다.
+ */
+function readBoth(id: string) {
+  return Promise.all([readDoc(id), kv.hGetAllJSON<EntryDoc>(entKey(id))] as const);
+}
+
 /** 공유 링크로 들어온 사람에게 보여줄 것 — 주인 이름과 인원수뿐 */
 export async function getIntro(id: string): Promise<MapIntro> {
-  const doc = await readDoc(id);
-  const entries = await kv.hGetAllJSON<EntryDoc>(entKey(id));
+  const [doc, entries] = await readBoth(id);
   return { id, ownerName: doc.name, count: Object.keys(entries).length };
 }
 
@@ -204,12 +212,10 @@ export async function getMap(
   key: string | null,
   visitor?: string | null,
 ): Promise<MapView> {
-  const doc = await readDoc(id);
+  // 만세력 로딩도 KV 읽기와 겹쳐 둔다 — 첫 요청에서는 동적 import 가 함께 돈다
+  const [[doc, entries]] = await Promise.all([readBoth(id), loadManse()]);
   const owner = !!key && key === doc.key;
-
-  await loadManse();
   const { sj, view } = ownerOf(doc);
-  const entries = await kv.hGetAllJSON<EntryDoc>(entKey(id));
 
   const vh = visitor ? hash36(visitor) : null;
   const mine = vh ? Object.entries(entries).find(([, e]) => e.v === vh)?.[0] : undefined;
@@ -226,11 +232,14 @@ export async function getMap(
 
 /** 공유 링크에서 이름을 올린다. 결과(내가 주인에게 어떤 사람인지)를 돌려준다. */
 export async function joinMap(id: string, raw: unknown): Promise<JoinResult> {
+  // 없는 지도(404)를 잘못된 입력(400)보다 먼저 알리던 순서는 그대로 둔다
   const doc = await readDoc(id);
   const input = normalizeJoin(raw);
-  const solar = await toSolar(input);
-
-  const entries = await kv.hGetAllJSON<EntryDoc>(entKey(id));
+  // 남은 둘은 서로 무관하다 — 만세력 로딩과 합류자 읽기를 겹친다
+  const [solar, entries] = await Promise.all([
+    toSolar(input),
+    kv.hGetAllJSON<EntryDoc>(entKey(id)),
+  ]);
   const nk = nameKey(input.name, solar);
   const vh = input.visitor ? hash36(input.visitor) : null;
   const eid = fieldOf(vh, nk);

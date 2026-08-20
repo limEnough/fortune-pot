@@ -1,3 +1,4 @@
+import { cache } from "react";
 import type { Metadata } from "next";
 import { KvUnavailable, logKvUnavailable } from "@/lib/kv";
 import { getIntro } from "@/lib/map/store";
@@ -15,8 +16,15 @@ import JoinPanel from "@/components/map/JoinPanel";
 
 type Params = { params: Promise<{ id: string }> };
 
-/** 못 찾은 것과 보관소가 없는 것은 안내 문장이 달라야 한다 */
-async function intro(id: string): Promise<MapIntro | "down" | null> {
+/**
+ * 못 찾은 것과 보관소가 없는 것은 안내 문장이 달라야 한다.
+ *
+ * generateMetadata 와 페이지 본문이 같은 지도를 각각 한 번씩 읽는다. 그대로 두면
+ * 링크를 열 때마다 KV 왕복이 두 배로 든다 — cache 로 감싸 한 요청 안에서는
+ * 처음 것만 실제로 나가게 한다(fetch 와 달리 이런 함수는 Next 가 알아서 묶어주지
+ * 않는다).
+ */
+const intro = cache(async (id: string): Promise<MapIntro | "down" | null> => {
   try {
     return await getIntro(id);
   } catch (e) {
@@ -26,7 +34,7 @@ async function intro(id: string): Promise<MapIntro | "down" | null> {
     }
     return null;
   }
-}
+});
 
 export async function generateMetadata({ params }: Params): Promise<Metadata> {
   const got = await intro((await params).id);
