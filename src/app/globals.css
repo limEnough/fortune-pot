@@ -2523,18 +2523,23 @@ input[type="date"].input::-webkit-calendar-picker-indicator {
   font-size: 12px;
 }
 
-/* 공유 링크 */
+/* 공유 링크 — 주소와 복사 버튼이 한 줄 */
 .share-bar {
   display: flex;
-  flex-direction: column;
-  gap: 9px;
+  align-items: center;
+  gap: 8px;
   margin-top: 12px;
 }
 .share-url {
+  flex: 1 1 auto;
+  min-width: 0; /* 없으면 긴 주소가 줄을 밀어내 버튼이 튀어나간다 */
+  height: 46px;
+  /* 말줄임은 블록에서만 걸린다 — flex 로 가운데를 맞추면 주소가 잘리지 않는다 */
+  line-height: 44px;
   border: 1px dashed var(--line);
   border-radius: 13px;
   background: rgba(255, 255, 255, 0.04);
-  padding: 11px 13px;
+  padding: 0 13px;
   font-size: 12px;
   color: #cdbef0;
   white-space: nowrap;
@@ -2542,14 +2547,13 @@ input[type="date"].input::-webkit-calendar-picker-indicator {
   text-overflow: ellipsis;
   user-select: all;
 }
-.share-actions {
-  display: grid;
-  grid-template-columns: 1fr 1.4fr;
-  gap: 9px;
-}
-.share-actions .btn {
+.share-copy {
+  flex: 0 0 auto;
   height: 46px;
-  font-size: 14px;
+  border-radius: 13px;
+  padding: 0 16px;
+  font-size: 13.5px;
+  white-space: nowrap;
 }
 
 .map-empty {
