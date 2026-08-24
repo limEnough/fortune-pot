@@ -18,7 +18,7 @@ export interface SajuSummary {
   y: string;
   mo: string;
   d: string;
-  /** "인시(寅)" 또는 "시각 미입력" */
+  /** "인시(寅)" 또는 "시간 미입력" */
   hourTxt: string;
   /** 일간 기준 십성 — 천간용 / 지지용 */
   sipGan: (g: number) => string;
@@ -49,7 +49,7 @@ export function summarizeSaju(saju: SajuInput): SajuSummary {
   const [y, mo, d] = saju.birth.split("-");
   const hourTxt =
     saju.hourIdx === null
-      ? "시각 미입력"
+      ? "시간 미입력"
       : `${JJ[saju.hourIdx]}시(${JJH[saju.hourIdx]})`;
 
   const ilOhIdx = ohIdxOfGan(sj.ilgan);
@@ -103,8 +103,21 @@ export function summarizeSaju(saju: SajuInput): SajuSummary {
   );
 
   return {
-    sj, y, mo, d, hourTxt, sipGan, sipJi,
-    tally, total, els, maxEl, minEl, ilOh, strength,
-    catCnt, domSip,
+    sj,
+    y,
+    mo,
+    d,
+    hourTxt,
+    sipGan,
+    sipJi,
+    tally,
+    total,
+    els,
+    maxEl,
+    minEl,
+    ilOh,
+    strength,
+    catCnt,
+    domSip,
   };
 }

@@ -48,14 +48,14 @@ export type Joined = Omit<JoinInput, "visitor">;
  * 저장 형태는 Joined 에 두 칸을 더 얹은 것이다.
  *
  * 이름을 올린 지도는 메뉴에 "OOO님의 귀인지도" 로 남아 다시 찾아갈 수 있어야 한다.
- * 그러려면 주인 이름과 올린 시각이 필요한데, 이 방식 이전에 쌓인 기록에는 둘 다
+ * 그러려면 주인 이름과 올린 시간이 필요한데, 이 방식 이전에 쌓인 기록에는 둘 다
  * 없다. 그래서 없어도 되는 값으로 두고 읽을 때 메운다 — 살아 있는 브라우저의
  * 기록을 버리지 않기 위해서다.
  */
 type JoinedRec = Joined & {
   /** 지도 주인 이름 — 메뉴에 "OOO님의 귀인지도" 로 세운다 */
   owner?: string;
-  /** 마지막으로 다녀온 시각 — 메뉴 차례와 밀려날 순서를 정한다 */
+  /** 마지막으로 다녀온 시간 — 메뉴 차례와 밀려날 순서를 정한다 */
   at?: number;
 };
 
@@ -73,7 +73,7 @@ export type JoinedRef = { id: string; owner?: string };
  */
 export const MAX_JOINED = 5;
 
-/** 최근 것부터 MAX_JOINED 개만 남긴다 — 시각을 모르는 옛 기록이 가장 먼저 밀린다 */
+/** 최근 것부터 MAX_JOINED 개만 남긴다 — 시간을 모르는 옛 기록이 가장 먼저 밀린다 */
 function prune(all: JoinedMap): JoinedMap {
   const ids = Object.keys(all);
   if (ids.length <= MAX_JOINED) return all;
@@ -132,10 +132,15 @@ export function touchJoined(mapId: string, owner?: string) {
   const all = readAll();
   const rec = all[mapId];
   if (!rec) return;
-  writeAll(prune({ ...all, [mapId]: { ...rec, owner: owner ?? rec.owner, at: Date.now() } }));
+  writeAll(
+    prune({
+      ...all,
+      [mapId]: { ...rec, owner: owner ?? rec.owner, at: Date.now() },
+    }),
+  );
 }
 
-/** 다녀온 지도들 — 최근에 다녀온 것부터. 시각을 모르는 옛 기록은 뒤로 */
+/** 다녀온 지도들 — 최근에 다녀온 것부터. 시간을 모르는 옛 기록은 뒤로 */
 export function listJoined(): JoinedRef[] {
   return Object.entries(readAll())
     .map(([id, r]) => ({ id, owner: r.owner, at: r.at ?? 0 }))

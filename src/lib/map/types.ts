@@ -30,7 +30,7 @@ export interface JoinInput {
 export interface MapMember extends Chemi {
   id: string;
   name: string;
-  /** 올라온 시각(ms) */
+  /** 올라온 시간(ms) */
   at: number;
 }
 

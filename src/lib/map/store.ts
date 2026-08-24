@@ -4,7 +4,12 @@ import { chemistry } from "@/lib/saju/chemi";
 import { ILGAN_NICK } from "@/lib/saju/text";
 import { isRealBirth } from "./birth";
 import type {
-  Calendar, JoinInput, JoinResult, MapIntro, MapMember, MapView,
+  Calendar,
+  JoinInput,
+  JoinResult,
+  MapIntro,
+  MapMember,
+  MapView,
 } from "./types";
 
 /*
@@ -54,7 +59,7 @@ interface EntryDoc {
   name: string;
   solar: string;
   hour?: number | null;
-  /** 처음 올린 시각 — 고쳐 올려도 유지된다 */
+  /** 처음 올린 시간 — 고쳐 올려도 유지된다 */
   at: number;
   /** 방문자 토큰 해시 — 같은 사람인지 가리는 1차 기준 */
   v?: string;
@@ -100,7 +105,8 @@ const fieldOf = (visitorHash: string | null, nk: string) =>
 
 export function normalizeJoin(raw: unknown): JoinInput {
   const o = (raw ?? {}) as Record<string, unknown>;
-  const name = typeof o.name === "string" ? o.name.trim().replace(/\s+/g, " ") : "";
+  const name =
+    typeof o.name === "string" ? o.name.trim().replace(/\s+/g, " ") : "";
   const birth = typeof o.birth === "string" ? o.birth.trim() : "";
   const cal: Calendar = o.cal === "lunar" ? "lunar" : "solar";
   // 모르면 null. 범위를 벗어난 값도 모르는 것으로 본다
@@ -115,11 +121,14 @@ export function normalizeJoin(raw: unknown): JoinInput {
       : undefined;
 
   if (!name) throw new MapError(400, "이름을 입력해 주세요.");
-  if (name.length > MAX_NAME) throw new MapError(400, `이름은 ${MAX_NAME}자까지 넣을 수 있어요.`);
-  if (!/^\d{4}-\d{2}-\d{2}$/.test(birth)) throw new MapError(400, "생년월일을 다시 확인해 주세요.");
+  if (name.length > MAX_NAME)
+    throw new MapError(400, `이름은 ${MAX_NAME}자까지 넣을 수 있어요.`);
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(birth))
+    throw new MapError(400, "생년월일을 다시 확인해 주세요.");
 
   const [y, m, d] = birth.split("-").map(Number);
-  if (!isRealBirth(y, m, d)) throw new MapError(400, "생년월일을 다시 확인해 주세요.");
+  if (!isRealBirth(y, m, d))
+    throw new MapError(400, "생년월일을 다시 확인해 주세요.");
   return { name, birth, cal, hourIdx, visitor };
 }
 
@@ -143,7 +152,11 @@ function ownerOf(doc: OwnerDoc) {
   };
 }
 
-function toMember(id: string, e: EntryDoc, ownerSj: ReturnType<typeof computeSaju>): MapMember {
+function toMember(
+  id: string,
+  e: EntryDoc,
+  ownerSj: ReturnType<typeof computeSaju>,
+): MapMember {
   return {
     id,
     name: e.name,
@@ -154,7 +167,11 @@ function toMember(id: string, e: EntryDoc, ownerSj: ReturnType<typeof computeSaj
 
 async function readDoc(id: string): Promise<OwnerDoc> {
   const doc = await kv.getJSON<OwnerDoc>(docKey(id));
-  if (!doc) throw new MapError(404, "지도를 찾을 수 없어요. 링크가 만료되었을 수 있어요.");
+  if (!doc)
+    throw new MapError(
+      404,
+      "지도를 찾을 수 없어요. 링크가 만료되었을 수 있어요.",
+    );
   return doc;
 }
 
@@ -189,7 +206,10 @@ export async function createMap(
  * 합류자 읽기 한 번이 헛돌지만, 링크는 대개 살아 있는 쪽으로 눌린다.
  */
 function readBoth(id: string) {
-  return Promise.all([readDoc(id), kv.hGetAllJSON<EntryDoc>(entKey(id))] as const);
+  return Promise.all([
+    readDoc(id),
+    kv.hGetAllJSON<EntryDoc>(entKey(id)),
+  ] as const);
 }
 
 /** 공유 링크로 들어온 사람에게 보여줄 것 — 주인 이름과 인원수뿐 */
@@ -218,7 +238,9 @@ export async function getMap(
   const { sj, view } = ownerOf(doc);
 
   const vh = visitor ? hash36(visitor) : null;
-  const mine = vh ? Object.entries(entries).find(([, e]) => e.v === vh)?.[0] : undefined;
+  const mine = vh
+    ? Object.entries(entries).find(([, e]) => e.v === vh)?.[0]
+    : undefined;
   if (!owner && !mine) {
     throw new MapError(403, "먼저 이 지도에 이름을 올려야 볼 수 있어요.");
   }
@@ -264,7 +286,7 @@ export async function joinMap(id: string, raw: unknown): Promise<JoinResult> {
     name: input.name,
     solar,
     hour: input.hourIdx,
-    // 처음 올린 시각은 지킨다 — 고쳐 올렸다고 새로 온 사람이 되는 건 아니다
+    // 처음 올린 시간은 지킨다 — 고쳐 올렸다고 새로 온 사람이 되는 건 아니다
     at: prior.length ? Math.min(...prior.map(([, e]) => e.at)) : Date.now(),
     v: vh ?? undefined,
   };
@@ -294,8 +316,13 @@ export async function joinMap(id: string, raw: unknown): Promise<JoinResult> {
 }
 
 /** 주인이 한 명을 지운다 */
-export async function removeMember(id: string, key: string | null, memberId: string) {
+export async function removeMember(
+  id: string,
+  key: string | null,
+  memberId: string,
+) {
   const doc = await readDoc(id);
-  if (!key || key !== doc.key) throw new MapError(403, "내 지도만 고칠 수 있어요.");
+  if (!key || key !== doc.key)
+    throw new MapError(403, "내 지도만 고칠 수 있어요.");
   await kv.hDel(entKey(id), memberId);
 }

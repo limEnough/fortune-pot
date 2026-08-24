@@ -15,24 +15,37 @@ export default function SajuInfoSheet({ saju, open, onClose }: Props) {
   const nav = useNav();
   const sj = computeSaju(saju.birth, saju.hourIdx);
   const [y, m, d] = saju.birth.split("-");
-  const hourTxt = saju.hourIdx === null ? "모름" : `${JJ[saju.hourIdx]}시 (${JJH[saju.hourIdx]})`;
+  const hourTxt =
+    saju.hourIdx === null
+      ? "모름"
+      : `${JJ[saju.hourIdx]}시 (${JJH[saju.hourIdx]})`;
 
   const rows: [string, string][] = [
     ["이름", saju.name],
     ["생년월일", `${y}년 ${m}월 ${d}일`],
-    ["태어난 시각", hourTxt],
+    ["태어난 시간", hourTxt],
     ["성별", saju.gender ? `${saju.gender}성` : "미입력"],
     ["일간 (日干)", `${CG[sj.ilgan]} (${CGH[sj.ilgan]})`],
   ];
 
   // 고치고 나면 이 시트를 열었던 운세 화면으로 돌아온다
-  const goEdit = () => { onClose(); nav.push("/info?from=/fortune"); };
-  const goFull = () => { onClose(); nav.push("/saju"); };
+  const goEdit = () => {
+    onClose();
+    nav.push("/info?from=/fortune");
+  };
+  const goFull = () => {
+    onClose();
+    nav.push("/saju");
+  };
 
   return (
     <>
       <div className={`sheet-scrim ${open ? "show" : ""}`} onClick={onClose} />
-      <div className={`sheet ${open ? "show" : ""}`} role="dialog" aria-label="내 사주 정보">
+      <div
+        className={`sheet ${open ? "show" : ""}`}
+        role="dialog"
+        aria-label="내 사주 정보"
+      >
         <div className="grip" />
         <h3>내 사주 정보</h3>
         <p>입력한 정보를 확인하고 수정할 수 있어요</p>
@@ -55,7 +68,8 @@ export default function SajuInfoSheet({ saju, open, onClose }: Props) {
                 alignItems: "center",
                 padding: "13px 16px",
                 fontSize: 14,
-                borderBottom: i < rows.length - 1 ? "1px solid var(--line)" : "none",
+                borderBottom:
+                  i < rows.length - 1 ? "1px solid var(--line)" : "none",
               }}
             >
               <span style={{ color: "var(--muted)" }}>{k}</span>
@@ -65,8 +79,12 @@ export default function SajuInfoSheet({ saju, open, onClose }: Props) {
         </div>
 
         <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-          <button className="btn primary block focusable" onClick={goFull}>전체 사주 풀이 보기</button>
-          <button className="btn ghost block focusable" onClick={goEdit}>사주 정보 수정하기</button>
+          <button className="btn primary block focusable" onClick={goFull}>
+            전체 사주 풀이 보기
+          </button>
+          <button className="btn ghost block focusable" onClick={goEdit}>
+            사주 정보 수정하기
+          </button>
         </div>
       </div>
     </>

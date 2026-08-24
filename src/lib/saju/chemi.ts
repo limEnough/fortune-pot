@@ -37,7 +37,8 @@ export const ROLES: RoleMeta[] = [
     emoji: "🌟",
     color: "#fcd34d",
     gist: "나를 살려주는 사람",
-    caution: "고마운 만큼 기대게 되기 쉬워요. 받기만 하지 말고 돌려줄 자리를 만들어두세요.",
+    caution:
+      "고마운 만큼 기대게 되기 쉬워요. 받기만 하지 말고 돌려줄 자리를 만들어두세요.",
   },
   {
     key: "단짝",
@@ -45,7 +46,8 @@ export const ROLES: RoleMeta[] = [
     emoji: "🤝",
     color: "#a78bfa",
     gist: "나와 결이 같은 사람",
-    caution: "닮은 만큼 같은 실수를 함께 해요. 서로 다른 시야를 챙겨주는 사람도 곁에 두세요.",
+    caution:
+      "닮은 만큼 같은 실수를 함께 해요. 서로 다른 시야를 챙겨주는 사람도 곁에 두세요.",
   },
   {
     key: "내사람",
@@ -53,7 +55,8 @@ export const ROLES: RoleMeta[] = [
     emoji: "🌱",
     color: "#4ade80",
     gist: "내가 아끼고 챙기는 사람",
-    caution: "주기만 하다 내가 먼저 지쳐요. 내 몫으로 남길 시간과 마음을 정해두세요.",
+    caution:
+      "주기만 하다 내가 먼저 지쳐요. 내 몫으로 남길 시간과 마음을 정해두세요.",
   },
   {
     key: "오른팔",
@@ -61,7 +64,8 @@ export const ROLES: RoleMeta[] = [
     emoji: "🧭",
     color: "#60a5fa",
     gist: "내 뜻대로 움직여주는 사람",
-    caution: "편해서 자꾸 기대게 돼요. 당연하게 여기지 말고 고마움을 자주 말로 표현해주세요.",
+    caution:
+      "편해서 자꾸 기대게 돼요. 당연하게 여기지 말고 고마움을 자주 말로 표현해주세요.",
   },
   {
     key: "호랑이선생",
@@ -69,7 +73,8 @@ export const ROLES: RoleMeta[] = [
     emoji: "⚡",
     color: "#fb7185",
     gist: "부딪히며 나를 키우는 사람",
-    caution: "옳은 말이라도 아플 수 있어요. 감정은 한 박자 두고, 배울 것만 챙기세요.",
+    caution:
+      "옳은 말이라도 아플 수 있어요. 감정은 한 박자 두고, 배울 것만 챙기세요.",
   },
 ];
 
@@ -83,19 +88,19 @@ const OH_HAN = ["木", "火", "土", "金", "水"];
 
 // 상생(A→A+1) 다섯 쌍의 그림말
 const SAENG_FIG = [
-  "나무가 불을 지피듯",       // 목생화
+  "나무가 불을 지피듯", // 목생화
   "타고 남은 재가 흙이 되듯", // 화생토
-  "흙 속에서 쇠가 나오듯",     // 토생금
-  "쇠에 이슬이 맺히듯",       // 금생수
-  "물이 나무를 키우듯",       // 수생목
+  "흙 속에서 쇠가 나오듯", // 토생금
+  "쇠에 이슬이 맺히듯", // 금생수
+  "물이 나무를 키우듯", // 수생목
 ];
 // 상극(A→A+2) 다섯 쌍의 그림말
 const GEUK_FIG = [
   "나무 뿌리가 흙을 파고들듯", // 목극토
-  "불이 쇠를 녹이듯",          // 화극금
-  "흙이 물길을 막듯",          // 토극수
-  "도끼가 나무를 다듬듯",      // 금극목
-  "물이 불을 끄듯",            // 수극화
+  "불이 쇠를 녹이듯", // 화극금
+  "흙이 물길을 막듯", // 토극수
+  "도끼가 나무를 다듬듯", // 금극목
+  "물이 불을 끄듯", // 수극화
 ];
 // 같은 오행(비화)
 const BIHWA_FIG = [
@@ -132,11 +137,42 @@ const BASE: Record<RoleKey, number> = {
 };
 
 // 육합 — 자축 인해 묘술 진유 사신 오미
-const YUKHAP: Record<number, number> = { 0: 1, 1: 0, 2: 11, 11: 2, 3: 10, 10: 3, 4: 9, 9: 4, 5: 8, 8: 5, 6: 7, 7: 6 };
+const YUKHAP: Record<number, number> = {
+  0: 1,
+  1: 0,
+  2: 11,
+  11: 2,
+  3: 10,
+  10: 3,
+  4: 9,
+  9: 4,
+  5: 8,
+  8: 5,
+  6: 7,
+  7: 6,
+};
 // 삼합 — 신자진(수) 해묘미(목) 인오술(화) 사유축(금)
-const SAMHAP: number[][] = [[8, 0, 4], [11, 3, 7], [2, 6, 10], [5, 9, 1]];
+const SAMHAP: number[][] = [
+  [8, 0, 4],
+  [11, 3, 7],
+  [2, 6, 10],
+  [5, 9, 1],
+];
 // 육해 — 자미 축오 인사 묘진 신해 유술
-const YUKHAE: Record<number, number> = { 0: 7, 7: 0, 1: 6, 6: 1, 2: 5, 5: 2, 3: 4, 4: 3, 8: 11, 11: 8, 9: 10, 10: 9 };
+const YUKHAE: Record<number, number> = {
+  0: 7,
+  7: 0,
+  1: 6,
+  6: 1,
+  2: 5,
+  5: 2,
+  3: 4,
+  4: 3,
+  8: 11,
+  11: 8,
+  9: 10,
+  10: 9,
+};
 
 type JiRel = "육합" | "삼합" | "동일" | "충" | "해" | null;
 
@@ -150,16 +186,23 @@ function jiRelation(a: number, b: number): JiRel {
 }
 
 const JI_WEIGHT: Record<Exclude<JiRel, null>, number> = {
-  육합: 9, 삼합: 7, 동일: 4, 충: -9, 해: -5,
+  육합: 9,
+  삼합: 7,
+  동일: 4,
+  충: -9,
+  해: -5,
 };
 
-/** 오행 집계 — 보완 가점을 매길 때 쓴다. 시각을 알면 여덟 글자, 모르면 여섯 글자 */
+/** 오행 집계 — 보완 가점을 매길 때 쓴다. 시간을 알면 여덟 글자, 모르면 여섯 글자 */
 function ohTally(sj: SajuResult): Record<Ohaeng, number> {
   const t: Record<Ohaeng, number> = { 목: 0, 화: 0, 토: 0, 금: 0, 수: 0 };
   const cells = [
-    ohOfGan(sj.year[0]), ohOfJi(sj.year[1]),
-    ohOfGan(sj.month[0]), ohOfJi(sj.month[1]),
-    ohOfGan(sj.day[0]), ohOfJi(sj.day[1]),
+    ohOfGan(sj.year[0]),
+    ohOfJi(sj.year[1]),
+    ohOfGan(sj.month[0]),
+    ohOfJi(sj.month[1]),
+    ohOfGan(sj.day[0]),
+    ohOfJi(sj.day[1]),
   ];
   if (sj.hour) cells.push(ohOfGan(sj.hour[0]), ohOfJi(sj.hour[1]));
   cells.forEach((o) => (t[o] += 1));
@@ -169,10 +212,10 @@ function ohTally(sj: SajuResult): Record<Ohaeng, number> {
 export function roleOf(myOh: number, yourOh: number): RoleKey {
   const d = (yourOh - myOh + 5) % 5;
   if (d === 0) return "단짝";
-  if (d === 1) return "내사람";      // 내가 생함
-  if (d === 2) return "오른팔";      // 내가 극함
-  if (d === 3) return "호랑이선생";  // 상대가 나를 극함
-  return "귀인";                     // 상대가 나를 생함
+  if (d === 1) return "내사람"; // 내가 생함
+  if (d === 2) return "오른팔"; // 내가 극함
+  if (d === 3) return "호랑이선생"; // 상대가 나를 극함
+  return "귀인"; // 상대가 나를 생함
 }
 
 export interface Chemi {
@@ -210,12 +253,12 @@ export function chemistry(mine: SajuResult, yours: SajuResult): Chemi {
   rel(mine.day[1], yours.day[1], 1);
   rel(mine.year[1], yours.year[1], 0.45);
   rel(mine.month[1], yours.month[1], 0.35);
-  // 시지는 둘 다 시각을 알 때만 — 한쪽만 알면 볼 수 없다
+  // 시지는 둘 다 시간을 알 때만 — 한쪽만 알면 볼 수 없다
   if (mine.hour && yours.hour) rel(mine.hour[1], yours.hour[1], 0.3);
 
   /*
    * 오행 보완 — 상대의 일간이 내게 없는 기운이면 반갑고, 넘치는 기운이면 덜하다.
-   * 시각을 알면 여덟 글자로 세므로 기준도 한 칸 올린다(넘침 판정 4 → 5).
+   * 시간을 알면 여덟 글자로 세므로 기준도 한 칸 올린다(넘침 판정 4 → 5).
    */
   const tally = ohTally(mine);
   const cnt = tally[OH_NAME[yo]];
@@ -230,17 +273,24 @@ export function chemistry(mine: SajuResult, yours: SajuResult): Chemi {
   score = Math.max(32, Math.min(99, score));
 
   const fig =
-    role === "단짝" ? BIHWA_FIG[my]
-      : role === "내사람" ? SAENG_FIG[my]
-      : role === "귀인" ? SAENG_FIG[yo]
-      : role === "오른팔" ? GEUK_FIG[my]
-      : GEUK_FIG[yo];
+    role === "단짝"
+      ? BIHWA_FIG[my]
+      : role === "내사람"
+        ? SAENG_FIG[my]
+        : role === "귀인"
+          ? SAENG_FIG[yo]
+          : role === "오른팔"
+            ? GEUK_FIG[my]
+            : GEUK_FIG[yo];
 
   const [a, b] =
-    role === "단짝" ? [my, my]
-      : role === "내사람" || role === "오른팔" ? [my, yo]
-      : [yo, my];
-  const verb = role === "단짝" ? "" : role === "귀인" || role === "내사람" ? "생" : "극";
+    role === "단짝"
+      ? [my, my]
+      : role === "내사람" || role === "오른팔"
+        ? [my, yo]
+        : [yo, my];
+  const verb =
+    role === "단짝" ? "" : role === "귀인" || role === "내사람" ? "생" : "극";
   const relation =
     role === "단짝"
       ? `${OH_NAME[my]}${OH_NAME[my]}(比和)`
