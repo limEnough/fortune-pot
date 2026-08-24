@@ -2154,17 +2154,17 @@ input[type="date"].input::-webkit-calendar-picker-indicator {
 .seg.cal button {
   font-size: 13px;
 }
-/* 태어난 시간 — 모르는 사람이 많아 '모르겠어요' 가 기본이고, 셀렉트는 잠겨 있다 */
+/* 태어난 시간 — 기본은 빈 채로 열려 있고, '모르겠어요' 를 체크하면 잠긴다 */
 .join-hour {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
   gap: 10px;
 }
-.join-hour select.input {
+.join-hour .hour-select {
   flex: 1 1 100%;
 }
-.join-hour select.input:disabled {
+.hour-trigger:disabled {
   opacity: 0.45;
   cursor: not-allowed;
 }

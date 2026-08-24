@@ -1,7 +1,7 @@
 "use client";
 import { useState } from "react";
 import { parseBirthDigits } from "@/lib/map/birth";
-import { HOUR_OPTIONS } from "@/lib/saju/constants";
+import HourPicker from "@/components/HourPicker";
 import type { Calendar, JoinInput } from "@/lib/map/types";
 
 interface Props {
@@ -12,7 +12,7 @@ interface Props {
   namePlaceholder?: string;
   /** 이미 올린 적이 있을 때의 안내 — 폼 맨 위에 붙는다 */
   notice?: React.ReactNode;
-  /** 지난번에 올린 값으로 채워둔다. 틀린 칸만 고치면 되게 */
+  /** 지난번에 입력한 값으로 채워둔다. 틀린 칸만 고치면 되게 */
   initial?: Partial<Omit<JoinInput, "visitor">>;
   /** 제출 버튼 앞에 붙는 그림 — 무엇을 하는 버튼인지 글자보다 빨리 읽힌다 */
   submitIcon?: React.ReactNode;
@@ -29,31 +29,57 @@ interface Props {
  * 칸이기 때문이다 — 한 칸에 숫자만 두드리고 끝나는 쪽이 이탈이 적다.
  * 성별은 궁합에 쓰이지 않으므로 받지 않는다.
  *
- * 시간은 모르는 사람이 많아서 **모르겠어요가 기본값**이다. 시주가 있으면 오행
- * 여덟 글자로 세어 케미가 조금 더 정확해지고, 없어도 일간 기준이라 결과는 나온다.
+ * 시간 칸의 기본은 늘 빈 채로 — 임의의 시간이나 '모르겠어요'를 미리 짚어두지
+ * 않는다. 전에 이 사람이 답한 값(initial)이 있을 때만 그 값으로 채운다.
+ * 몰라도 일간 기준이라 결과는 나온다.
  */
 export default function JoinForm({
-  title, desc, submitLabel, busyLabel = "그리는 중…", namePlaceholder = "이름 또는 별명",
-  notice, initial, submitIcon, extra, onSubmit,
+  title,
+  desc,
+  submitLabel,
+  busyLabel = "그리는 중…",
+  namePlaceholder = "이름 또는 별명",
+  notice,
+  initial,
+  submitIcon,
+  extra,
+  onSubmit,
 }: Props) {
   const [name, setName] = useState(initial?.name ?? "");
-  const [digits, setDigits] = useState(initial?.birth ? initial.birth.replace(/-/g, "") : "");
+  const [digits, setDigits] = useState(
+    initial?.birth ? initial.birth.replace(/-/g, "") : "",
+  );
   const [cal, setCal] = useState<Calendar>(initial?.cal ?? "solar");
-  const [hourIdx, setHourIdx] = useState<number | null>(initial?.hourIdx ?? null);
+  /*
+   * 세 상태를 가른다 — number(실제로 고른 시간) · null('모르겠어요'를 직접
+   * 고름) · undefined(아직 아무것도 안 골랐다, 기본 시작 상태).
+   *
+   * initial 이 있으면 그 값을 그대로 쓴다 — 전에 '모르겠어요'로 답했다면
+   * (initial.hourIdx === null) 그 선택을 다른 경로의 폼에서도 그대로
+   * 이어받는다. initial 이 아예 없으면(전에 답한 적이 없으면) 비워 둔다.
+   */
+  const [hourIdx, setHourIdx] = useState<number | null | undefined>(
+    initial ? (initial.hourIdx ?? null) : undefined,
+  );
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState<string | null>(null);
-
-  const unknownHour = hourIdx === null;
 
   const submit = async () => {
     const birth = parseBirthDigits(digits);
     if (!name.trim()) return setErr("이름을 입력해 주세요.");
-    if (!birth) return setErr("생년월일을 여섯 자리로 입력해 주세요. 예) 930821");
+    if (!birth)
+      return setErr("생년월일을 여섯 자리로 입력해 주세요. 예) 930821");
 
     setErr(null);
     setBusy(true);
     try {
-      await onSubmit({ name: name.trim(), birth, cal, hourIdx });
+      // 고르지 않은 채 제출했다면 서버로는 '모르겠어요'와 같은 null 로 보낸다
+      await onSubmit({
+        name: name.trim(),
+        birth,
+        cal,
+        hourIdx: hourIdx ?? null,
+      });
     } catch (e) {
       setErr(e instanceof Error ? e.message : "잠시 후 다시 시도해 주세요.");
       setBusy(false);
@@ -120,39 +146,22 @@ export default function JoinForm({
         </div>
       </div>
 
-      <div className="join-hour">
-        <select
-          className="input focusable"
-          value={unknownHour ? "" : hourIdx}
-          disabled={unknownHour}
-          onChange={(e) => setHourIdx(Number(e.target.value))}
-          aria-label="태어난 시간"
-        >
-          <option value="" disabled>
-            태어난 시간
-          </option>
-          {HOUR_OPTIONS.slice(1).map((opt, i) => (
-            <option key={i} value={i}>
-              {opt}
-            </option>
-          ))}
-        </select>
-
-        <label className="check focusable">
-          <input
-            type="checkbox"
-            checked={unknownHour}
-            onChange={(e) => setHourIdx(e.target.checked ? null : 6)}
-          />
-          <span className="box" aria-hidden="true" />
-          모르겠어요
-        </label>
-        <span className="hint">몰라도 괜찮아요 · 시간을 넣으면 케미가 조금 더 정확해져요</span>
-      </div>
+      <HourPicker
+        value={hourIdx}
+        onChange={setHourIdx}
+        hint="몰라도 괜찮아요 · 시간을 넣으면 케미가 조금 더 정확해져요"
+      />
 
       {err && <p className="join-err">{err}</p>}
 
-      {extra ? <div className="join-actions">{submitBtn}{extra}</div> : submitBtn}
+      {extra ? (
+        <div className="join-actions">
+          {submitBtn}
+          {extra}
+        </div>
+      ) : (
+        submitBtn
+      )}
     </div>
   );
 }
