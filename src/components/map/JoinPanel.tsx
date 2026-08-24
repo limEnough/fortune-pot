@@ -2,9 +2,12 @@
 import { useEffect, useState } from "react";
 import { useNav } from "@/hooks/useNav";
 import { useMapStore } from "@/store/useMapStore";
+import { useViewingStore } from "@/store/useViewingStore";
 import { ROLE_MAP } from "@/lib/saju/chemi";
 import { apiPost } from "@/lib/map/api";
-import { readJoined, visitorId, writeJoined, type Joined } from "@/lib/map/visitor";
+import {
+  readJoined, touchJoined, visitorId, writeJoined, type Joined,
+} from "@/lib/map/visitor";
 import { plantSaju } from "@/lib/map/plant";
 import JoinForm from "./JoinForm";
 import type { JoinInput, JoinResult } from "@/lib/map/types";
@@ -21,6 +24,7 @@ export default function JoinPanel({
 }: { id: string; ownerName: string; count: number }) {
   const nav = useNav();
   const myId = useMapStore((s) => s.id);
+  const { setViewing, clearViewing } = useViewingStore();
   const [result, setResult] = useState<JoinResult | null>(null);
   // localStorage 는 서버 렌더에 없다. 하이드레이션 후에 읽어야 화면이 어긋나지 않는다
   const [before, setBefore] = useState<Joined | null>(null);
@@ -31,15 +35,29 @@ export default function JoinPanel({
     setReady(true);
   }, [id]);
 
+  /*
+   * 아직 이름을 올리지 않았다면 이 지도는 어디에도 저장돼 있지 않다. 그래도 메뉴가
+   * 지금 어느 지도에 와 있는지는 말해줘야 하므로 여기서 알려준다. 내 지도 링크를
+   * 내가 연 것이라면 '공유받은 지도' 가 아니므로 알리지 않는다.
+   *
+   * 이미 올린 지도라면 방문을 남겨 메뉴 맨 위로 끌어올린다.
+   */
+  useEffect(() => {
+    if (myId === id) return clearViewing();
+    setViewing(id, ownerName);
+    touchJoined(id, ownerName);
+  }, [id, ownerName, myId, setViewing, clearViewing]);
+
   const submit = async (input: JoinInput) => {
     const got = await apiPost<JoinResult>(
       `/api/map/${id}/join`,
       { ...input, visitor: visitorId() },
       "잠시 후 다시 시도해 주세요.",
     );
-    // 다음에 다시 들어오면 이 값으로 폼을 채우고 "이미 올렸어요" 를 띄운다
+    // 다음에 다시 들어오면 이 값으로 폼을 채우고 "이미 올렸어요" 를 띄운다.
+    // 주인 이름을 함께 남겨야 메뉴에 "OOO님의 귀인지도" 로 세워 다시 찾아올 수 있다
     const { visitor: _v, ...keep } = input;
-    writeJoined(id, keep);
+    writeJoined(id, keep, got.ownerName);
     // 남의 지도에 올린 정보라도 자기 것이므로, 사주가 비어 있으면 옮겨 심는다
     plantSaju(input, got.solar);
     setResult(got);

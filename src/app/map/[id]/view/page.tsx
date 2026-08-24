@@ -3,8 +3,9 @@ import { useCallback, useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import { useNav } from "@/hooks/useNav";
 import { useMapStore } from "@/store/useMapStore";
+import { useViewingStore } from "@/store/useViewingStore";
 import { apiGet } from "@/lib/map/api";
-import { visitorId } from "@/lib/map/visitor";
+import { forgetJoined, touchJoined, visitorId } from "@/lib/map/visitor";
 import TopBar from "@/components/TopBar";
 import MapBoard from "@/components/map/MapBoard";
 import { MapSkeleton } from "@/components/Skeleton";
@@ -22,6 +23,7 @@ export default function MapViewPage() {
   const params = useParams<{ id: string }>();
   const id = params.id;
   const myMapId = useMapStore((s) => s.id);
+  const setViewing = useViewingStore((s) => s.setViewing);
 
   const [map, setMap] = useState<MapView | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -29,11 +31,19 @@ export default function MapViewPage() {
 
   const load = useCallback(async () => {
     try {
-      setMap(await apiGet<MapView>(`/api/map/${id}?visitor=${visitorId() ?? ""}`));
+      const got = await apiGet<MapView>(`/api/map/${id}?visitor=${visitorId() ?? ""}`);
+      setMap(got);
+      // 남의 지도일 때만 메뉴에 알린다 — 내 지도를 이 주소로 연 것일 수도 있다
+      if (got.role !== "owner") {
+        setViewing(id, got.owner.name);
+        touchJoined(id, got.owner.name); // 다녀왔으니 메뉴 맨 위로
+      }
     } catch (e) {
+      // 만료돼 사라진 지도라면 메뉴에서도 빼둔다. 열리지 않는 줄을 남겨둘 이유가 없다
+      if (e instanceof Error && /찾을 수 없/.test(e.message)) forgetJoined(id);
       setError(e instanceof Error ? e.message : "지도를 불러오지 못했어요.");
     }
-  }, [id]);
+  }, [id, setViewing]);
 
   useEffect(() => {
     load();

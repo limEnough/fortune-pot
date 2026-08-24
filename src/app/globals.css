@@ -1535,6 +1535,15 @@ input[type="date"].input::-webkit-calendar-picker-indicator {
   justify-content: space-between;
   align-items: center;
   margin-bottom: 18px;
+  flex: 0 0 auto; /* 목록이 길어져도 이름 줄은 자리를 지킨다 */
+}
+/* 공유받은 지도가 여러 장이면 메뉴가 화면보다 길어질 수 있다 */
+.drawer .d-body {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
 }
 .drawer .d-top .who {
   font-family: var(--display);
@@ -1621,6 +1630,24 @@ input[type="date"].input::-webkit-calendar-picker-indicator {
   padding: 3px 7px;
   border-radius: 99px;
   margin-left: -4px;
+}
+
+/* 관계 그룹 안의 두 번째 층 — 공유받은 지도들. 내 지도와 남의 지도는 성격이
+   다르므로(하나는 내가 주인, 나머지는 구경) 한 줄 들여 갈라 세운다 */
+.nav-group .g-sub {
+  font-size: 11.5px;
+  font-weight: 700;
+  color: var(--muted);
+  padding: 4px 6px 8px;
+}
+.nav-sub {
+  margin-left: 7px;
+  padding-left: 11px;
+  border-left: 1px solid var(--line);
+}
+.nav-sub .nav-item {
+  font-size: 13.5px;
+  padding: 12px 13px;
 }
 
 /* 명식 / 십성 / 세운 */
