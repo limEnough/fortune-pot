@@ -122,6 +122,27 @@ export const kv = {
     await writeDb(db);
   },
 
+  /**
+   * 없을 때만 쓴다. 이미 있으면 아무 일도 하지 않고 false.
+   *
+   * "하루에 한 번" 처럼 **횟수를 지켜야 하는 일**에 쓴다. 읽고 나서 쓰는 방식은
+   * 두 요청이 겹치면 둘 다 "아직 안 받았네" 를 보고 둘 다 지급해 버린다(연타·
+   * 새로고침이면 충분히 겹친다). SET NX 는 그 판정과 쓰기가 한 명령이라 겹칠 틈이
+   * 없다. 개발용 파일 폴백은 한 프로세스 안에서만 도니 읽고-쓰기로 흉내 낸다.
+   */
+  async setIfAbsent(key: string, value: unknown, ttlSec: number): Promise<boolean> {
+    const s = JSON.stringify(value);
+    if (kvRemote) {
+      return (await cmd<string | null>(["SET", key, s, "EX", ttlSec, "NX"])) === "OK";
+    }
+    ensureLocal();
+    const db = await readDb();
+    if (alive(db, key)) return false;
+    db[key] = { s, exp: Date.now() + ttlSec * 1000 };
+    await writeDb(db);
+    return true;
+  },
+
   async hSetJSON(key: string, field: string, value: unknown): Promise<void> {
     const s = JSON.stringify(value);
     if (kvRemote) {
