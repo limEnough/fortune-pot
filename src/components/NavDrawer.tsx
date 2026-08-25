@@ -3,6 +3,7 @@ import { useEffect, useMemo, useState } from "react";
 import { usePathname } from "next/navigation";
 import { useUIStore } from "@/store/useUIStore";
 import { useMapStore } from "@/store/useMapStore";
+import { useRoomStore } from "@/store/useRoomStore";
 import { useViewingStore } from "@/store/useViewingStore";
 import { useRelease } from "@/hooks/useRelease";
 import { useSaju } from "@/hooks/useSaju";
@@ -51,6 +52,7 @@ export default function NavDrawer() {
   const { hasUpdate, openNote } = useRelease();
 
   const myMapId = useMapStore((s) => s.id);
+  const myRoomId = useRoomStore((s) => s.id);
   const viewing = useViewingStore((s) => s.map);
   const [joined, setJoined] = useState<JoinedRef[]>([]);
   const [mounted, setMounted] = useState(false);
@@ -194,6 +196,22 @@ export default function NavDrawer() {
                   ))}
                 </div>
               </>
+            )}
+          </div>
+
+          {/*
+            방은 한 번 보고 끝나는 화면이 아니라 매일 돌아오는 자리라 그룹을 따로 둔다.
+            꾸미기(/my-room/decorate)는 방 안에서만 들어가므로 여기 세우지 않는다 —
+            방이 없는 사람에게는 갈 수 없는 줄이 된다.
+          */}
+          <div className="nav-group">
+            <div className="g-lab">내 방</div>
+            <Item
+              path="/my-room"
+              label={mounted && myRoomId ? "내 방" : "내 방 만들기"}
+            />
+            {mounted && myRoomId && (
+              <Item path={`/room/${myRoomId}`} label="방명록 보기" />
             )}
           </div>
 

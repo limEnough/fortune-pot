@@ -70,16 +70,34 @@ export default function SajuForm({ mode = "start" }: { mode?: FormMode }) {
   const editing = mode === "edit";
 
   /*
-   * start: 홈에서 고른 도착지(?next=saju|fortune) — 없으면 오늘의 운세로.
+   * start: 홈에서 고른 도착지(?next=saju|fortune|room|visit) — 없으면 오늘의 운세로.
    * edit:  고치기 전에 있던 화면(?from=) — 없으면 홈으로.
+   *
+   * 도착지를 목록으로 둔 건 `?next=` 가 주소창으로 들어오는 값이라서다. 그대로
+   * 이어 붙이면 남이 보낸 링크가 이 폼을 아무 데로나 튕기는 통로가 된다.
    */
-  const wantsSaju = searchParams.get("next") === "saju";
+  const NEXT = {
+    // josa: 받침에 따라 갈리는 목적격 조사. 말이 어긋나는 자리라 값과 같이 둔다
+    saju: { path: "/saju", label: "사주 풀이", josa: "를" },
+    fortune: { path: "/fortune", label: "오늘의 운세", josa: "를" },
+    // 방이 없는 사람이 오는 길이라 캐릭터를 빚는 화면부터 — 이미 있으면 저기서 방으로 넘긴다
+    room: { path: "/my-room/intro", label: "내 캐릭터", josa: "를" },
+    // 남의 방에서 방명록을 남기려다 온 사람 — 보던 방으로 돌려보낸다
+    visit: { path: "", label: "방명록", josa: "을" },
+  } as const;
+  const next = NEXT[searchParams.get("next") as keyof typeof NEXT] ?? NEXT.fortune;
+
+  /*
+   * 남의 방으로 돌아가는 길만 값을 받아 만든다. 그래도 주소를 그대로 잇지는 않는다 —
+   * 방 id 는 정해진 32글자로만 이뤄지므로, 그 모양이 아니면 홈으로 보낸다.
+   * (`lib/game/store.ts` 의 randomId 가 쓰는 알파벳)
+   */
+  const roomId = searchParams.get("room") ?? "";
+  const visitPath = /^[a-z2-9]{6,16}$/.test(roomId) ? `/room/${roomId}` : "/";
   const dest = editing
     ? searchParams.get("from") || "/"
-    : wantsSaju
-      ? "/saju"
-      : "/fortune";
-  const destLabel = wantsSaju ? "사주 풀이" : "오늘의 운세";
+    : next.path || visitPath;
+  const destLabel = next.label;
 
   /*
    * 말풍선은 start 에서만. 고치러 온 사람에게 "그냥 그대로 보시겠어요?" 는
@@ -133,7 +151,8 @@ export default function SajuForm({ mode = "start" }: { mode?: FormMode }) {
           <p>
             최근 조회한 <b style={{ color: "var(--magic)" }}>{saju.name}</b>
             님으로
-            {destLabel}를 확인해보시겠어요?
+            {destLabel}
+            {next.josa} 확인해보시겠어요?
           </p>
           <div className="bubble-actions">
             <button
