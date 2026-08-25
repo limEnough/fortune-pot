@@ -264,9 +264,13 @@ body {
   justify-content: center;
   min-width: 0;
 }
+/*
+ * 메인 캐릭터. 예전보다 작다 — 진입 버튼이 두 줄(2×2)로 늘면서 아래 블록이
+ * 그만큼 키를 가져갔다. 캐릭터가 그대로면 작은 기기에서 버튼이 접힌다.
+ */
 .char {
-  width: 248px;
-  max-width: 64vw;
+  width: 186px;
+  max-width: 46vw;
   height: auto; /* height 속성은 ClayChar가 제거 — viewBox 비율을 따른다 */
   animation: float 5s ease-in-out infinite;
   filter: drop-shadow(0 26px 30px rgba(60, 20, 110, 0.55));
@@ -407,12 +411,21 @@ h1.title .pt {
   letter-spacing: 0.2px;
   margin-bottom: 2px;
 }
+/*
+ * 진입 버튼 네 개 — 2×2.
+ *
+ * 예전엔 운세·사주가 한 줄, 귀인지도·내 방이 각각 가로로 눕는 줄이었다. 성격이
+ * 다르다는 걸 생김새로 말하려던 것인데, 넷이 되자 같은 층위의 메뉴가 세 가지
+ * 모양으로 갈려 오히려 어디를 봐야 할지 알기 어려웠다. 지금은 넷이 같은 칸이다.
+ *
+ * grid 라서 한 줄 안의 칸 높이가 저절로 맞는다(설명 줄 수가 달라도).
+ */
 .cta-split {
-  display: flex;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
   gap: 10px;
 }
 .choice {
-  flex: 1 1 0;
   min-width: 0;
   display: flex;
   flex-direction: column;
@@ -458,59 +471,6 @@ h1.title .pt {
 .choice:active {
   transform: scale(0.975);
 }
-/*
- * 기본 추천(오늘의 운세)이라는 것만 알아볼 정도의 차이. 꽉 찬 그라데이션은
- * 옆 카드와 너무 벌어져서, 같은 반투명 판 위에 옅은 보라 틴트와 테두리만 얹는다.
- */
-.choice.accent {
-  border-color: rgba(232, 121, 249, 0.34);
-  background: linear-gradient(
-    135deg,
-    rgba(139, 92, 246, 0.2),
-    rgba(232, 121, 249, 0.13)
-  );
-}
-.choice.accent .ic {
-  background: rgba(232, 121, 249, 0.22);
-}
-.choice.accent:hover {
-  border-color: rgba(232, 121, 249, 0.5);
-  background: linear-gradient(
-    135deg,
-    rgba(139, 92, 246, 0.28),
-    rgba(232, 121, 249, 0.19)
-  );
-}
-/* 귀인지도 — 두 카드 아래 가로로 눕는 한 줄 */
-.choice.wide {
-  flex-direction: row;
-  align-items: center;
-  gap: 11px;
-  margin-top: 10px;
-  padding: 11px 14px;
-  text-align: left;
-  border-color: rgba(252, 211, 77, 0.28);
-  background: linear-gradient(
-    135deg,
-    rgba(252, 211, 77, 0.12),
-    rgba(139, 92, 246, 0.12)
-  );
-}
-.choice.wide .ic {
-  flex: 0 0 auto;
-  background: rgba(252, 211, 77, 0.18);
-}
-.choice.wide .k {
-  flex: 0 0 auto;
-}
-.choice.wide .d {
-  text-align: left;
-  flex: 1 1 auto;
-}
-.choice.wide:hover {
-  border-color: rgba(252, 211, 77, 0.45);
-}
-
 /*
  * 정중앙 팝업 — 다른 화면으로 떠나기 전에 결정을 받아야 하는 것만 쓴다.
  * 바텀시트(z 40)·드로어(51)보다 위에 둔다. 이 위에 얹힐 것은 없어야 한다.

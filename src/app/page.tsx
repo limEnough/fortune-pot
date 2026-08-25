@@ -71,11 +71,13 @@ export default function HomePage() {
           <div className="cta-pick">먼저 보고 싶은 걸 골라주세요</div>
         )}
 
+        {/*
+          네 칸이 같은 생김새다. 예전엔 운세·사주가 한 줄, 귀인지도·내 방이 각각
+          가로로 눕는 줄이었는데 — 성격이 다르다는 걸 모양으로 말하려던 것이지만,
+          넷이 되자 같은 층위의 메뉴가 세 가지 모양으로 갈려 오히려 어수선했다.
+        */}
         <div className="cta-split">
-          <button
-            className="choice accent focusable"
-            onClick={() => go("fortune")}
-          >
+          <button className="choice focusable" onClick={() => go("fortune")}>
             <span className="ic" aria-hidden="true">
               🔮
             </span>
@@ -97,19 +99,30 @@ export default function HomePage() {
               오행 풀이 보기
             </span>
           </button>
+          <button className="choice focusable" onClick={() => nav.push("/map")}>
+            <span className="ic" aria-hidden="true">
+              🌟
+            </span>
+            <span className="k">내 귀인지도</span>
+            <span className="d">
+              생일만 넣으면
+              <br />
+              친구와의 케미가 별자리로
+            </span>
+          </button>
+          {/* 방이 없으면 캐릭터를 빚는 화면으로, 있으면 방으로 — /my-room 이 가른다 */}
+          <button className="choice focusable" onClick={() => nav.push("/my-room")}>
+            <span className="ic" aria-hidden="true">
+              🏠
+            </span>
+            <span className="k">내 방</span>
+            <span className="d">
+              사주 캐릭터와 살며
+              <br />
+              매일 출석하면 포인트가
+            </span>
+          </button>
         </div>
-
-        {/* 혼자 보는 두 화면과 성격이 달라(친구를 부르는 화면) 한 칸 아래 따로 둔다 */}
-        <button
-          className="choice wide focusable"
-          onClick={() => nav.push("/map")}
-        >
-          <span className="ic" aria-hidden="true">
-            🌟
-          </span>
-          <span className="k">내 귀인지도</span>
-          <span className="d">생일만 넣으면 친구와의 케미가 별자리로</span>
-        </button>
       </div>
 
       {askNow && saju && (
