@@ -139,6 +139,39 @@ export function MapSkeleton() {
   );
 }
 
+/*
+ * 방은 비율이 정해진 그림 한 장이 화면의 대부분이라, 그 자리를 그대로 비워 둔다.
+ * 방 마크업은 서버에서 함께 오지만 방 문서(꾸미기·포인트)는 브라우저가 받아오므로
+ * 그동안 이 화면이 뜬다.
+ */
+export function RoomSkeleton() {
+  return (
+    <div className="room-screen" role="status" aria-label="내 방을 불러오는 중">
+      <div className="room-head">
+        <Sk w="46%" h={20} />
+        <Sk w={84} h={26} r={999} style={{ marginLeft: "auto" }} />
+      </div>
+      <Sk r={22} style={{ aspectRatio: "900 / 640" }} />
+      <div className="room-actions">
+        <Sk h={46} r={14} />
+        <Sk h={46} r={14} />
+        <Sk h={46} r={14} style={{ gridColumn: "1 / -1" }} />
+      </div>
+    </div>
+  );
+}
+
+export function RoomSkeletonScreen() {
+  return (
+    <section className="screen">
+      <TopBar back home menu />
+      <div className="scroll">
+        <RoomSkeleton />
+      </div>
+    </section>
+  );
+}
+
 export function MapSkeletonScreen() {
   return (
     <section className="screen">

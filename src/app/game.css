@@ -1,0 +1,854 @@
+/*
+ * 게임 파트(내 방·꾸미기·방명록) 전용 스타일.
+ *
+ * globals.css 에 합치지 않고 (game) 레이아웃에서만 부른다. 운세·사주·귀인지도는
+ * 이 규칙이 하나도 필요 없고, 인라인 SVG 를 겨냥한 선택자(`[data-element] > svg`)가
+ * 다른 화면까지 훑을 이유가 없어서다. 색·간격·버튼은 globals.css 의 변수와
+ * 클래스(.btn·.focusable·.sheet)를 그대로 쓴다 — 게임만 다른 앱처럼 보이면 안 된다.
+ */
+
+/* ── 인라인 SVG ──────────────────────────────────────── */
+
+/* loadSvg 가 width/height 속성을 지웠으므로 크기는 여기서 준다 */
+.room-bg > svg,
+.fp-card [data-element] > svg,
+[data-element] > svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+/* ── 무대 ────────────────────────────────────────────── */
+
+.room-stage {
+  position: relative;
+  overflow: hidden;
+  border-radius: 22px;
+  border: 1px solid var(--line);
+  background: #160e2c;
+  /* 방 에셋 비율(900×640). 마크업이 늦게 들어와도 자리가 흔들리지 않는다 */
+  aspect-ratio: 900 / 640;
+}
+
+/*
+ * 캐릭터는 방 좌표계에서 계산한 % 로 얹힌다.
+ * 점프 정점이 방 밖으로 나가지 않도록 무대가 overflow 를 자른다 —
+ * 방 안에 있는 캐릭터니까 천장을 뚫지 않는 편이 맞다.
+ */
+.room-char {
+  position: absolute;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* 캡처 직전에 붙인다. 굽는 순간의 프레임이 매번 달라지지 않게 */
+.fp-freeze *,
+.fp-freeze *::before,
+.fp-freeze *::after {
+  animation-play-state: paused !important;
+  animation-delay: 0s !important;
+}
+
+/* ── 오행 대표색 ─────────────────────────────────────── */
+
+.room-screen,
+.intro,
+.gb-scroll,
+.room-card {
+  --fp-fire: #ff8072;
+  --fp-water: #5aa8f5;
+  --fp-wood: #63d28c;
+  --fp-metal: #e4eaf6;
+  --fp-earth: #f5c263;
+}
+[data-element="fire"] { --fp-element: var(--fp-fire); }
+[data-element="water"] { --fp-element: var(--fp-water); }
+[data-element="wood"] { --fp-element: var(--fp-wood); }
+[data-element="metal"] { --fp-element: var(--fp-metal); }
+[data-element="earth"] { --fp-element: var(--fp-earth); }
+
+/* ── 방 화면 ─────────────────────────────────────────── */
+
+.room-screen {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding-bottom: 8px;
+}
+
+.room-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 40px;
+}
+.room-title {
+  font-family: var(--display);
+  font-size: 20px;
+  margin: 0;
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.room-title b {
+  color: var(--magic);
+}
+
+/* 오행 뱃지 — 글로우가 캐릭터 색을 따라간다 */
+.el-badge {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 11px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--fp-element, var(--lilac));
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid var(--line);
+  box-shadow: 0 0 18px -6px var(--fp-element, transparent);
+}
+
+/* 포인트 — 방 위에 얹혀 늘 보인다. 오른쪽 위는 방명록 쪽지 버튼 자리다 */
+.point-badge {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 13px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--gold);
+  background: rgba(11, 6, 25, 0.62);
+  border: 1px solid rgba(252, 211, 77, 0.35);
+  backdrop-filter: blur(6px);
+}
+.point-badge .ic {
+  font-size: 14px;
+}
+
+/* 방을 처음 열었을 때 뜨는 안내 — 캐릭터를 눌러보라고 */
+.room-hint {
+  position: absolute;
+  left: 50%;
+  bottom: 12px;
+  transform: translateX(-50%);
+  padding: 6px 14px;
+  border-radius: 999px;
+  font-size: 12px;
+  color: #e3d8ff;
+  background: rgba(11, 6, 25, 0.55);
+  border: 1px solid var(--line);
+  white-space: nowrap;
+  pointer-events: none;
+  animation: room-hint-out 0.5s ease 6s both;
+}
+@keyframes room-hint-out {
+  to {
+    opacity: 0;
+    visibility: hidden;
+  }
+}
+
+.room-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+.room-actions .btn {
+  margin: 0;
+}
+.room-actions .wide {
+  grid-column: 1 / -1;
+}
+
+.room-note {
+  margin: 2px 0 0;
+  font-size: 12px;
+  line-height: 1.7;
+  color: var(--muted);
+  text-align: center;
+  word-break: keep-all;
+}
+
+/* 방을 만들기 전 안내 카드 — 지도의 .join-card 와 같은 톤 */
+.room-card {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  padding: 20px 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.room-card h2 {
+  font-family: var(--display);
+  font-size: 19px;
+  margin: 0;
+}
+.room-card p {
+  margin: 0;
+  font-size: 13.5px;
+  line-height: 1.75;
+  color: #ded2ff;
+  word-break: keep-all;
+}
+.room-card p b {
+  color: var(--magic);
+}
+.room-err {
+  margin: 0;
+  font-size: 13px;
+  color: #ff9db2;
+}
+
+/*
+ * 출석 안내 줄(.reward-bar)은 globals.css 에 있다 — 그 줄이 실제로 서는 자리가
+ * 운세 화면이고, 이 파일은 (game) 라우트 그룹에서만 실리기 때문이다.
+ * 내 방 화면에서도 같은 줄을 쓰므로 생김새는 한 곳에만 둔다.
+ */
+
+/* ── 꾸미기 팔레트 ───────────────────────────────────── */
+
+.decor-tabs {
+  display: flex;
+  gap: 6px;
+  overflow-x: auto;
+  padding-bottom: 4px;
+  scrollbar-width: none;
+}
+.decor-tabs::-webkit-scrollbar {
+  display: none;
+}
+.decor-tab {
+  flex: 0 0 auto;
+  padding: 8px 14px;
+  border-radius: 999px;
+  border: 1px solid var(--line);
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--muted);
+  font-size: 13px;
+  cursor: pointer;
+}
+.decor-tab.on {
+  color: #fff;
+  background: linear-gradient(135deg, var(--purple), var(--magic-d));
+  border-color: transparent;
+}
+
+.decor-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(96px, 1fr));
+  gap: 10px;
+}
+
+.decor-item {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 8px;
+  border-radius: 14px;
+  border: 1px solid var(--line);
+  background: rgba(255, 255, 255, 0.04);
+  cursor: pointer;
+  text-align: center;
+}
+.decor-item .chip {
+  height: 46px;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+.decor-item .k {
+  font-size: 12px;
+  line-height: 1.3;
+  word-break: keep-all;
+}
+.decor-item .p {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--gold);
+}
+.decor-item .p.own {
+  color: var(--muted);
+  font-weight: 400;
+}
+.decor-item.on {
+  border-color: var(--lilac);
+  box-shadow: 0 0 0 1px var(--lilac) inset;
+}
+/*
+ * 못 사는 건 눌러도 되게 둔다 — 눌러야 값을 보고 살지 말지 정할 수 있다.
+ * 대신 채도만 살짝 빼서 "아직 내 것이 아니다" 를 표시한다. 더 어둡게 하면
+ * 원래 벽지가 무슨 색인지 알 수 없어져서, 살지 말지 정할 근거가 사라진다.
+ */
+.decor-item.locked .chip {
+  filter: saturate(0.6) brightness(0.86);
+}
+.decor-item.locked .chip::after {
+  content: "";
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: rgba(11, 6, 25, 0.18);
+}
+
+.decor-bar {
+  position: sticky;
+  bottom: 0;
+  display: flex;
+  gap: 10px;
+  padding: 12px 0 4px;
+  background: linear-gradient(180deg, rgba(22, 11, 46, 0) 0%, var(--bg-1) 34%);
+}
+.decor-bar .btn {
+  flex: 1 1 0;
+  margin: 0;
+}
+
+/* ── 캐릭터를 빚는 화면 ──────────────────────────────── */
+
+.intro {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 6px 0 4px;
+}
+
+/*
+ * 캐릭터 무대.
+ *
+ * 캐릭터 viewBox 는 위쪽 160/520 이 점프 정점을 담는 투명 여백이라, 그대로 놓으면
+ * 상자의 3할이 비어 제목이 저 아래로 밀린다. 상자 높이는 여백을 뺀 비율(320:344)로
+ * 잡고 캐릭터만 그만큼 끌어올린다 — 점프해도 잘리지 않게 overflow 는 열어 둔다.
+ */
+.intro-stage {
+  position: relative;
+  width: min(62%, 236px);
+  aspect-ratio: 320 / 344;
+  margin-bottom: 6px;
+}
+.intro-char {
+  position: absolute;
+  left: 0;
+  top: -46.5%;
+  width: 100%;
+}
+/* 도는 동안엔 넷을 그리지 않는다 — 필터가 다섯 벌 깔리면 저가 기기에서 리듬이 끊긴다 */
+.intro-char:not(.on) {
+  display: none;
+}
+
+.intro-halo {
+  position: absolute;
+  left: 50%;
+  top: 58%;
+  width: 150%;
+  aspect-ratio: 1;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  background: radial-gradient(
+    circle,
+    var(--fp-element, var(--lilac)) 0%,
+    rgba(139, 92, 246, 0.18) 42%,
+    transparent 68%
+  );
+  opacity: 0.3;
+  pointer-events: none;
+}
+.intro-stage.spinning .intro-halo {
+  animation: intro-pulse 0.42s ease-in-out infinite alternate;
+}
+.intro-stage.settled .intro-halo {
+  animation: intro-burst 0.9s cubic-bezier(0.2, 0.9, 0.3, 1) both;
+}
+@keyframes intro-pulse {
+  from {
+    opacity: 0.22;
+    transform: translate(-50%, -50%) scale(0.9);
+  }
+  to {
+    opacity: 0.45;
+    transform: translate(-50%, -50%) scale(1.06);
+  }
+}
+@keyframes intro-burst {
+  0% {
+    opacity: 0.75;
+    transform: translate(-50%, -50%) scale(0.72);
+  }
+  100% {
+    opacity: 0.3;
+    transform: translate(-50%, -50%) scale(1);
+  }
+}
+/* 멎는 순간 캐릭터가 한 번 커졌다 제자리로 — "정해졌다" 를 말하는 유일한 동작이다 */
+.intro-stage.settled .intro-char.on {
+  animation: intro-pop 0.5s cubic-bezier(0.2, 0.9, 0.3, 1.3) both;
+}
+@keyframes intro-pop {
+  from {
+    transform: scale(0.86);
+  }
+  to {
+    transform: scale(1);
+  }
+}
+
+.intro-eyebrow {
+  margin: 0 0 6px;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+  color: var(--muted);
+}
+.intro-name {
+  margin: 0;
+  font-family: var(--display);
+  font-weight: 400;
+  font-size: 25px;
+  line-height: 1.4;
+  color: #f5efff;
+  word-break: keep-all;
+}
+.intro-name b {
+  font-weight: 400;
+  color: var(--fp-element, var(--magic));
+}
+.intro-trait {
+  margin: 7px 0 0;
+  font-size: 13px;
+  color: var(--lilac);
+}
+
+.intro-note {
+  width: 100%;
+  margin-top: 20px;
+  padding: 16px 18px;
+  border-radius: 18px;
+  border: 1px solid var(--line);
+  background: var(--card);
+  text-align: left;
+}
+.intro-note p {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.8;
+  color: #ded2ff;
+  word-break: keep-all;
+}
+.intro-note p b {
+  color: var(--magic);
+}
+.intro-note ul {
+  margin: 12px 0 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+.intro-note li {
+  position: relative;
+  padding-left: 17px;
+  font-size: 12.5px;
+  line-height: 1.65;
+  color: var(--muted);
+  word-break: keep-all;
+}
+.intro-note li::before {
+  content: "✦";
+  position: absolute;
+  left: 0;
+  color: var(--lilac);
+}
+
+.intro-go {
+  margin-top: 18px;
+}
+
+/* 상시 움직임만 멈춘다 — 결과가 정해지는 순간의 한 번은 남긴다 */
+@media (prefers-reduced-motion: reduce) {
+  .intro-stage.spinning .intro-halo {
+    animation: none;
+  }
+}
+
+/* ── 방명록 ──────────────────────────────────────────── */
+
+/*
+ * 방 위에 얹히는 채팅창.
+ *
+ * 방 아래 목록으로 길게 늘어놓지 않는다 — 방은 보러 오는 곳이고 방명록은 말을
+ * 거는 곳이라, 늘 펼쳐 두면 방이 목록의 머리말처럼 작아진다. 접어 두고 쪽지 버튼에
+ * 개수만 붙이면 방이 주인공으로 남는다.
+ *
+ * 무대(.room-stage)가 overflow 를 자르므로 창은 무대 **바깥**(.room-frame)에
+ * 붙인다. 같은 상자를 덮으면서도 잘리지 않고, 자기 모서리를 가질 수 있다.
+ */
+.room-frame {
+  position: relative;
+}
+
+.gb-toggle {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  z-index: 3;
+  width: 38px;
+  height: 38px;
+  display: grid;
+  place-items: center;
+  border-radius: 12px;
+  border: 1px solid var(--line);
+  background: rgba(11, 6, 25, 0.62);
+  backdrop-filter: blur(6px);
+  color: #e3d8ff;
+  cursor: pointer;
+}
+.gb-toggle.on {
+  color: #fff;
+  background: linear-gradient(135deg, var(--purple), var(--magic-d));
+  border-color: transparent;
+}
+/* 개수 뱃지 — 접힌 상태에서도 "뭔가 와 있다" 를 알리는 유일한 신호다 */
+.gb-toggle .n {
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  min-width: 19px;
+  height: 19px;
+  padding: 0 5px;
+  border-radius: 999px;
+  display: grid;
+  place-items: center;
+  font-size: 10.5px;
+  font-weight: 700;
+  color: #1b1230;
+  background: var(--gold);
+}
+
+/*
+ * 창 높이는 무대에 맞추지 않는다.
+ *
+ * 방은 가로가 넓은 그림(900:640)이라 폰에서 세로가 240px 밖에 안 된다. 그 안에
+ * 머리말과 쓰는 줄을 넣고 나면 말풍선 자리가 두 줄도 안 남는다. 그래서 무대를
+ * 넘어 아래로 내려오게 두었다 — 배경이 불투명해서 밑에 깔린 카드를 덮는 모양이
+ * 어색하지 않고, 방에서 펼쳐 나온 것처럼 읽힌다.
+ */
+.gb-panel {
+  position: absolute;
+  z-index: 4;
+  top: 54px;
+  right: 8px;
+  left: 8px;
+  height: clamp(250px, 50dvh, 440px);
+  display: flex;
+  flex-direction: column;
+  border-radius: 18px;
+  border: 1px solid var(--line);
+  /*
+   * 불투명하다. 방이 비쳐 보이면 예쁘겠지만 무대 아래 카드의 **글자**까지 비쳐서
+   * 말풍선과 겹쳐 읽힌다 — 조금만 비쳐도 글자는 눈에 걸린다. 대신 앱의 카드와
+   * 같은 결의 그라데이션을 써서 떠 있는 판처럼 보이게 한다.
+   */
+  background: linear-gradient(180deg, #1c1342 0%, #120a2a 100%);
+  box-shadow: 0 24px 60px -18px rgba(6, 3, 16, 0.9);
+  overflow: hidden;
+  animation: gb-in 0.22s ease both;
+}
+@keyframes gb-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+}
+
+.gb-top {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 11px 10px 11px 14px;
+  border-bottom: 1px solid var(--line);
+}
+.gb-top b {
+  font-family: var(--display);
+  font-weight: 400;
+  font-size: 15px;
+}
+.gb-top .c {
+  font-size: 11.5px;
+  color: var(--muted);
+}
+.gb-x {
+  margin-left: auto;
+  width: 28px;
+  height: 28px;
+  display: grid;
+  place-items: center;
+  border: 0;
+  border-radius: 9px;
+  background: rgba(255, 255, 255, 0.06);
+  color: #e3d8ff;
+  cursor: pointer;
+}
+
+/* 오래된 글이 위, 새 글이 아래 — 열면 맨 아래에서 시작한다 */
+.gb-scroll {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 14px 12px;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(167, 139, 250, 0.45) transparent;
+}
+.gb-scroll::-webkit-scrollbar {
+  width: 8px;
+}
+.gb-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+.gb-scroll::-webkit-scrollbar-thumb {
+  border-radius: 99px;
+  border: 2px solid transparent;
+  background: linear-gradient(180deg, var(--lilac), var(--purple)) padding-box;
+}
+
+.gb-msg {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+  max-width: 86%;
+}
+.gb-msg.mine {
+  align-self: flex-end;
+  align-items: flex-end;
+}
+.gb-who {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  font-weight: 700;
+  color: #cdbef0;
+}
+/* 남긴 사람의 오행을 점 하나로만 보인다 — 캐릭터를 다 그리면 창이 무거워진다 */
+.gb-who .dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--fp-element, var(--lilac));
+  box-shadow: 0 0 9px -1px var(--fp-element, var(--lilac));
+}
+.gb-bubble {
+  margin: 0;
+  padding: 9px 13px;
+  border-radius: 15px;
+  border-top-left-radius: 5px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid var(--line);
+  font-size: 13px;
+  line-height: 1.65;
+  color: #ece3ff;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+.gb-msg.mine .gb-bubble {
+  border-top-left-radius: 15px;
+  border-top-right-radius: 5px;
+  background: linear-gradient(135deg, rgba(139, 92, 246, 0.42), rgba(192, 38, 211, 0.28));
+  border-color: rgba(232, 121, 249, 0.34);
+}
+.gb-meta {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  font-size: 10.5px;
+  color: var(--muted);
+}
+.gb-del {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--muted);
+  font-size: 10.5px;
+  text-decoration: underline;
+  cursor: pointer;
+}
+.gb-none {
+  margin: auto;
+  text-align: center;
+  font-size: 12.5px;
+  line-height: 1.8;
+  color: var(--muted);
+}
+
+.gb-err {
+  flex: 0 0 auto;
+  margin: 0;
+  padding: 8px 14px 0;
+  font-size: 11.5px;
+  color: #ff9db2;
+}
+
+/*
+ * 쓰는 줄. 이름 칸을 따로 두는 건 방명록이 **남의 방에서** 쓰는 글이라 누가
+ * 남겼는지가 본문만큼 중요해서다. 사주를 넣어둔 사람은 이미 채워져 있다.
+ */
+.gb-compose {
+  flex: 0 0 auto;
+  display: flex;
+  gap: 6px;
+  padding: 9px;
+  border-top: 1px solid var(--line);
+}
+.gb-compose input {
+  height: 38px;
+  border-radius: 11px;
+  border: 1px solid var(--line);
+  background: rgba(255, 255, 255, 0.05);
+  color: #fff;
+  font-family: var(--body);
+  font-size: 13px;
+  padding: 0 11px;
+  outline: none;
+  min-width: 0;
+}
+.gb-compose input:focus {
+  border-color: rgba(167, 139, 250, 0.5);
+}
+.gb-name {
+  flex: 0 0 72px;
+  width: 72px;
+}
+.gb-text {
+  flex: 1 1 auto;
+}
+.gb-send {
+  flex: 0 0 auto;
+  height: 38px;
+  padding: 0 13px;
+  border-radius: 11px;
+  border: 0;
+  background: linear-gradient(135deg, var(--purple), var(--magic-d));
+  color: #fff;
+  font-family: var(--body);
+  font-size: 12.5px;
+  font-weight: 700;
+  cursor: pointer;
+}
+.gb-send:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+
+/* 사주가 없어 아직 못 쓰는 상태 — 막는 대신 채우러 가는 길을 연다 */
+.gb-need {
+  flex: 0 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+  padding: 12px;
+  border-top: 1px solid var(--line);
+}
+.gb-need p {
+  margin: 0;
+  font-size: 12px;
+  line-height: 1.7;
+  color: var(--muted);
+  text-align: center;
+  word-break: keep-all;
+}
+.gb-need p b {
+  color: var(--magic);
+}
+.gb-need .gb-send {
+  height: 40px;
+}
+
+/* 하루 한 줄을 다 쓴 상태 — 칸을 비워두는 대신 이유를 적는다 */
+.gb-done {
+  flex: 0 0 auto;
+  margin: 0;
+  padding: 14px;
+  text-align: center;
+  font-size: 12px;
+  color: var(--muted);
+  border-top: 1px solid var(--line);
+}
+
+/* ── 복구 코드 ───────────────────────────────────────── */
+
+/*
+ * 브라우저 데이터를 지우면 방을 잃는다. 며칠씩 모은 포인트가 함께 사라지므로
+ * 만든 직후에 한 번은 반드시 보여준다. 지도(id·열쇠)와 달리 다시 그리면 되는
+ * 물건이 아니라, 안내를 접어두지 않고 카드로 세운다.
+ */
+.recovery {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 16px;
+  border-radius: 18px;
+  border: 1px solid rgba(252, 211, 77, 0.3);
+  background: rgba(252, 211, 77, 0.07);
+}
+.recovery h3 {
+  margin: 0;
+  font-family: var(--display);
+  font-size: 16px;
+  color: var(--gold);
+}
+.recovery p {
+  margin: 0;
+  font-size: 12.5px;
+  line-height: 1.7;
+  color: #ded2ff;
+  word-break: keep-all;
+}
+.recovery-code {
+  padding: 11px 12px;
+  border-radius: 12px;
+  border: 1px solid var(--line);
+  background: rgba(0, 0, 0, 0.28);
+  color: #f3ecff;
+  font-size: 12px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  word-break: break-all;
+  text-align: left;
+  cursor: pointer;
+  /* 클립보드가 막힌 브라우저에서 길게 눌러 가져갈 마지막 길 */
+  user-select: all;
+}
+
+/* ── 접근성 ──────────────────────────────────────────── */
+
+/*
+ * SVG 안에도 같은 미디어 쿼리가 있지만, 카드 hover 같은 바깥 연출까지 함께
+ * 멈추려면 여기서 한 번 더 선언해야 한다.
+ *
+ * 멈추는 건 **상시 움직임**(숨쉬기·눈깜빡임·오라·반짝임)뿐이다.
+ *  - 사용자가 직접 누른 점프는 남긴다 — 누른 결과가 아무것도 없으면 눌렀는지 알 수 없다.
+ *  - 힌트가 사라지는 연출(.room-hint)도 남긴다. 자리를 옮기지 않고 흐려지기만 하는
+ *    데다, 멈춰버리면 안내 문구가 방 위에 영영 남는다.
+ */
+@media (prefers-reduced-motion: reduce) {
+  [data-element] .fp-idle,
+  [data-element] .fp-eyes,
+  [data-element] .fp-aura,
+  [data-element] .fp-spark {
+    animation: none !important;
+  }
+}
