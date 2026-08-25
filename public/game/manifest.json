@@ -1,0 +1,57 @@
+[
+  {
+    "key": "fire",
+    "ko": "화",
+    "hanja": "火",
+    "name": "부리",
+    "base": "#FF8072",
+    "trait": "열정·호기로움",
+    "face": "호기로운 결의 눈썹 + 활짝 웃는 입",
+    "motion": "가장 높고 빠른 2단 점프 (살짝 기울며 튀어오름)",
+    "file": "characters/fire.svg"
+  },
+  {
+    "key": "water",
+    "ko": "수",
+    "hanja": "水",
+    "name": "포로",
+    "base": "#5AA8F5",
+    "trait": "지혜·유연·차분",
+    "face": "반쯤 감긴 나른한 눈 + 잔잔한 미소",
+    "motion": "낮고 느린 물결 점프 (크게 눌렸다 길게 여운)",
+    "file": "characters/water.svg"
+  },
+  {
+    "key": "wood",
+    "ko": "목",
+    "hanja": "木",
+    "name": "새싹",
+    "base": "#63D28C",
+    "trait": "성장·호기심",
+    "face": "크고 동그란 눈 + 둥근 눈썹 + 감탄하는 입",
+    "motion": "위로 쭉 뻗는 성장형 점프 (스트레치 최대)",
+    "file": "characters/wood.svg"
+  },
+  {
+    "key": "metal",
+    "ko": "금",
+    "hanja": "金",
+    "name": "차랑",
+    "base": "#E4EAF6",
+    "trait": "결단·의리·냉철",
+    "face": "야무진 눈 + 직선 눈썹 + 단정한 미소",
+    "motion": "짧고 절도 있는 점프 (잔반동 없이 딱 멈춤)",
+    "file": "characters/metal.svg"
+  },
+  {
+    "key": "earth",
+    "ko": "토",
+    "hanja": "土",
+    "name": "도담",
+    "base": "#F5C263",
+    "trait": "안정·포용·느긋",
+    "face": "눈웃음 + 넉넉한 큰 미소",
+    "motion": "낮고 묵직한 쿵 점프 (착지에서 크게 눌림)",
+    "file": "characters/earth.svg"
+  }
+]

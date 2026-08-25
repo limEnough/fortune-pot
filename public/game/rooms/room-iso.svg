@@ -1,0 +1,192 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 700" width="900" height="700"
+     class="fp-room fp-room--iso" data-room="iso" role="img"
+     aria-label="FortunePot 기본 방 - 아이소메트릭 (밤하늘)">
+  <title>기본 방 · 아이소메트릭(B안)</title>
+
+  <defs>
+    <linearGradient id="ri-wallL" x1="0" y1="0" x2="1" y2="0.4">
+      <stop offset="0%"   stop-color="#3B2969"/>
+      <stop offset="100%" stop-color="#2C1D53"/>
+    </linearGradient>
+    <linearGradient id="ri-wallR" x1="0" y1="0" x2="1" y2="0.4">
+      <stop offset="0%"   stop-color="#2A1C4F"/>
+      <stop offset="100%" stop-color="#1F1440"/>
+    </linearGradient>
+    <linearGradient id="ri-floor" x1="0.2" y1="0" x2="0.8" y2="1">
+      <stop offset="0%"   stop-color="#2A1C52"/>
+      <stop offset="100%" stop-color="#180F32"/>
+    </linearGradient>
+    <linearGradient id="ri-sky" x1="0" y1="0" x2="0.2" y2="1">
+      <stop offset="0%"   stop-color="#2E3E86"/>
+      <stop offset="100%" stop-color="#5A3574"/>
+    </linearGradient>
+    <linearGradient id="ri-wood" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%"   stop-color="#5B3F94"/>
+      <stop offset="100%" stop-color="#3E2A6B"/>
+    </linearGradient>
+    <radialGradient id="ri-nebula" cx="30%" cy="14%" r="60%">
+      <stop offset="0%"   stop-color="#8B5CF6" stop-opacity=".3"/>
+      <stop offset="100%" stop-color="#8B5CF6" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="ri-lamp" cx="50%" cy="50%" r="50%">
+      <stop offset="0%"   stop-color="#FFD98E" stop-opacity=".85"/>
+      <stop offset="100%" stop-color="#FFD98E" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="ri-moon" cx="36%" cy="30%" r="72%">
+      <stop offset="0%"   stop-color="#FFF6D8"/>
+      <stop offset="100%" stop-color="#F5D98A"/>
+    </radialGradient>
+    <filter id="ri-soft" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="12"/>
+    </filter>
+    <filter id="ri-soft-s" x="-60%" y="-60%" width="220%" height="220%">
+      <feGaussianBlur stdDeviation="5"/>
+    </filter>
+    <filter id="ri-glow" x="-140%" y="-140%" width="380%" height="380%">
+      <feGaussianBlur stdDeviation="5" result="b"/>
+      <feMerge><feMergeNode in="b"/><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <clipPath id="ri-floorclip"><path d="M450 268 L780 433 L450 598 L120 433 Z"/></clipPath>
+    <clipPath id="ri-wallLclip"><path d="M120 433 L120 208 L450 43 L450 268 Z"/></clipPath>
+    <clipPath id="ri-wallRclip"><path d="M780 433 L780 208 L450 43 L450 268 Z"/></clipPath>
+    <clipPath id="ri-winclip"><path d="M198 310 L318 250 L318 132 L198 192 Z"/></clipPath>
+  </defs>
+
+  <style><![CDATA[
+    .fp-room--iso .ri-grid{ stroke:#42307A; stroke-width:2; opacity:.5; fill:none; }
+  ]]></style>
+
+  <!-- ===== 레이어 1 : 벽 ===== -->
+  <g id="layer-wall">
+    <path d="M120 433 L120 208 L450 43 L450 268 Z" fill="url(#ri-wallL)"/>
+    <path d="M780 433 L780 208 L450 43 L450 268 Z" fill="url(#ri-wallR)"/>
+    <g clip-path="url(#ri-wallLclip)">
+      <path d="M120 433 L120 208 L450 43 L450 268 Z" fill="url(#ri-nebula)"/>
+      <g fill="#EDE7FF" opacity=".6">
+        <circle cx="160" cy="290" r="1.8"/><circle cx="212" cy="180" r="1.6"/>
+        <circle cx="356" cy="146" r="2"/><circle cx="400" cy="230" r="1.5"/>
+        <circle cx="146" cy="380" r="1.5"/><circle cx="392" cy="120" r="1.6"/>
+      </g>
+    </g>
+    <g clip-path="url(#ri-wallRclip)">
+      <g fill="#EDE7FF" opacity=".5">
+        <circle cx="510" cy="150" r="1.8"/><circle cx="700" cy="230" r="1.6"/>
+        <circle cx="748" cy="330" r="1.5"/><circle cx="620" cy="120" r="1.5"/>
+      </g>
+    </g>
+    <path d="M120 208 L450 43 L450 60 L120 225 Z" fill="#54409A"/>
+    <path d="M780 208 L450 43 L450 60 L780 225 Z" fill="#3E2C72"/>
+    <path d="M120 433 L450 268 L450 288 L120 453 Z" fill="#3E2C72"/>
+    <path d="M780 433 L450 268 L450 288 L780 453 Z" fill="#332255"/>
+  </g>
+
+  <!-- ===== 레이어 2 : 바닥 ===== -->
+  <g id="layer-floor">
+    <path d="M450 268 L780 433 L450 598 L120 433 Z" fill="url(#ri-floor)"/>
+    <g clip-path="url(#ri-floorclip)" class="ri-grid">
+      <path d="M285 350 L615 515"/><path d="M368 309 L698 474"/>
+      <path d="M203 391 L533 556"/><path d="M120 433 L450 598"/>
+      <path d="M615 350 L285 515"/><path d="M532 309 L202 474"/>
+      <path d="M698 391 L368 556"/><path d="M780 433 L450 598"/>
+    </g>
+    <path d="M450 268 L780 433 L450 598 L120 433 Z" fill="none" stroke="#54409A"
+          stroke-width="3" opacity=".7"/>
+  </g>
+
+  <!-- ===== 레이어 3 : 벽 장식 슬롯 ===== -->
+  <g id="slot-window" data-slot="window" clip-path="url(#ri-wallLclip)">
+    <path d="M186 316 L330 244 L330 118 L186 190 Z" fill="#4A3684"/>
+    <path d="M198 310 L318 250 L318 132 L198 192 Z" fill="url(#ri-sky)"/>
+    <g clip-path="url(#ri-winclip)">
+      <ellipse cx="280" cy="180" rx="24" ry="27" fill="url(#ri-moon)"
+               transform="rotate(-27 280 180)"/>
+      <ellipse cx="291" cy="171" rx="21" ry="24" fill="#3F2C78"
+               transform="rotate(-27 291 171)" opacity=".95"/>
+      <g fill="#FFFFFF" opacity=".85">
+        <circle cx="224" cy="228" r="1.8"/><circle cx="250" cy="196" r="1.5"/>
+        <circle cx="288" cy="232" r="1.8"/><circle cx="214" cy="268" r="1.5"/>
+        <circle cx="304" cy="196" r="1.4"/>
+      </g>
+      <path d="M198 300 C232 280 258 292 284 278 C300 270 312 274 318 270 L318 312 L198 312 Z"
+            fill="#2A1B52"/>
+    </g>
+    <path d="M258 280 L258 162" stroke="#4A3684" stroke-width="8"/>
+    <path d="M198 251 L318 191" stroke="#4A3684" stroke-width="8"/>
+    <path d="M186 316 L330 244 L330 118 L186 190 Z" fill="none" stroke="#5B4499" stroke-width="5"/>
+  </g>
+
+  <g id="slot-poster" data-slot="poster" clip-path="url(#ri-wallRclip)">
+    <path d="M566 254 L680 311 L680 179 L566 122 Z" fill="#2C1E58"/>
+    <path d="M566 254 L680 311 L680 179 L566 122 Z" fill="none" stroke="#4A3684" stroke-width="6"/>
+    <ellipse cx="623" cy="214" rx="24" ry="28" fill="#3A2870" transform="rotate(-27 623 214)"/>
+    <path d="M623 192 C614 206 609 215 609 224 C609 235 615 242 623 242
+             C631 242 637 235 637 224 C637 215 632 206 623 192 Z"
+          fill="#FFB25C" transform="rotate(-27 623 217)" filter="url(#ri-glow)"/>
+    <g fill="#EDE7FF" opacity=".7">
+      <circle cx="588" cy="164" r="1.8"/><circle cx="660" cy="270" r="1.8"/>
+    </g>
+  </g>
+
+  <g id="slot-shelf" data-slot="shelf" clip-path="url(#ri-wallRclip)">
+    <path d="M496 314 L496 298 L578 339 L578 355 Z" fill="url(#ri-wood)"/>
+    <path d="M496 298 L578 339 L578 344 L496 303 Z" fill="#7C57D6"/>
+    <g filter="url(#ri-glow)">
+      <path d="M508 294 L508 266 L518 271 L518 299 Z" fill="#F472B6" opacity=".9"/>
+      <path d="M522 301 L522 269 L532 274 L532 306 Z" fill="#7DD3FC" opacity=".9"/>
+      <path d="M536 308 L536 282 L546 287 L546 313 Z" fill="#A3E635" opacity=".85"/>
+    </g>
+    <ellipse cx="562" cy="312" rx="14" ry="16" fill="#6C46C0" filter="url(#ri-glow)"/>
+    <ellipse cx="558" cy="306" rx="4" ry="5" fill="#EDE7FF" opacity=".8"/>
+  </g>
+
+  <!-- ===== 레이어 4 : 러그 ===== -->
+  <g id="slot-rug" data-slot="rug">
+    <path d="M450 366 L672 477 L450 588 L228 477 Z" fill="#7C57D6" opacity=".18" filter="url(#ri-soft)"/>
+    <path d="M450 372 L662 477 L450 582 L238 477 Z" fill="#563099"/>
+    <path d="M450 372 L662 477 L450 582 L238 477 Z" fill="none" stroke="#8B5CF6" stroke-width="5"/>
+    <path d="M450 408 L590 477 L450 546 L310 477 Z" fill="none" stroke="#A78BFA" stroke-width="4" opacity=".6"/>
+    <path d="M450 442 L520 477 L450 512 L380 477 Z" fill="none" stroke="#A78BFA" stroke-width="3.5" opacity=".45"/>
+    <g fill="#FFD84D" opacity=".85">
+      <circle cx="450" cy="392" r="2.4"/><circle cx="450" cy="562" r="2.4"/>
+      <circle cx="264" cy="477" r="2.2"/><circle cx="636" cy="477" r="2.2"/>
+    </g>
+  </g>
+
+  <!-- ===== 레이어 5 : 가구 ===== -->
+  <g id="slot-furniture-left" data-slot="furniture-left">
+    <ellipse cx="238" cy="446" rx="50" ry="22" fill="#0F0A24" opacity=".55" filter="url(#ri-soft-s)"/>
+    <path d="M210 396 L214 434 C214 446 262 446 262 434 L266 396 Z" fill="#5B4499"/>
+    <ellipse cx="238" cy="396" rx="28" ry="13" fill="#7C57D6"/>
+    <path d="M238 392 C212 370 206 332 220 306 C244 318 252 356 238 392 Z" fill="#6C46C0"/>
+    <path d="M238 392 C264 374 276 336 264 310 C240 324 228 358 238 392 Z" fill="#9268E8"/>
+    <g fill="#FFD84D" filter="url(#ri-glow)">
+      <circle cx="222" cy="326" r="3"/><circle cx="262" cy="342" r="2.4"/>
+    </g>
+  </g>
+
+  <g id="slot-furniture-right" data-slot="furniture-right">
+    <ellipse cx="644" cy="452" rx="68" ry="28" fill="#0F0A24" opacity=".55" filter="url(#ri-soft-s)"/>
+    <ellipse cx="653" cy="392" rx="96" ry="46" fill="url(#ri-lamp)" opacity=".7"/>
+    <path d="M584 396 L644 361 L704 396 L644 431 Z" fill="#6D4FBF"/>
+    <path d="M584 396 L644 431 L644 443 L584 408 Z" fill="#4A3684"/>
+    <path d="M704 396 L644 431 L644 443 L704 408 Z" fill="#3B2A6E"/>
+    <path d="M592 412 L592 448 L600 452 L600 416 Z" fill="#4A3684"/>
+    <path d="M696 412 L696 448 L688 452 L688 416 Z" fill="#3B2A6E"/>
+    <path d="M644 447 L644 478 L652 474 L652 443 Z" fill="#3B2A6E"/>
+    <path d="M618 358 L634 322 L672 322 L688 358 Z" fill="#FFD98E"/>
+    <ellipse cx="653" cy="358" rx="35" ry="12" fill="#F5C266"/>
+    <path d="M645 322 L643 308 L665 308 L663 322 Z" fill="#5B4499"/>
+  </g>
+
+  <!-- ===== 레이어 6 : 캐릭터 앵커 ===== -->
+  <g id="slot-character" data-slot="character" data-anchor-x="440" data-anchor-baseline="502">
+    <ellipse cx="440" cy="502" rx="84" ry="32" fill="#0F0A24" opacity=".5" filter="url(#ri-soft)"/>
+  </g>
+
+  <!-- ===== 레이어 7 : 분위기 ===== -->
+  <g id="layer-fx" fill="#FFD84D" opacity=".9" filter="url(#ri-glow)">
+    <circle cx="330" cy="120" r="2.6"/><circle cx="742" cy="180" r="2.2"/>
+    <circle cx="176" cy="330" r="2"/>
+  </g>
+</svg>

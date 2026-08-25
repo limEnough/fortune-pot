@@ -1,0 +1,227 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 640" width="900" height="640"
+     class="fp-room fp-room--front" data-room="front" role="img"
+     aria-label="FortunePot 기본 방 - 정면 무대형 (밤하늘)">
+  <title>기본 방 · 정면 무대형(A안)</title>
+
+  <defs>
+    <linearGradient id="rf-wall" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%"   stop-color="#38265F"/>
+      <stop offset="55%"  stop-color="#2B1C4E"/>
+      <stop offset="100%" stop-color="#231741"/>
+    </linearGradient>
+    <linearGradient id="rf-floor" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%"   stop-color="#241844"/>
+      <stop offset="100%" stop-color="#160E2C"/>
+    </linearGradient>
+    <linearGradient id="rf-sky" x1="0" y1="0" x2="0.3" y2="1">
+      <stop offset="0%"   stop-color="#2E3E86"/>
+      <stop offset="55%"  stop-color="#3A2A6E"/>
+      <stop offset="100%" stop-color="#5A3574"/>
+    </linearGradient>
+    <linearGradient id="rf-curtain" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%"   stop-color="#7C57D6"/>
+      <stop offset="100%" stop-color="#4E3399"/>
+    </linearGradient>
+    <linearGradient id="rf-wood" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%"   stop-color="#5B3F94"/>
+      <stop offset="100%" stop-color="#3E2A6B"/>
+    </linearGradient>
+    <radialGradient id="rf-nebula" cx="26%" cy="18%" r="60%">
+      <stop offset="0%"   stop-color="#8B5CF6" stop-opacity=".34"/>
+      <stop offset="100%" stop-color="#8B5CF6" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="rf-nebula2" cx="82%" cy="30%" r="48%">
+      <stop offset="0%"   stop-color="#F472B6" stop-opacity=".22"/>
+      <stop offset="100%" stop-color="#F472B6" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="rf-lamp" cx="50%" cy="50%" r="50%">
+      <stop offset="0%"   stop-color="#FFD98E" stop-opacity=".9"/>
+      <stop offset="100%" stop-color="#FFD98E" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="rf-rug" cx="50%" cy="50%" r="50%">
+      <stop offset="0%"   stop-color="#6C46C0"/>
+      <stop offset="100%" stop-color="#4A2E93"/>
+    </radialGradient>
+    <radialGradient id="rf-moon" cx="36%" cy="30%" r="72%">
+      <stop offset="0%"   stop-color="#FFF6D8"/>
+      <stop offset="100%" stop-color="#F5D98A"/>
+    </radialGradient>
+    <radialGradient id="rf-vig" cx="50%" cy="44%" r="74%">
+      <stop offset="58%"  stop-color="#000000" stop-opacity="0"/>
+      <stop offset="100%" stop-color="#0B0619" stop-opacity=".62"/>
+    </radialGradient>
+    <filter id="rf-soft" x="-40%" y="-40%" width="180%" height="180%">
+      <feGaussianBlur stdDeviation="14"/>
+    </filter>
+    <filter id="rf-soft-s" x="-60%" y="-60%" width="220%" height="220%">
+      <feGaussianBlur stdDeviation="5"/>
+    </filter>
+    <filter id="rf-glow" x="-120%" y="-120%" width="340%" height="340%">
+      <feGaussianBlur stdDeviation="5" result="b"/>
+      <feMerge><feMergeNode in="b"/><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <clipPath id="rf-frame"><rect x="0" y="0" width="900" height="640" rx="28"/></clipPath>
+    <clipPath id="rf-winclip"><rect x="110" y="100" width="200" height="184" rx="14"/></clipPath>
+  </defs>
+
+  <style><![CDATA[
+    .fp-room--front .rf-star{ fill:#EDE7FF; }
+    .fp-room--front .rf-line{ stroke:#42307A; stroke-width:2; fill:none; opacity:.7; }
+  ]]></style>
+
+  <g clip-path="url(#rf-frame)">
+
+    <!-- ===== 레이어 1 : 벽 ===== -->
+    <g id="layer-wall">
+      <rect x="0" y="0" width="900" height="452" fill="url(#rf-wall)"/>
+      <rect x="0" y="0" width="900" height="452" fill="url(#rf-nebula)"/>
+      <rect x="0" y="0" width="900" height="452" fill="url(#rf-nebula2)"/>
+      <g class="rf-star" opacity=".75">
+        <circle cx="62" cy="52" r="2"/><circle cx="152" cy="34" r="1.4"/>
+        <circle cx="392" cy="46" r="2.2"/><circle cx="470" cy="70" r="1.4"/>
+        <circle cx="596" cy="40" r="1.8"/><circle cx="700" cy="82" r="1.4"/>
+        <circle cx="836" cy="52" r="2"/><circle cx="864" cy="128" r="1.5"/>
+        <circle cx="46" cy="168" r="1.6"/><circle cx="376" cy="290" r="1.6"/>
+        <circle cx="424" cy="352" r="1.4"/><circle cx="560" cy="330" r="1.8"/>
+        <circle cx="836" cy="300" r="1.5"/><circle cx="66" cy="330" r="1.5"/>
+        <circle cx="746" cy="196" r="1.4"/><circle cx="880" cy="222" r="1.7"/>
+      </g>
+      <rect x="0" y="0" width="900" height="16" fill="#432F7C" opacity=".8"/>
+      <rect x="0" y="396" width="900" height="8" fill="#3B2A6E" opacity=".7"/>
+    </g>
+
+    <!-- ===== 레이어 2 : 바닥 ===== -->
+    <g id="layer-floor">
+      <rect x="0" y="452" width="900" height="188" fill="url(#rf-floor)"/>
+      <g class="rf-line">
+        <path d="M0 452 H900"/><path d="M0 502 H900"/>
+        <path d="M0 554 H900"/><path d="M0 608 H900"/>
+        <path d="M130 452 V502"/><path d="M350 452 V502"/><path d="M570 452 V502"/><path d="M790 452 V502"/>
+        <path d="M60 502 V554"/><path d="M260 502 V554"/><path d="M480 502 V554"/><path d="M700 502 V554"/>
+        <path d="M170 554 V608"/><path d="M400 554 V608"/><path d="M640 554 V608"/><path d="M860 554 V608"/>
+      </g>
+      <rect x="0" y="440" width="900" height="16" rx="4" fill="#3E2C72"/>
+      <rect x="0" y="440" width="900" height="4" fill="#57409A"/>
+    </g>
+
+    <!-- ===== 레이어 3 : 벽 장식 슬롯 ===== -->
+    <g id="slot-window" data-slot="window">
+      <rect x="98" y="88" width="224" height="208" rx="20" fill="#4A3684"/>
+      <rect x="110" y="100" width="200" height="184" rx="14" fill="url(#rf-sky)"/>
+      <g clip-path="url(#rf-winclip)">
+        <circle cx="252" cy="150" r="30" fill="url(#rf-moon)"/>
+        <circle cx="266" cy="140" r="26" fill="#3A2A6E" opacity=".92"/>
+        <g fill="#FFFFFF" opacity=".9">
+          <circle cx="140" cy="130" r="2.2"/><circle cx="176" cy="112" r="1.6"/>
+          <circle cx="196" cy="160" r="2"/><circle cx="132" cy="196" r="1.6"/>
+          <circle cx="230" cy="212" r="2.2"/><circle cx="286" cy="196" r="1.6"/>
+          <circle cx="162" cy="238" r="1.8"/><circle cx="272" cy="252" r="1.5"/>
+        </g>
+        <path d="M150 154 L182 178" stroke="#FFFFFF" stroke-width="2.5"
+              stroke-linecap="round" opacity=".7"/>
+        <circle cx="184" cy="180" r="3" fill="#FFFFFF" filter="url(#rf-glow)"/>
+        <!-- 능선 -->
+        <path d="M110 262 C150 232 186 258 224 246 C258 236 288 250 310 244 L310 284 L110 284 Z"
+              fill="#2A1B52"/>
+        <path d="M110 272 C158 250 196 272 240 262 C276 254 296 264 310 260 L310 284 L110 284 Z"
+              fill="#1F1440"/>
+      </g>
+      <rect x="204" y="100" width="10" height="184" fill="#4A3684"/>
+      <rect x="110" y="188" width="200" height="10" fill="#4A3684"/>
+      <rect x="98" y="88" width="224" height="208" rx="20" fill="none" stroke="#5B4499" stroke-width="6"/>
+      <path d="M80 78 C106 132 102 212 88 296 L54 296 C66 210 68 132 56 78 Z" fill="url(#rf-curtain)"/>
+      <path d="M340 78 C314 132 318 212 332 296 L366 296 C354 210 352 132 364 78 Z" fill="url(#rf-curtain)"/>
+      <rect x="44" y="66" width="332" height="14" rx="7" fill="#5B4499"/>
+    </g>
+
+    <g id="slot-poster" data-slot="poster">
+      <rect x="420" y="94" width="128" height="156" rx="16" fill="#2C1E58" stroke="#4A3684" stroke-width="5"/>
+      <circle cx="484" cy="152" r="34" fill="#3A2870"/>
+      <path d="M484 128 C473 143 466 154 466 165 C466 177 474 186 484 186
+               C494 186 502 177 502 165 C502 154 495 143 484 128 Z"
+            fill="#FFB25C" filter="url(#rf-glow)"/>
+      <g fill="#EDE7FF" opacity=".8">
+        <circle cx="444" cy="120" r="1.8"/><circle cx="524" cy="132" r="1.6"/>
+        <circle cx="452" cy="196" r="1.6"/><circle cx="520" cy="204" r="2"/>
+      </g>
+      <rect x="444" y="212" width="80" height="7" rx="3.5" fill="#4A3684"/>
+      <rect x="458" y="228" width="52" height="7" rx="3.5" fill="#4A3684"/>
+    </g>
+
+    <g id="slot-shelf" data-slot="shelf">
+      <rect x="580" y="196" width="228" height="13" rx="6.5" fill="url(#rf-wood)"/>
+      <rect x="580" y="196" width="228" height="4" rx="2" fill="#6D4FBF"/>
+      <!-- 포션 -->
+      <g filter="url(#rf-glow)">
+        <path d="M600 196 L600 168 C600 160 612 160 612 168 L612 196 Z" fill="#F472B6" opacity=".9"/>
+        <path d="M620 196 L620 158 C620 150 632 150 632 158 L632 196 Z" fill="#7DD3FC" opacity=".9"/>
+        <path d="M640 196 L640 172 C640 164 652 164 652 172 L652 196 Z" fill="#A3E635" opacity=".85"/>
+      </g>
+      <rect x="602" y="156" width="8" height="8" rx="2" fill="#5B4499"/>
+      <rect x="622" y="146" width="8" height="8" rx="2" fill="#5B4499"/>
+      <!-- 수정구 -->
+      <circle cx="694" cy="176" r="20" fill="#6C46C0" filter="url(#rf-glow)"/>
+      <circle cx="687" cy="169" r="6" fill="#EDE7FF" opacity=".8"/>
+      <path d="M676 194 L712 194 L706 200 L682 200 Z" fill="#4A3684"/>
+      <!-- 별 화분 -->
+      <path d="M760 196 L757 172 L791 172 L788 196 Z" fill="#5B4499"/>
+      <path d="M774 172 C760 164 756 148 763 136 C776 140 781 158 774 172 Z" fill="#7C57D6"/>
+      <path d="M774 172 C789 166 796 150 791 138 C777 141 769 158 774 172 Z" fill="#A78BFA"/>
+    </g>
+
+    <!-- ===== 레이어 4 : 러그 ===== -->
+    <g id="slot-rug" data-slot="rug">
+      <ellipse cx="450" cy="558" rx="248" ry="72" fill="#7C57D6" opacity=".16" filter="url(#rf-soft)"/>
+      <ellipse cx="450" cy="558" rx="234" ry="66" fill="url(#rf-rug)"/>
+      <ellipse cx="450" cy="558" rx="234" ry="66" fill="none" stroke="#8B5CF6" stroke-width="5" opacity=".8"/>
+      <ellipse cx="450" cy="558" rx="172" ry="48" fill="none" stroke="#A78BFA" stroke-width="4" opacity=".55"/>
+      <ellipse cx="450" cy="558" rx="108" ry="30" fill="none" stroke="#A78BFA" stroke-width="3.5" opacity=".4"/>
+      <g fill="#FFD84D" opacity=".85">
+        <circle cx="322" cy="546" r="2.4"/><circle cx="584" cy="552" r="2.4"/>
+        <circle cx="450" cy="514" r="2.2"/><circle cx="450" cy="600" r="2.2"/>
+      </g>
+    </g>
+
+    <!-- ===== 레이어 5 : 가구 ===== -->
+    <g id="slot-furniture-left" data-slot="furniture-left">
+      <ellipse cx="130" cy="536" rx="58" ry="14" fill="#0F0A24" opacity=".5" filter="url(#rf-soft-s)"/>
+      <path d="M96 452 L104 526 C104 536 158 536 158 526 L166 452 Z" fill="#5B4499"/>
+      <path d="M96 452 L166 452 L164 468 L98 468 Z" fill="#7C57D6"/>
+      <path d="M130 452 C104 428 98 388 112 356 C138 368 148 414 130 452 Z" fill="#6C46C0"/>
+      <path d="M130 452 C158 432 172 392 160 360 C134 374 118 416 130 452 Z" fill="#9268E8"/>
+      <path d="M130 452 C126 412 132 380 144 354" stroke="#B79BFF" stroke-width="4"
+            fill="none" stroke-linecap="round" opacity=".5"/>
+      <g fill="#FFD84D" filter="url(#rf-glow)">
+        <circle cx="112" cy="374" r="3.2"/><circle cx="156" cy="392" r="2.6"/>
+      </g>
+    </g>
+
+    <g id="slot-furniture-right" data-slot="furniture-right">
+      <ellipse cx="750" cy="534" rx="76" ry="16" fill="#0F0A24" opacity=".5" filter="url(#rf-soft-s)"/>
+      <ellipse cx="758" cy="450" rx="86" ry="46" fill="url(#rf-lamp)" opacity=".55"/>
+      <rect x="678" y="426" width="146" height="18" rx="9" fill="url(#rf-wood)"/>
+      <rect x="678" y="426" width="146" height="5" rx="2.5" fill="#7C57D6"/>
+      <rect x="694" y="444" width="13" height="84" rx="6.5" fill="#4A3684"/>
+      <rect x="794" y="444" width="13" height="84" rx="6.5" fill="#4A3684"/>
+      <rect x="702" y="516" width="98" height="11" rx="5.5" fill="#4A3684"/>
+      <path d="M716 426 L732 382 L786 382 L802 426 Z" fill="#FFD98E"/>
+      <path d="M716 426 L802 426 L802 433 L716 433 Z" fill="#F5C266"/>
+      <path d="M745 382 L742 362 L776 362 L773 382 Z" fill="#5B4499"/>
+    </g>
+
+    <!-- ===== 레이어 6 : 캐릭터 앵커 ===== -->
+    <g id="slot-character" data-slot="character" data-anchor-x="450" data-anchor-baseline="578">
+      <ellipse cx="450" cy="578" rx="94" ry="20" fill="#0F0A24" opacity=".45" filter="url(#rf-soft)"/>
+    </g>
+
+    <!-- ===== 레이어 7 : 분위기 ===== -->
+    <g id="layer-fx">
+      <g fill="#FFD84D" opacity=".9" filter="url(#rf-glow)">
+        <circle cx="356" cy="150" r="2.6"/><circle cx="606" cy="118" r="2.2"/>
+        <circle cx="856" cy="380" r="2.4"/>
+      </g>
+      <rect x="0" y="0" width="900" height="640" fill="url(#rf-vig)"/>
+    </g>
+  </g>
+</svg>
