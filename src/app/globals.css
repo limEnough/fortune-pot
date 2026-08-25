@@ -1409,6 +1409,66 @@ input[type="date"].input::-webkit-calendar-picker-indicator {
 }
 
 /*
+ * 출석 보상 줄 — 운세 카드 아래에 붙는다.
+ *
+ * 게임 파트에서 쓰는 스타일이지만 game.css 가 아니라 여기 있다. 이 줄이 서는
+ * 자리가 운세 화면이고, game.css 는 (game) 라우트 그룹에서만 실리기 때문이다.
+ * 화면을 가리는 모달로 만들지 않은 건 운세를 보러 온 사람의 시선을 포인트가
+ * 가로채면 안 되기 때문 — 받은 사실만 알리고 방으로 가는 길만 열어 둔다.
+ */
+.reward-bar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 16px;
+  padding: 14px 16px;
+  border-radius: 18px;
+  background: linear-gradient(
+    135deg,
+    rgba(139, 92, 246, 0.2),
+    rgba(192, 38, 211, 0.12)
+  );
+  border: 1px solid var(--line);
+}
+.reward-bar .ic {
+  flex: 0 0 auto;
+  font-size: 22px;
+}
+.reward-bar .body {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+.reward-bar .k {
+  font-family: var(--display);
+  font-size: 15px;
+}
+.reward-bar .k b {
+  color: var(--gold);
+}
+.reward-bar .v {
+  margin-top: 3px;
+  font-size: 12px;
+  line-height: 1.6;
+  color: var(--muted);
+  word-break: keep-all;
+}
+.reward-bar .go {
+  flex: 0 0 auto;
+  padding: 9px 14px;
+  border-radius: 999px;
+  border: 1px solid var(--line);
+  background: rgba(255, 255, 255, 0.08);
+  color: #f3ecff;
+  font-family: var(--body);
+  font-size: 12.5px;
+  font-weight: 700;
+  cursor: pointer;
+}
+.reward-bar .go:active {
+  transform: scale(0.97);
+}
+
+/*
  * 카드 이미지 저장 — 화면 맨 아래 트리거 버튼 + 미리보기 바텀시트.
  * 운세·사주 두 화면이 같은 컴포넌트를 쓰므로 생김새도 하나로 둔다.
  */

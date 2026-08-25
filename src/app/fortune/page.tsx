@@ -7,6 +7,7 @@ import TopBar from "@/components/TopBar";
 import FortuneCard from "@/components/FortuneCard";
 import { FortuneSkeletonScreen } from "@/components/Skeleton";
 import SajuInfoSheet from "@/components/SajuInfoSheet";
+import RewardBanner from "@/components/game/RewardBanner";
 import { generateFortune } from "@/lib/saju/fortune";
 import { computeSaju } from "@/lib/saju/calc";
 import { isComplete } from "@/types/saju";
@@ -64,6 +65,12 @@ export default function FortunePage() {
         </button>
 
         <FortuneCard fortune={fortune} name={saju.name} />
+
+        {/*
+          운세를 본 것이 곧 출석이다. 카드 아래에 결과 한 줄만 붙여
+          운세를 보러 온 시선을 포인트가 가로채지 않게 한다.
+        */}
+        <RewardBanner />
       </div>
 
       <SajuInfoSheet
