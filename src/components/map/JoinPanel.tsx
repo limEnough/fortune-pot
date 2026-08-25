@@ -4,10 +4,11 @@ import { useNav } from "@/hooks/useNav";
 import { useMapStore } from "@/store/useMapStore";
 import { useViewingStore } from "@/store/useViewingStore";
 import { ROLE_MAP } from "@/lib/saju/chemi";
-import { apiPost } from "@/lib/map/api";
+import { apiPost } from "@/lib/http";
 import {
-  readJoined, touchJoined, visitorId, writeJoined, type Joined,
+  readJoined, touchJoined, writeJoined, type Joined,
 } from "@/lib/map/visitor";
+import { visitorId } from "@/lib/visitor";
 import { plantSaju } from "@/lib/map/plant";
 import JoinForm from "./JoinForm";
 import type { JoinInput, JoinResult } from "@/lib/map/types";

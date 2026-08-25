@@ -16,10 +16,19 @@ import { useEffect, useRef, useState } from "react";
  * 복사는 화면이 바뀌지 않는 동작이라 토스트가 유일한 응답이다. 그래서 실제로
  * 클립보드에 들어간 뒤에만 띄운다.
  */
-export default function ShareBar({ id, ownerName }: { id: string; ownerName: string }) {
+interface Props {
+  /** 앱 기준 경로 (예: /map/abc, /room/abc) — 주소는 화면에서 만든다 */
+  path: string;
+  /** 공유 시트 제목 */
+  title: string;
+  /** 공유 시트에 함께 실릴 한 줄 */
+  text: string;
+}
+
+export default function ShareBar({ path, title, text }: Props) {
   const [toast, setToast] = useState("");
   const timer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
-  const url = typeof window === "undefined" ? "" : `${window.location.origin}/map/${id}`;
+  const url = typeof window === "undefined" ? "" : `${window.location.origin}${path}`;
 
   // 화면을 떠난 뒤 setState 가 도는 걸 막는다
   useEffect(() => () => clearTimeout(timer.current), []);
@@ -44,11 +53,7 @@ export default function ShareBar({ id, ownerName }: { id: string; ownerName: str
   const share = async () => {
     if (!navigator.share) return copy();
     try {
-      await navigator.share({
-        title: "포춘팟 귀인지도",
-        text: `나는 ${ownerName}님에게 어떤 사람일까? 생일만 넣으면 바로 나와요.`,
-        url,
-      });
+      await navigator.share({ title, text, url });
     } catch {
       // 사용자가 시트를 닫았다 — 그대로 둔다
     }

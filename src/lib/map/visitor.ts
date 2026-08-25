@@ -2,18 +2,13 @@
 import type { JoinInput } from "./types";
 
 /*
- * 공유 링크로 들어온 사람의 브라우저 표식.
+ * 이 브라우저가 다녀온 남의 지도들.
  *
- * 로그인이 없으므로 "같은 사람"을 알아볼 방법이 입력값밖에 없는데, 다시 올리는
- * 이유는 대개 입력을 고치려는 것이라 입력으로는 같은 사람을 못 알아본다.
- * 그래서 무엇을 고치든 변하지 않는 임의 id 를 브라우저에 심어두고 함께 보낸다.
- *
- * 이 값으로 사람을 식별하지 않는다 — 서버는 해시만 저장하고, 한 지도 안에서
- * 같은 줄을 찾는 데만 쓴다. 스토리지를 막아둔 브라우저(시크릿창 등)에서는
- * 그냥 없는 채로 진행하고, 서버가 이름+생일로 한 번 더 걸러준다.
+ * 브라우저 표식(`visitorId`) 자체는 방명록도 함께 쓰게 되어 `lib/visitor.ts` 로
+ * 올려 두었다. 여기 남은 건 지도에만 해당하는 것 — 어느 지도에 무엇으로 이름을
+ * 올렸는지, 그래서 메뉴에 무엇을 세울지다.
  */
 
-const VISITOR = "fortunepot-visitor";
 const JOINED = "fortunepot-joined";
 
 function store(): Storage | null {
@@ -22,23 +17,6 @@ function store(): Storage | null {
   } catch {
     return null; // 스토리지 차단
   }
-}
-
-export function visitorId(): string | undefined {
-  const s = store();
-  if (!s) return undefined;
-  let v = s.getItem(VISITOR) ?? undefined;
-  if (!v) {
-    const b = new Uint8Array(16);
-    crypto.getRandomValues(b);
-    v = Array.from(b, (n) => n.toString(16).padStart(2, "0")).join("");
-    try {
-      s.setItem(VISITOR, v);
-    } catch {
-      return undefined;
-    }
-  }
-  return v;
 }
 
 /** 이 브라우저가 어느 지도에 무엇으로 올렸는지 — 폼을 채워두고 미리 알리는 데 쓴다 */

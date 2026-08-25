@@ -6,7 +6,7 @@ import { useSessionStore } from "@/store/useSessionStore";
 import TopBar from "@/components/TopBar";
 import JoinForm from "@/components/map/JoinForm";
 import MapBoard from "@/components/map/MapBoard";
-import ShareBar from "@/components/map/ShareBar";
+import ShareBar from "@/components/ShareBar";
 import { MapSkeleton, MapSkeletonScreen } from "@/components/Skeleton";
 import type { JoinInput, MapMember } from "@/lib/map/types";
 
@@ -190,7 +190,13 @@ export default function MapPage() {
                 <b>이 지도를 볼 수 있어요</b>
                 (이름과 유형까지, 생년월일은 아무에게도 보이지 않아요).
               </p>
-              {id && <ShareBar id={id} ownerName={map.owner.name} />}
+              {id && (
+                <ShareBar
+                  path={`/map/${id}`}
+                  title="포춘팟 귀인지도"
+                  text={`나는 ${map.owner.name}님에게 어떤 사람일까? 생일만 넣으면 바로 나와요.`}
+                />
+              )}
             </div>
 
             <MapBoard

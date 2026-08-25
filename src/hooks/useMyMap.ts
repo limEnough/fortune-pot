@@ -1,7 +1,7 @@
 "use client";
 import { useCallback, useEffect, useState } from "react";
 import { useMapStore } from "@/store/useMapStore";
-import { apiDelete, apiGet, apiPost } from "@/lib/map/api";
+import { apiDelete, apiGet, apiPost } from "@/lib/http";
 import { plantSaju } from "@/lib/map/plant";
 import type { JoinInput, MapView } from "@/lib/map/types";
 
